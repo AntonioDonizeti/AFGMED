@@ -10,7 +10,9 @@ from werkzeug.utils import secure_filename
 # ----------------- HOME -----------------
 @app.route("/")
 def homepage():
-    return render_template("homepage.html")
+    # Puxa 4 produtos mais recentes ou mais vendidos
+    produtos_destaque = Produto.query.limit(4).all()
+    return render_template("homepage.html", produtos=produtos_destaque)
 
 # ----------------- CADASTRO USUÁRIO -----------------
 @app.route("/criar-conta", methods=["GET","POST"])

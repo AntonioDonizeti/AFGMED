@@ -19,9 +19,7 @@
     <p>Nenhum produto cadastrado.</p>
     {% endfor %}
 </div>
-{% endblock %}
 
-<!-- CSS adicional para produtos -->
 <style>
 .produtos-container {
     display: flex;
@@ -31,8 +29,8 @@
 }
 
 .card-produto {
-    width: 280px;       /* Largura fixa para desktop */
-    min-height: 420px;  /* Altura mínima para manter layout */
+    width: 280px;       /* largura fixa para desktop */
+    min-height: 420px;  /* altura mínima do card */
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -42,8 +40,9 @@
 }
 
 .card-produto img.card-imagem {
-    width: 100%;       /* Não ultrapassa o card */
-    height: auto;      /* Mantém proporção */
+    width: 100%;        /* ocupa toda largura do card */
+    max-height: 200px;  /* altura máxima da imagem */
+    object-fit: contain; /* mantém proporção */
     display: block;
     margin: 0 auto;
 }
@@ -63,14 +62,16 @@
     margin: 5px 0;
 }
 
-/* Responsivo: telas menores que 768px */
+/* Responsivo para telas menores que 768px */
 @media (max-width: 768px) {
     .produtos-container {
         justify-content: center;
     }
     .card-produto {
-        width: 90%;      /* ocupa quase toda a tela em mobile */
+        width: 90%;       /* ocupa quase toda a tela em mobile */
         min-height: auto;
     }
 }
 </style>
+
+{% endblock %}

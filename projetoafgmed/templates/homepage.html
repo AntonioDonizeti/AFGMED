@@ -3,22 +3,23 @@
 {% block title %}AFGMED - Home{% endblock %}
 
 {% block content %}
-<h1 class="text-center mb-4">Bem-vindo à AFGMED</h1>
-<p class="text-center">Explore nossa equipe e produtos.</p>
+<h1 class="text-center mb-4">Mais Vendidos</h1>
+<p class="text-center text-muted">Os produtos preferidos dos nossos clientes</p>
 
-<div class="row mt-5">
+<div class="row row-cols-1 row-cols-md-4 g-4 mt-3">
     {% for produto in produtos %}
-    <div class="col-md-3 mb-4">
-        <div class="card">
-            <div class="card-body text-center">
+    <div class="col">
+        <div class="card h-100 text-center shadow-sm">
+            <img src="{{ url_for('static', filename='fotos_produtos/' + produto.foto) }}"
+                 class="card-img-top" style="height:180px; object-fit:contain;" alt="{{ produto.nome }}">
+            <div class="card-body">
                 <h5 class="card-title">{{ produto.nome }}</h5>
-                <p class="card-text">{{ produto.descricao }}</p>
-                <p class="fw-bold">R$ {{ "%.2f"|format(produto.preco) }}</p>
+                <p class="card-text text-truncate">{{ produto.descricao }}</p>
+                <p class="fw-bold">R$ {{ '%.2f' % produto.preco }}</p>
+                <a href="#" class="btn btn-primary w-100">Adicionar ao Carrinho</a>
             </div>
         </div>
     </div>
-    {% else %}
-    <p class="text-center">Nenhum produto disponível.</p>
     {% endfor %}
 </div>
 {% endblock %}
