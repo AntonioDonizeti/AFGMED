@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro - AFGMED{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5 pt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="text-center mb-4">Criar Conta</h3>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.nome.label(class="form-label") }}
+                        {{ form.nome(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.sobrenome.label(class="form-label") }}
+                        {{ form.sobrenome(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.senha.label(class="form-label") }}
+                        {{ form.senha(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.confirmacao_senha.label(class="form-label") }}
+                        {{ form.confirmacao_senha(class="form-control") }}
+                    </div>
+                    {{ form.botao_confirmacao(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

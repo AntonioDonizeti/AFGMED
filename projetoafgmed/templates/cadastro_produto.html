@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Cadastrar Produto - AFGMED{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5 pt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="text-center mb-4">Cadastrar Produto</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.nome.label(class="form-label") }}
+                        {{ form.nome(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.descricao.label(class="form-label") }}
+                        {{ form.descricao(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.preco.label(class="form-label") }}
+                        {{ form.preco(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.estoque.label(class="form-label") }}
+                        {{ form.estoque(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.foto.label(class="form-label") }}
+                        {{ form.foto(class="form-control") }}
+                    </div>
+
+                    {{ form.botao_confirmacao(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

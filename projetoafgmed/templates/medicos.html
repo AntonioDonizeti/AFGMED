@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}AFGMED - Equipe{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4">Nossa Equipe</h1>
+<div class="row">
+    {% for medico in medicos %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+           <img src="{{ url_for('static', filename='fotos_medicos/' ~ medico.foto) }}"
+     class="card-img-top" style="height:200px; object-fit:cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ medico.nome }}</h5>
+                <p>{{ medico.especialidade }}</p>
+                <p>Email: {{ medico.email }}</p>
+                <p>Telefone: {{ medico.telefone }}</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-center">Nenhum médico cadastrado.</p>
+    {% endfor %}
+</div>
+{% endblock %}

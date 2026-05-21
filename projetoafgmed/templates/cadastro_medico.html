@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro Médico{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5 pt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="text-center mb-4">Cadastrar Médico</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.nome.label(class="form-label") }}
+                        {{ form.nome(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.especialidade.label(class="form-label") }}
+                        {{ form.especialidade(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.telefone.label(class="form-label") }}
+                        {{ form.telefone(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.foto.label(class="form-label") }}
+                        {{ form.foto(class="form-control") }}
+                    </div>
+                    {{ form.botao_confirmacao(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

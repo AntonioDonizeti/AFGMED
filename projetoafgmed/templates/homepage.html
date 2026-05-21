@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}AFGMED - Home{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4">Bem-vindo à AFGMED</h1>
+<p class="text-center">Explore nossa equipe e produtos.</p>
+
+<div class="row mt-5">
+    {% for produto in produtos %}
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">{{ produto.nome }}</h5>
+                <p class="card-text">{{ produto.descricao }}</p>
+                <p class="fw-bold">R$ {{ "%.2f"|format(produto.preco) }}</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-center">Nenhum produto disponível.</p>
+    {% endfor %}
+</div>
+{% endblock %}
