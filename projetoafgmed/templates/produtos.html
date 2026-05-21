@@ -1,23 +1,76 @@
+<!-- produtos.html -->
 {% extends "base.html" %}
 
-{% block title %}AFGMED - Produtos{% endblock %}
-
 {% block content %}
-<h1 class="text-center mb-4">Produtos</h1>
-<div class="row">
+<h1>Produtos</h1>
+<div class="produtos-container">
     {% for produto in produtos %}
-    <div class="col-md-3 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <h5 class="card-title">{{ produto.nome }}</h5>
-                <p class="card-text">{{ produto.descricao }}</p>
-                <p class="fw-bold">R$ {{ "%.2f"|format(produto.preco) }}</p>
-                <p>Estoque: {{ produto.estoque }}</p>
-            </div>
+    <div class="card card-produto">
+        <img src="{{ url_for('static', filename='fotos_produtos/' + produto.foto) }}"
+             alt="{{ produto.nome }}" class="card-imagem">
+        <div class="card-body">
+            <h2>{{ produto.nome }}</h2>
+            <p>{{ produto.descricao }}</p>
+            <p><strong>R$ {{ '%.2f' % produto.preco }}</strong></p>
+            <p>Estoque: {{ produto.estoque }}</p>
         </div>
     </div>
     {% else %}
-    <p class="text-center">Nenhum produto cadastrado.</p>
+    <p>Nenhum produto cadastrado.</p>
     {% endfor %}
 </div>
 {% endblock %}
+
+<!-- CSS adicional para produtos -->
+<style>
+.produtos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.card-produto {
+    width: 280px;       /* Largura fixa para desktop */
+    min-height: 420px;  /* Altura mínima para manter layout */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-produto img.card-imagem {
+    width: 100%;       /* Não ultrapassa o card */
+    height: auto;      /* Mantém proporção */
+    display: block;
+    margin: 0 auto;
+}
+
+.card-body {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.card-body h2 {
+    font-size: 1.2rem;
+    margin: 0 0 10px;
+}
+
+.card-body p {
+    font-size: 0.95rem;
+    margin: 5px 0;
+}
+
+/* Responsivo: telas menores que 768px */
+@media (max-width: 768px) {
+    .produtos-container {
+        justify-content: center;
+    }
+    .card-produto {
+        width: 90%;      /* ocupa quase toda a tela em mobile */
+        min-height: auto;
+    }
+}
+</style>

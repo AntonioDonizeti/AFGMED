@@ -33,4 +33,6 @@ class Produto(database.Model):
     descricao = database.Column(database.String)
     preco = database.Column(database.Float, nullable=False)
     estoque = database.Column(database.Integer, default=0)
+    foto = database.Column(database.String, default="default.jpg")
+
 
