@@ -35,4 +35,22 @@ class Produto(database.Model):
     estoque = database.Column(database.Integer, default=0)
     foto = database.Column(database.String, default="default.jpg")
 
+class Carrinho(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    id_usuario = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False)
+    data_criacao = database.Column(database.DateTime, default=datetime.utcnow)
+    status = database.Column(database.String, default='ativo')  # ativo ou finalizado
+
+    usuario = database.relationship('Usuario', backref=database.backref('carrinho', uselist=False))
+    itens = database.relationship('ItemCarrinho', backref='carrinho', lazy=True)
+
+class ItemCarrinho(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    id_carrinho = database.Column(database.Integer, database.ForeignKey('carrinho.id'), nullable=False)
+    id_produto = database.Column(database.Integer, database.ForeignKey('produto.id'), nullable=False)
+    quantidade = database.Column(database.Integer, default=1)
+    preco_unitario = database.Column(database.Float, nullable=False)
+
+    produto = database.relationship('Produto')
+
 

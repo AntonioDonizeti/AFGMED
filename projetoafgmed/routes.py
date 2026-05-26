@@ -1,8 +1,9 @@
 from projetoafgmed import app, database, bcrypt
-from projetoafgmed.models import Usuario, Medico, Produto
+from projetoafgmed.models import Usuario, Medico, Produto ,Carrinho, ItemCarrinho
 from projetoafgmed.forms import FormProduto, FormCriarConta, FormLogin, FormMedico
 from flask import render_template, redirect, url_for, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from flask import request
 import os
 from werkzeug.utils import secure_filename
 
@@ -10,9 +11,11 @@ from werkzeug.utils import secure_filename
 # ----------------- HOME -----------------
 @app.route("/")
 def homepage():
-    # Puxa 4 produtos mais recentes ou mais vendidos
     produtos_destaque = Produto.query.limit(4).all()
-    return render_template("homepage.html", produtos=produtos_destaque)
+    carrinho = None
+    if current_user.is_authenticated:
+        carrinho = Carrinho.query.filter_by(id_usuario=current_user.id, status='ativo').first()
+    return render_template("homepage.html", produtos=produtos_destaque, carrinho=carrinho)
 
 # ----------------- CADASTRO USUÁRIO -----------------
 @app.route("/criar-conta", methods=["GET","POST"])
@@ -133,3 +136,66 @@ def cadastro_produto():
         return redirect(url_for("produtos"))
 
     return render_template("cadastro_produto.html", form=form)
+
+# ----------------- ADICIONAR PRODUTO AO CARRINHO -----------------
+@app.route("/adicionar-carrinho/<int:id_produto>", methods=["POST"])
+@login_required
+def adicionar_carrinho(id_produto):
+    produto = Produto.query.get_or_404(id_produto)
+
+    # Pega o carrinho ativo do usuário ou cria
+    carrinho = Carrinho.query.filter_by(id_usuario=current_user.id, status='ativo').first()
+    if not carrinho:
+        carrinho = Carrinho(id_usuario=current_user.id)
+        database.session.add(carrinho)
+        database.session.commit()
+
+    # Verifica se o produto já está no carrinho
+    item = ItemCarrinho.query.filter_by(id_carrinho=carrinho.id, id_produto=produto.id).first()
+    if item:
+        item.quantidade += 1
+    else:
+        item = ItemCarrinho(
+            id_carrinho=carrinho.id,
+            id_produto=produto.id,
+            quantidade=1,
+            preco_unitario=produto.preco
+        )
+        database.session.add(item)
+
+    database.session.commit()
+    flash(f"{produto.nome} adicionado ao carrinho!", "success")
+    return redirect(request.referrer)
+
+# ----------------- VISUALIZAR CARRINHO -----------------
+@app.route("/carrinho")
+@login_required
+def ver_carrinho():
+    carrinho = Carrinho.query.filter_by(id_usuario=current_user.id, status='ativo').first()
+    itens = carrinho.itens if carrinho else []
+    total = sum([item.quantidade * item.preco_unitario for item in itens])
+    return render_template("carrinho.html", itens=itens, total=total)
+
+# ----------------- REMOVER ITEM -----------------
+@app.route("/remover-carrinho/<int:id_item>", methods=["POST"])
+@login_required
+def remover_item_carrinho(id_item):
+    item = ItemCarrinho.query.get_or_404(id_item)
+    database.session.delete(item)
+    database.session.commit()
+    flash("Item removido do carrinho!", "info")
+    return redirect(url_for("ver_carrinho"))
+
+# ----------------- FINALIZAR COMPRA -----------------
+@app.route("/finalizar-carrinho", methods=["POST"])
+@login_required
+def finalizar_carrinho():
+    carrinho = Carrinho.query.filter_by(id_usuario=current_user.id, status='ativo').first()
+    if not carrinho or not carrinho.itens:
+        flash("Carrinho vazio!", "warning")
+        return redirect(url_for("ver_carrinho"))
+
+    carrinho.status = "finalizado"
+    database.session.commit()
+    flash("Compra finalizada com sucesso!", "success")
+    return redirect(url_for("homepage"))

@@ -3,6 +3,24 @@
 {% block title %}AFGMED - Home{% endblock %}
 
 {% block content %}
+
+<!-- INICIO BANNER -->
+
+<div class="hero-banner">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-12 col-md-8 col-lg-6 hero-conteudo">
+                <h1 class="display-4 fw-bold text-white mb-3">Cuidado completo para você</h1>
+                <p class="fs-5 text-white mb-4">Agende consultas, realize exames e receba seus remédios em casa com a plataforma AFGMED.</p>
+                <div class="d-flex gap-3">
+                    <a href="medicos.html" class="btn text-white py-2 px-4 fw-bold" style="background-color: #072B59;" role="button">Agendar consultas</a>
+                    <button class="btn btn-light py-2 px-4 fw-bold">Ver especialidades</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <h1 class="text-center mb-4">Mais Vendidos</h1>
 <p class="text-center text-muted">Os produtos preferidos dos nossos clientes</p>
 
@@ -16,10 +34,16 @@
                 <h5 class="card-title">{{ produto.nome }}</h5>
                 <p class="card-text text-truncate">{{ produto.descricao }}</p>
                 <p class="fw-bold">R$ {{ '%.2f' % produto.preco }}</p>
-                <a href="#" class="btn btn-primary w-100">Adicionar ao Carrinho</a>
+
+                <!-- FORMULARIO ADICIONAR AO CARRINHO -->
+                <form action="{{ url_for('adicionar_carrinho', id_produto=produto.id) }}" method="post">
+                    <button type="submit" class="btn btn-primary w-100">Adicionar ao Carrinho</button>
+                </form>
+
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}

@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AFGMED{% endblock %}</title>
 
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="{{ url_for('homepage') }}">
@@ -36,15 +39,62 @@
                     <li class="nav-item ms-2"><a class="btn btn-primary" href="{{ url_for('criar_conta') }}">Criar Conta</a></li>
                     <li class="nav-item ms-2"><a class="btn btn-success" href="{{ url_for('login') }}">Login</a></li>
                 {% endif %}
+
+                <!-- Ícone do carrinho -->
+                <li class="nav-item position-relative ms-3">
+                    <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCarrinho" aria-controls="offcanvasCarrinho">
+                        <i class="bi bi-cart3" style="font-size: 1.5rem;"></i>
+                        {% if carrinho %}
+                            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">{{ carrinho.itens|length }}</span>
+                        {% endif %}
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
 
+<!-- Offcanvas Carrinho -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCarrinho" aria-labelledby="offcanvasCarrinhoLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasCarrinhoLabel">Meu Carrinho</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% if carrinho and carrinho.itens %}
+      <ul class="list-group mb-3">
+        {% set total = 0 %}
+        {% for item in carrinho.itens %}
+          {% set subtotal = item.quantidade * item.preco_unitario %}
+          {% set total = total + subtotal %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div>{{ item.produto.nome }}</div>
+              <small>{{ item.quantidade }}x de R$ {{ '%.2f' % item.preco_unitario }}</small>
+            </div>
+            <span class="fw-bold">R$ {{ '%.2f' % subtotal }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="d-flex justify-content-between mb-3">
+        <strong>Total:</strong>
+        <strong>R$ {{ '%.2f' % total }}</strong>
+      </div>
+      <form action="{{ url_for('finalizar_carrinho') }}" method="post">
+        <button type="submit" class="btn btn-primary w-100">Finalizar Compra</button>
+      </form>
+    {% else %}
+      <p>Seu carrinho está vazio.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Conteúdo principal -->
 <main class="container mt-5">
     {% block content %}{% endblock %}
 </main>
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

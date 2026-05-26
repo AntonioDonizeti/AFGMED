@@ -51,4 +51,20 @@ footer {
     color: #fff;
     padding: 40px 20px;
     font-size: 0.9rem;
+
+}
+
+.hero-banner {
+    /* Mantenha a URL da sua imagem */
+    background-image:  url_for('static', filename='imagens/banner.jpg');
+    background-size: cover;
+
+    /* Isso garante que o médico sempre apareça no celular */
+    background-position: right center;
+
+    background-repeat: no-repeat;
+    min-height: 500px;
+    padding: 60px 0;
+    position: relative;
+    overflow: hidden;
 }
