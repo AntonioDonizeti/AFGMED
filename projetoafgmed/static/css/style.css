@@ -1,70 +1,333 @@
 body {
+    background: #f4f8fb;
+    color: #273444;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
-    margin: 0;
-    padding: 0;
-    color: #333;
 }
 
+/* NAVBAR */
 .navbar {
-    background-color: #2c3e50;
+    background: #072B59 !important;
+    box-shadow: 0 4px 18px rgba(7, 43, 89, 0.18);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.navbar-brand img {
+    border-radius: 10px;
+    object-fit: cover;
 }
 
 .navbar .nav-link {
-    color: #fff;
+    color: rgba(255, 255, 255, .88) !important;
+    font-weight: 500;
 }
 
 .navbar .nav-link:hover {
-    color: #3498db;
+    color: #7ee0d2 !important;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+/* BANNER */
+.hero-banner {
+    min-height: 430px;
+    border-radius: 24px;
+    padding: 55px 0;
+    overflow: hidden;
+    position: relative;
+    background:
+        linear-gradient(90deg, rgba(7,43,89,.94), rgba(7,43,89,.50)),
+        url("../imagens/banner.jpg") center/cover no-repeat;
+    box-shadow: 0 18px 45px rgba(7, 43, 89, .16);
 }
 
-.card {
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.hero-banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 20%, rgba(24,169,153,.35), transparent 28%);
 }
 
-.card-body {
-    padding: 20px;
+.hero-conteudo {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-conteudo h1 {
+    letter-spacing: -1px;
+    line-height: 1.08;
+}
+
+.hero-conteudo p {
+    color: rgba(255,255,255,.88) !important;
+}
+
+/* BOTÕES */
+.btn {
+    border-radius: 12px;
+    transition: .2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
 }
 
 .btn-primary {
-    background-color: #3498db;
-    border: none;
+    background-color: #072B59;
+    border-color: #072B59;
+    font-weight: 700;
 }
 
 .btn-primary:hover {
-    background-color: #2980b9;
+    background-color: #0B3A75;
+    border-color: #0B3A75;
+}
+
+.btn-success {
+    background-color: #18A999;
+    border-color: #18A999;
+    font-weight: 700;
+}
+
+.btn-success:hover {
+    background-color: #129585;
+    border-color: #129585;
+}
+
+.btn-outline-primary {
+    color: #072B59;
+    border-color: #072B59;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+.btn-outline-primary:hover {
+    background: #072B59;
+    border-color: #072B59;
+    color: #fff;
+}
+
+/* CARDS */
+.card {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: .25s ease;
+    box-shadow: 0 8px 24px rgba(7,43,89,.08) !important;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(7,43,89,.14) !important;
+}
+
+.card-body {
+    padding: 22px;
+}
+
+.card-title {
+    color: #072B59;
+}
+
+.card-img-top {
+    background: linear-gradient(180deg, #eef7fb, #ffffff);
+}
+
+/* TEXTOS */
+h1.text-center {
+    color: #072B59;
+    font-weight: 800;
+    margin-top: 20px;
 }
 
 .text-muted {
-    color: #7f8c8d !important;
+    color: #6b7280 !important;
 }
 
-footer {
-    background-color: #212c3d;
-    color: #fff;
-    padding: 40px 20px;
-    font-size: 0.9rem;
-
+.text-success {
+    color: #18A999 !important;
 }
 
-.hero-banner {
-    /* Mantenha a URL da sua imagem */
-    background-image:  url_for('static', filename='imagens/banner.jpg');
-    background-size: cover;
+/* CARRINHO */
+.badge.bg-danger {
+    font-size: 0.7rem;
+}
 
-    /* Isso garante que o médico sempre apareça no celular */
-    background-position: right center;
+.offcanvas-title {
+    color: #072B59;
+    font-weight: 700;
+}
 
-    background-repeat: no-repeat;
-    min-height: 500px;
-    padding: 60px 0;
-    position: relative;
-    overflow: hidden;
+.list-group-item {
+    border-radius: 12px !important;
+    margin-bottom: 10px;
+    border: 1px solid #e5eaf0;
+}
+
+/* RODAPÉ */
+.footer-afg {
+    background: #072B59;
+    color: #ffffff;
+    border-radius: 24px 24px 0 0;
+}
+
+.footer-logo {
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.footer-text {
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.footer-title {
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #ffffff;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+.footer-links a:hover {
+    color: #7ee0d2;
+}
+
+.footer-links i {
+    color: #18A999;
+    margin-right: 6px;
+}
+
+.footer-icons {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.footer-icons i {
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #7ee0d2;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+}
+
+.footer-line {
+    border-color: rgba(255, 255, 255, 0.18);
+    margin: 30px 0 20px;
+}
+
+.footer-afg small {
+    color: rgba(255, 255, 255, 0.68);
+}
+
+/* RESPONSIVO TABLET */
+@media (max-width: 992px) {
+    .navbar-nav {
+        padding-top: 15px;
+    }
+
+    .navbar-nav .btn {
+        margin-top: 6px;
+    }
+
+    .hero-banner {
+        background-position: center;
+    }
+}
+
+/* RESPONSIVO MOBILE */
+@media (max-width: 768px) {
+    main.container {
+        margin-top: 25px !important;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .hero-banner {
+        min-height: auto;
+        padding: 45px 22px;
+        border-radius: 18px;
+        background-position: center;
+    }
+
+    .hero-conteudo h1 {
+        font-size: 2rem;
+    }
+
+    .hero-conteudo p {
+        font-size: 1rem !important;
+    }
+
+    .hero-conteudo .d-flex {
+        flex-direction: column;
+    }
+
+    .hero-conteudo .btn {
+        width: 100%;
+    }
+
+    .card-img-top {
+        height: 160px !important;
+    }
+
+    h1.text-center {
+        font-size: 1.8rem;
+    }
+
+    .card-body {
+        padding: 18px;
+    }
+
+    .footer-afg {
+        text-align: center;
+        border-radius: 18px 18px 0 0;
+    }
+
+    .footer-afg .d-flex {
+        justify-content: center;
+    }
+
+    .footer-icons {
+        justify-content: center;
+    }
+}
+
+/* RESPONSIVO CELULAR PEQUENO */
+@media (max-width: 480px) {
+    .hero-conteudo h1 {
+        font-size: 1.75rem;
+    }
+
+    .hero-banner {
+        padding: 38px 18px;
+    }
+
+    .navbar-brand img {
+        width: 42px;
+    }
+
+    .btn {
+        font-size: 0.95rem;
+    }
 }

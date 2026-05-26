@@ -43,7 +43,7 @@ def login():
         usuario = Usuario.query.filter_by(email=form.email.data).first()
         if usuario and bcrypt.check_password_hash(usuario.senha, form.senha.data):
             login_user(usuario)
-            return redirect(url_for("medicos"))
+            return redirect(url_for("homepage"))
         else:
             flash("Email ou senha incorretos.", "danger")
     return render_template("login.html", form=form)
