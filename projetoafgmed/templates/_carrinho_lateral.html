@@ -1,0 +1,107 @@
+<!-- templates/_carrinho_lateral.html -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="carrinhoLateral" aria-labelledby="carrinhoLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title fw-bold" id="carrinhoLabel">Meu Carrinho</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+    </div>
+
+    <div class="offcanvas-body p-3" id="carrinho-body">
+        <div id="itens-carrinho-container">
+            {% if itens_carrinho %}
+                {% for item in itens_carrinho %}
+                <div class="carrinho-item border rounded p-2 mb-2" data-id="{{ item.id }}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="mb-1 fw-semibold">{{ item.produto.nome }}</p>
+                            <small>{{ item.quantidade }}x de R$ {{ '%.2f' % item.preco_unitario }}</small>
+                        </div>
+                        <strong>R$ {{ '%.2f' % (item.quantidade * item.preco_unitario) }}</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-secondary btn-aumentar" data-id="{{ item.id }}" {% if item.produto.estoque <= 0 %}disabled{% endif %}>+</button>
+                            <span class="fw-bold">{{ item.quantidade }}</span>
+                            <button class="btn btn-sm btn-outline-secondary btn-diminuir" data-id="{{ item.id }}">-</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger btn-remover" data-id="{{ item.id }}">Remover</button>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="carrinho-total mt-3 border-top pt-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Total:</strong>
+                        <strong id="total-carrinho">R$ {{ '%.2f' % total_carrinho }}</strong>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary w-100 mt-3" id="finalizar-compra">Finalizar Compra</button>
+            {% else %}
+                <p class="text-center text-muted mt-4">Seu carrinho está vazio.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Função para atualizar o conteúdo do carrinho sem reload
+    function atualizarCarrinho() {
+        fetch("{{ url_for('ver_carrinho') }}")
+            .then(resp => resp.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const itens = doc.getElementById('itens-carrinho-container');
+                document.getElementById('itens-carrinho-container').innerHTML = itens.innerHTML;
+
+                // Atualiza badge na navbar
+                const badgeNovo = doc.querySelector('.badge');
+                if (badgeNovo) {
+                    const badgeAtual = document.querySelector('.badge');
+                    if (badgeAtual) badgeAtual.textContent = badgeNovo.textContent;
+                }
+            });
+    }
+
+    // Eventos para + / - / Remover
+    document.body.addEventListener("click", function(e) {
+        const target = e.target;
+
+        if (target.classList.contains("btn-aumentar")) {
+            e.preventDefault();
+            const id = target.dataset.id;
+            fetch(`/atualizar-item/${id}`, {
+                method: 'POST',
+                body: new URLSearchParams({acao: 'aumentar'})
+            }).then(() => atualizarCarrinho());
+        }
+
+        if (target.classList.contains("btn-diminuir")) {
+            e.preventDefault();
+            const id = target.dataset.id;
+            fetch(`/atualizar-item/${id}`, {
+                method: 'POST',
+                body: new URLSearchParams({acao: 'diminuir'})
+            }).then(() => atualizarCarrinho());
+        }
+
+        if (target.classList.contains("btn-remover")) {
+            e.preventDefault();
+            const id = target.dataset.id;
+            fetch(`/remover-item/${id}`, {method: 'POST'})
+                .then(() => atualizarCarrinho());
+        }
+    });
+
+    // Finalizar compra
+    document.getElementById("finalizar-compra")?.addEventListener("click", function(e){
+        e.preventDefault();
+        fetch(`/finalizar-carrinho`, {method: 'POST'})
+            .then(() => atualizarCarrinho());
+    });
+
+});
+</script>

@@ -34,12 +34,17 @@ class Produto(database.Model):
     preco = database.Column(database.Float, nullable=False)
     estoque = database.Column(database.Integer, default=0)
     foto = database.Column(database.String, default="default.jpg")
+    ativo = database.Column(database.Boolean, default=True, nullable=False)
+    destaque_home = database.Column(database.Boolean, default=False, nullable=False)
+    data_criacao = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
+
 
 class Carrinho(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     id_usuario = database.Column(database.Integer, database.ForeignKey('usuario.id'), nullable=False)
     data_criacao = database.Column(database.DateTime, default=datetime.utcnow)
     status = database.Column(database.String, default='ativo')  # ativo ou finalizado
+    ativo = database.Column(database.Boolean, default=True, nullable=False)  # NOVO CAMPO
 
     usuario = database.relationship('Usuario', backref=database.backref('carrinho', uselist=False))
     itens = database.relationship('ItemCarrinho', backref='carrinho', lazy=True)

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, EmailField, FloatField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, EmailField, FloatField, IntegerField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo
 from flask_wtf.file import FileField, FileAllowed
 
@@ -34,5 +34,13 @@ class FormProduto(FlaskForm):
     descricao = StringField("Descrição")
     preco = FloatField("Preço", validators=[DataRequired()])
     estoque = IntegerField("Estoque", default=0, validators=[DataRequired()])
-    foto = FileField("Foto", validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Apenas imagens são permitidas!')])
+
+    ativo = BooleanField("Produto ativo", default=True)
+    destaque_home = BooleanField("Aparecer em Mais Vendidos na Home")
+
+    foto = FileField(
+        "Foto",
+        validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Apenas imagens são permitidas!')]
+    )
+
     botao_confirmacao = SubmitField("Cadastrar")

@@ -1,23 +1,46 @@
 from projetoafgmed import app, database, bcrypt
-from projetoafgmed.models import Usuario, Medico, Produto ,Carrinho, ItemCarrinho
+from projetoafgmed.models import Usuario, Medico, Produto, Carrinho, ItemCarrinho
 from projetoafgmed.forms import FormProduto, FormCriarConta, FormLogin, FormMedico
-from flask import render_template, redirect, url_for, flash, current_app
+from flask import render_template, redirect, url_for, flash, current_app, request
 from flask_login import login_user, logout_user, login_required, current_user
-from flask import request
-import os
 from werkzeug.utils import secure_filename
+import os
 
+
+# --- Context processor para carrinho global ---
+@app.context_processor
+def carrinho_global():
+    if current_user.is_authenticated:
+        carrinho = Carrinho.query.filter_by(
+            id_usuario=current_user.id,
+            status="ativo"
+        ).first()
+
+        itens = carrinho.itens if carrinho else []
+        total = sum(item.quantidade * item.preco_unitario for item in itens)
+        quantidade = sum(item.quantidade for item in itens)
+
+        return {
+            "carrinho": carrinho,
+            "itens_carrinho": itens,
+            "total_carrinho": total,
+            "quantidade_carrinho": quantidade
+        }
+
+    return {
+        "carrinho": None,
+        "itens_carrinho": [],
+        "total_carrinho": 0,
+        "quantidade_carrinho": 0
+    }
 
 # ----------------- HOME -----------------
 @app.route("/")
 def homepage():
-    produtos_destaque = Produto.query.limit(4).all()
-    carrinho = None
-    if current_user.is_authenticated:
-        carrinho = Carrinho.query.filter_by(id_usuario=current_user.id, status='ativo').first()
-    return render_template("homepage.html", produtos=produtos_destaque, carrinho=carrinho)
+    produtos_destaque = Produto.query.filter_by(ativo=True, destaque_home=True).limit(4).all()
+    return render_template("homepage.html", produtos=produtos_destaque)
 
-# ----------------- CADASTRO USUÁRIO -----------------
+# ----------------- USUÁRIOS -----------------
 @app.route("/criar-conta", methods=["GET","POST"])
 def criar_conta():
     form = FormCriarConta()
@@ -35,7 +58,6 @@ def criar_conta():
         return redirect(url_for("login"))
     return render_template("cadastro.html", form=form)
 
-# ----------------- LOGIN -----------------
 @app.route("/login", methods=["GET","POST"])
 def login():
     form = FormLogin()
@@ -44,11 +66,9 @@ def login():
         if usuario and bcrypt.check_password_hash(usuario.senha, form.senha.data):
             login_user(usuario)
             return redirect(url_for("homepage"))
-        else:
-            flash("Email ou senha incorretos.", "danger")
+        flash("Email ou senha incorretos.", "danger")
     return render_template("login.html", form=form)
 
-# ----------------- LOGOUT -----------------
 @app.route("/logout")
 @login_required
 def logout():
@@ -59,13 +79,12 @@ def logout():
 @app.route("/medicos")
 @login_required
 def medicos():
-    medicos_lista = Medico.query.all()
-    return render_template("medicos.html", medicos=medicos_lista)
+    return render_template("medicos.html", medicos=Medico.query.all())
 
-@app.route("/cadastro-medico", methods=["GET", "POST"])
+@app.route("/cadastro-medico", methods=["GET","POST"])
 @login_required
 def cadastro_medico():
-    if not current_user.is_admin:
+    if not getattr(current_user, "is_admin", False):
         flash("Apenas administradores podem acessar esta página.", "warning")
         return redirect(url_for("homepage"))
 
@@ -97,26 +116,23 @@ def cadastro_medico():
 @app.route("/produtos")
 @login_required
 def produtos():
-    produtos_lista = Produto.query.all()
-    return render_template("produtos.html", produtos=produtos_lista)
+    return render_template("produtos.html", produtos=Produto.query.all())
 
 @app.route("/cadastro-produto", methods=["GET","POST"])
 @login_required
 def cadastro_produto():
-    if not current_user.is_admin:
+    if not getattr(current_user, "is_admin", False):
         flash("Apenas administradores podem acessar esta página.", "warning")
         return redirect(url_for("homepage"))
 
     form = FormProduto()
     if form.validate_on_submit():
-        # Converte vírgula para ponto no preço
         preco_str = str(form.preco.data).replace(",", ".")
         form.preco.data = float(preco_str)
 
         nome_foto = "default.jpg"
         pasta_uploads = os.path.join(current_app.root_path, 'static/fotos_produtos')
         os.makedirs(pasta_uploads, exist_ok=True)
-
         if form.foto.data:
             arquivo = form.foto.data
             nome_foto = secure_filename(arquivo.filename)
@@ -128,7 +144,9 @@ def cadastro_produto():
             descricao=form.descricao.data,
             preco=form.preco.data,
             estoque=form.estoque.data,
-            foto=nome_foto
+            foto=nome_foto,
+            ativo=form.ativo.data,
+            destaque_home=form.destaque_home.data
         )
         database.session.add(produto)
         database.session.commit()
@@ -137,20 +155,57 @@ def cadastro_produto():
 
     return render_template("cadastro_produto.html", form=form)
 
-# ----------------- ADICIONAR PRODUTO AO CARRINHO -----------------
+@app.route("/editar-produto/<int:id_produto>", methods=["GET","POST"])
+@login_required
+def editar_produto(id_produto):
+    if not getattr(current_user, "is_admin", False):
+        flash("Apenas administradores podem acessar esta página.", "warning")
+        return redirect(url_for("homepage"))
+
+    produto = Produto.query.get_or_404(id_produto)
+    form = FormProduto()
+    if request.method == "GET":
+        form.nome.data = produto.nome
+        form.descricao.data = produto.descricao
+        form.preco.data = produto.preco
+        form.estoque.data = produto.estoque
+        form.ativo.data = produto.ativo
+        form.destaque_home.data = produto.destaque_home
+
+    if form.validate_on_submit():
+        produto.nome = form.nome.data
+        produto.descricao = form.descricao.data
+        produto.preco = form.preco.data
+        produto.estoque = form.estoque.data
+        produto.ativo = form.ativo.data
+        produto.destaque_home = form.destaque_home.data
+        if form.foto.data:
+            arquivo = form.foto.data
+            nome_foto = secure_filename(arquivo.filename)
+            caminho = os.path.join(current_app.root_path, 'static/fotos_produtos', nome_foto)
+            arquivo.save(caminho)
+            produto.foto = nome_foto
+        database.session.commit()
+        flash("Produto atualizado com sucesso!", "success")
+        return redirect(url_for("produtos"))
+
+    return render_template("cadastro_produto.html", form=form, produto=produto)
+
+# ----------------- CARRINHO -----------------
 @app.route("/adicionar-carrinho/<int:id_produto>", methods=["POST"])
 @login_required
 def adicionar_carrinho(id_produto):
     produto = Produto.query.get_or_404(id_produto)
+    if not produto.ativo:
+        flash("Produto indisponível.", "warning")
+        return redirect(request.referrer or url_for("produtos"))
 
-    # Pega o carrinho ativo do usuário ou cria
     carrinho = Carrinho.query.filter_by(id_usuario=current_user.id, status='ativo').first()
     if not carrinho:
         carrinho = Carrinho(id_usuario=current_user.id)
         database.session.add(carrinho)
         database.session.commit()
 
-    # Verifica se o produto já está no carrinho
     item = ItemCarrinho.query.filter_by(id_carrinho=carrinho.id, id_produto=produto.id).first()
     if item:
         item.quantidade += 1
@@ -163,30 +218,59 @@ def adicionar_carrinho(id_produto):
         )
         database.session.add(item)
 
+    produto.estoque -= 1
     database.session.commit()
     flash(f"{produto.nome} adicionado ao carrinho!", "success")
-    return redirect(request.referrer)
+    return redirect(request.referrer or url_for("produtos"))
 
-# ----------------- VISUALIZAR CARRINHO -----------------
-@app.route("/carrinho")
+@app.route("/atualizar-item/<int:id_item>", methods=["POST"])
 @login_required
-def ver_carrinho():
-    carrinho = Carrinho.query.filter_by(id_usuario=current_user.id, status='ativo').first()
-    itens = carrinho.itens if carrinho else []
-    total = sum([item.quantidade * item.preco_unitario for item in itens])
-    return render_template("carrinho.html", itens=itens, total=total)
-
-# ----------------- REMOVER ITEM -----------------
-@app.route("/remover-carrinho/<int:id_item>", methods=["POST"])
-@login_required
-def remover_item_carrinho(id_item):
+def atualizar_item(id_item):
+    acao = request.form.get("acao")
     item = ItemCarrinho.query.get_or_404(id_item)
+    if item.carrinho.id_usuario != current_user.id:
+        flash("Você não pode alterar este item.", "danger")
+        return redirect(request.referrer or url_for("homepage"))
+
+    produto = Produto.query.get_or_404(item.id_produto)
+
+    if acao == "aumentar" and produto.estoque > 0:
+        item.quantidade += 1
+        produto.estoque -= 1
+    elif acao == "diminuir":
+        if item.quantidade > 1:
+            item.quantidade -= 1
+            produto.estoque += 1
+        else:
+            produto.estoque += item.quantidade
+            database.session.delete(item)
+
+    database.session.commit()
+    return redirect(request.referrer or url_for("homepage") + "#carrinho-aberto")
+
+@app.route("/remover-item/<int:id_item>", methods=["POST"])
+@login_required
+def remover_item(id_item):
+    item = ItemCarrinho.query.get_or_404(id_item)
+    if item.carrinho.id_usuario != current_user.id:
+        flash("Você não pode remover este item.", "danger")
+        return redirect(request.referrer or url_for("homepage"))
+
+    produto = Produto.query.get(item.id_produto)
+    produto.estoque += item.quantidade
     database.session.delete(item)
     database.session.commit()
     flash("Item removido do carrinho!", "info")
     return redirect(url_for("ver_carrinho"))
 
-# ----------------- FINALIZAR COMPRA -----------------
+@app.route("/ver-carrinho")
+@login_required
+def ver_carrinho():
+    carrinho = Carrinho.query.filter_by(id_usuario=current_user.id, status='ativo').first()
+    itens = carrinho.itens if carrinho else []
+    total = sum(item.quantidade * item.preco_unitario for item in itens)
+    return render_template("_carrinho_lateral.html", itens_carrinho=itens, total_carrinho=total)
+
 @app.route("/finalizar-carrinho", methods=["POST"])
 @login_required
 def finalizar_carrinho():
@@ -199,3 +283,44 @@ def finalizar_carrinho():
     database.session.commit()
     flash("Compra finalizada com sucesso!", "success")
     return redirect(url_for("homepage"))
+# ----------------- ALTERNAR DESTAQUE -----------------
+@app.route("/alternar-destaque-produto/<int:id_produto>", methods=["POST"])
+@login_required
+def alternar_destaque_produto(id_produto):
+    if not getattr(current_user, "is_admin", False):
+        flash("Apenas administradores podem acessar.", "warning")
+        return redirect(url_for("produtos"))
+
+    produto = Produto.query.get_or_404(id_produto)
+    produto.destaque_home = not produto.destaque_home
+    database.session.commit()
+    flash("Produto adicionado ou removido dos Mais Vendidos.", "success")
+    return redirect(url_for("produtos"))
+
+# ----------------- DESATIVAR PRODUTO -----------------
+@app.route("/desativar-produto/<int:id_produto>", methods=["POST"])
+@login_required
+def desativar_produto(id_produto):
+    if not getattr(current_user, "is_admin", False):
+        flash("Apenas administradores podem acessar.", "warning")
+        return redirect(url_for("produtos"))
+
+    produto = Produto.query.get_or_404(id_produto)
+    produto.ativo = False
+    database.session.commit()
+    flash("Produto desativado.", "info")
+    return redirect(url_for("produtos"))
+
+# ----------------- ATIVAR PRODUTO -----------------
+@app.route("/ativar-produto/<int:id_produto>", methods=["POST"])
+@login_required
+def ativar_produto(id_produto):
+    if not getattr(current_user, "is_admin", False):
+        flash("Apenas administradores podem acessar.", "warning")
+        return redirect(url_for("produtos"))
+
+    produto = Produto.query.get_or_404(id_produto)
+    produto.ativo = True
+    database.session.commit()
+    flash("Produto ativado.", "success")
+    return redirect(url_for("produtos"))

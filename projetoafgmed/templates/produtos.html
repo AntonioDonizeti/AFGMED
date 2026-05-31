@@ -1,77 +1,85 @@
-<!-- produtos.html -->
+<!-- templates/produtos.html -->
 {% extends "base.html" %}
 
+{% block title %}Produtos - AFGMED{% endblock %}
+
 {% block content %}
-<h1>Produtos</h1>
-<div class="produtos-container">
-    {% for produto in produtos %}
-    <div class="card card-produto">
-        <img src="{{ url_for('static', filename='fotos_produtos/' + produto.foto) }}"
-             alt="{{ produto.nome }}" class="card-imagem">
-        <div class="card-body">
-            <h2>{{ produto.nome }}</h2>
-            <p>{{ produto.descricao }}</p>
-            <p><strong>R$ {{ '%.2f' % produto.preco }}</strong></p>
-            <p>Estoque: {{ produto.estoque }}</p>
+<div class="container py-5">
+    <h2 class="mb-4">Produtos</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for produto in produtos %}
+        <div class="col">
+            <div class="card h-100 text-center shadow-sm">
+                <img src="{{ url_for('static', filename='fotos_produtos/' + produto.foto) }}"
+                     class="card-img-top p-3"
+                     style="height:180px; object-fit:contain;"
+                     alt="{{ produto.nome }}">
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold">{{ produto.nome }}</h5>
+                    <p class="card-text text-truncate text-muted">{{ produto.descricao }}</p>
+                    <p class="fw-bold text-success fs-5">R$ {{ '%.2f' % produto.preco }}</p>
+
+                    <p class="mb-3">
+                        {% if produto.estoque > 0 %}
+                        <small class="text-success"><i class="bi bi-check-circle"></i> Em estoque: {{ produto.estoque }}</small>
+                        {% else %}
+                        <small class="text-danger"><i class="bi bi-x-circle"></i> Produto indisponível</small>
+                        {% endif %}
+                    </p>
+
+                    {% if not current_user.is_admin %}
+                        {% if produto.estoque > 0 %}
+                        <!-- Botão Adicionar ao Carrinho -->
+                        <form action="{{ url_for('adicionar_carrinho', id_produto=produto.id) }}" method="post" class="mt-auto">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
+                            </button>
+                        </form>
+                        {% else %}
+                        <button class="btn btn-secondary w-100 mt-auto" disabled>Indisponível</button>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if current_user.is_admin %}
+                    <div class="mt-auto d-grid gap-2">
+
+                        <!-- Editar Produto -->
+                        <a href="{{ url_for('editar_produto', id_produto=produto.id) }}" class="btn btn-sm btn-warning">
+                            Editar Produto
+                        </a>
+
+                        <!-- Alternar Mais Vendidos -->
+                        <form action="{{ url_for('alternar_destaque_produto', id_produto=produto.id) }}" method="post">
+                            <button type="submit" class="btn btn-sm btn-info">
+                                {% if produto.destaque_home %}Remover dos Mais Vendidos{% else %}Adicionar aos Mais Vendidos{% endif %}
+                            </button>
+                        </form>
+
+                        <!-- Desativar / Ativar Produto -->
+                        {% if produto.ativo %}
+                        <form action="{{ url_for('desativar_produto', id_produto=produto.id) }}" method="post">
+                            <button type="submit" class="btn btn-sm btn-danger">Desativar Produto</button>
+                        </form>
+                        {% else %}
+                        <form action="{{ url_for('ativar_produto', id_produto=produto.id) }}" method="post">
+                            <button type="submit" class="btn btn-sm btn-success">Ativar Produto</button>
+                        </form>
+                        {% endif %}
+
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
+        {% endfor %}
     </div>
-    {% else %}
-    <p>Nenhum produto cadastrado.</p>
-    {% endfor %}
+
+    <!-- Botão Ver todos os produtos -->
+    <div class="text-center mt-5">
+        <a href="{{ url_for('produtos') }}" class="btn btn-outline-primary px-4 py-2 fw-bold">
+            Ver todos os produtos
+        </a>
+    </div>
 </div>
-
-<style>
-.produtos-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-start;
-}
-
-.card-produto {
-    width: 280px;       /* largura fixa para desktop */
-    min-height: 420px;  /* altura mínima do card */
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
-    background-color: #fff;
-    display: flex;
-    flex-direction: column;
-}
-
-.card-produto img.card-imagem {
-    width: 100%;        /* ocupa toda largura do card */
-    max-height: 200px;  /* altura máxima da imagem */
-    object-fit: contain; /* mantém proporção */
-    display: block;
-    margin: 0 auto;
-}
-
-.card-body {
-    padding: 15px;
-    flex-grow: 1;
-}
-
-.card-body h2 {
-    font-size: 1.2rem;
-    margin: 0 0 10px;
-}
-
-.card-body p {
-    font-size: 0.95rem;
-    margin: 5px 0;
-}
-
-/* Responsivo para telas menores que 768px */
-@media (max-width: 768px) {
-    .produtos-container {
-        justify-content: center;
-    }
-    .card-produto {
-        width: 90%;       /* ocupa quase toda a tela em mobile */
-        min-height: auto;
-    }
-}
-</style>
-
 {% endblock %}

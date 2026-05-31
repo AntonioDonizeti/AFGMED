@@ -1,3 +1,4 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -26,6 +27,7 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('homepage') }}">Home</a>
                 </li>
@@ -42,48 +44,37 @@
 
                     {% if current_user.is_admin %}
                         <li class="nav-item ms-2">
-                            <a class="btn btn-primary" href="{{ url_for('cadastro_medico') }}">
-                                Cadastrar Médico
-                            </a>
+                            <a class="btn btn-primary" href="{{ url_for('cadastro_medico') }}">Cadastrar Médico</a>
                         </li>
 
                         <li class="nav-item ms-2">
-                            <a class="btn btn-primary" href="{{ url_for('cadastro_produto') }}">
-                                Cadastrar Produto
-                            </a>
+                            <a class="btn btn-primary" href="{{ url_for('cadastro_produto') }}">Cadastrar Produto</a>
                         </li>
                     {% endif %}
 
                     <li class="nav-item ms-2">
-                        <a class="btn btn-success" href="{{ url_for('logout') }}">
-                            Logout
-                        </a>
+                        <a class="btn btn-success" href="{{ url_for('logout') }}">Logout</a>
                     </li>
 
                 {% else %}
 
                     <li class="nav-item ms-2">
-                        <a class="btn btn-primary" href="{{ url_for('criar_conta') }}">
-                            Criar Conta
-                        </a>
+                        <a class="btn btn-primary" href="{{ url_for('criar_conta') }}">Criar Conta</a>
                     </li>
 
                     <li class="nav-item ms-2">
-                        <a class="btn btn-success" href="{{ url_for('login') }}">
-                            Login
-                        </a>
+                        <a class="btn btn-success" href="{{ url_for('login') }}">Login</a>
                     </li>
 
                 {% endif %}
 
                 <!-- Ícone do carrinho -->
                 <li class="nav-item position-relative ms-3">
-                    <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCarrinho" aria-controls="offcanvasCarrinho">
+                    <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#carrinhoLateral" aria-controls="carrinhoLateral">
                         <i class="bi bi-cart3" style="font-size: 1.5rem;"></i>
-
                         {% if carrinho %}
                             <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
-                                {{ carrinho.itens|length }}
+                                {{ quantidade_carrinho }}
                             </span>
                         {% endif %}
                     </a>
@@ -94,55 +85,7 @@
 </nav>
 
 <!-- Offcanvas Carrinho -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCarrinho" aria-labelledby="offcanvasCarrinhoLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasCarrinhoLabel">Meu Carrinho</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
-    </div>
-
-    <div class="offcanvas-body">
-        {% if carrinho and carrinho.itens %}
-
-            <ul class="list-group mb-3">
-                {% set ns = namespace(total=0) %}
-
-                {% for item in carrinho.itens %}
-                    {% set subtotal = item.quantidade * item.preco_unitario %}
-                    {% set ns.total = ns.total + subtotal %}
-
-                    <li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div>{{ item.produto.nome }}</div>
-                            <small>
-                                {{ item.quantidade }}x de R$ {{ '%.2f' % item.preco_unitario }}
-                            </small>
-                        </div>
-
-                        <span class="fw-bold">
-                            R$ {{ '%.2f' % subtotal }}
-                        </span>
-                    </li>
-                {% endfor %}
-            </ul>
-
-            <div class="d-flex justify-content-between mb-3">
-                <strong>Total:</strong>
-                <strong>R$ {{ '%.2f' % ns.total }}</strong>
-            </div>
-
-            <form action="{{ url_for('finalizar_carrinho') }}" method="post">
-                <button type="submit" class="btn btn-primary w-100">
-                    Finalizar Compra
-                </button>
-            </form>
-
-        {% else %}
-
-            <p>Seu carrinho está vazio.</p>
-
-        {% endif %}
-    </div>
-</div>
+{% include "_carrinho_lateral.html" %}
 
 <!-- Conteúdo principal -->
 <main class="container mt-5">
