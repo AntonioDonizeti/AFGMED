@@ -112,6 +112,60 @@ def cadastro_medico():
 
     return render_template("cadastro_medico.html", form=form)
 
+# ----------------- EDITAR MÉDICO -----------------
+@app.route("/editar-medico/<int:id_medico>", methods=["GET", "POST"])
+@login_required
+def editar_medico(id_medico):
+    if not getattr(current_user, "is_admin", False):
+        flash("Apenas administradores podem acessar esta página.", "warning")
+        return redirect(url_for("homepage"))
+
+    medico = Medico.query.get_or_404(id_medico)
+    form = FormMedico()
+
+    # Preencher formulário com dados existentes
+    if request.method == "GET":
+        form.nome.data = medico.nome
+        form.especialidade.data = medico.especialidade
+        form.email.data = medico.email
+        form.telefone.data = medico.telefone
+
+    # Atualizar dados ao enviar
+    if form.validate_on_submit():
+        medico.nome = form.nome.data
+        medico.especialidade = form.especialidade.data
+        medico.email = form.email.data
+        medico.telefone = form.telefone.data
+
+        # Atualizar foto
+        if form.foto.data:
+            arquivo = form.foto.data
+            nome_foto = secure_filename(arquivo.filename)
+            caminho = os.path.join(current_app.root_path, 'static/fotos_medicos', nome_foto)
+            os.makedirs(os.path.dirname(caminho), exist_ok=True)
+            arquivo.save(caminho)
+            medico.foto = nome_foto
+
+        database.session.commit()
+        flash("Médico atualizado com sucesso!", "success")
+        return redirect(url_for("medicos"))
+
+    return render_template("cadastro_medico.html", form=form, medico=medico)
+
+# ----------------- REMOVER MÉDICO -----------------
+@app.route("/remover-medico/<int:id_medico>", methods=["POST"])
+@login_required
+def remover_medico(id_medico):
+    if not getattr(current_user, "is_admin", False):
+        flash("Apenas administradores podem acessar.", "warning")
+        return redirect(url_for("homepage"))
+
+    medico = Medico.query.get_or_404(id_medico)
+    database.session.delete(medico)
+    database.session.commit()
+    flash("Médico removido com sucesso!", "success")
+    return redirect(url_for("medicos"))
+
 # ----------------- PRODUTOS -----------------
 @app.route("/produtos")
 @login_required

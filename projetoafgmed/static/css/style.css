@@ -331,3 +331,20 @@ h1.text-center {
         font-size: 0.95rem;
     }
 }
+
+
+/* Ajuste automático das imagens dos médicos */
+.card-img-container {
+    width: 100%;
+    height: 200px;       /* altura uniforme para todos os cards */
+    overflow: hidden;    /* corta qualquer excesso da imagem */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-img-container img {
+    width: auto;         /* mantém proporção original */
+    height: 100%;        /* preenche a altura do container */
+    object-fit: cover;   /* corta o excesso mantendo o foco central */
+}
