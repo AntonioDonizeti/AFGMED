@@ -19,6 +19,7 @@
                     <p class="text-muted">{{ medico.especialidade }}</p>
                     <p>Email: {{ medico.email }}</p>
                     <p>Telefone: {{ medico.telefone }}</p>
+                    <a href="{{ url_for('consultas', medico_id=medico.id) }}" class="btn btn-success mt-2">Marcar consulta</a>
 
                     {% if current_user.is_admin %}
                     <div class="mt-auto d-grid gap-2">

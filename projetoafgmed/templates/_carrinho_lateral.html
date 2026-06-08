@@ -36,7 +36,7 @@
                     </div>
                 </div>
 
-                <button class="btn btn-primary w-100 mt-3" id="finalizar-compra">Finalizar Compra</button>
+                <a href="{{ url_for('entrega', id_carrinho=carrinho.id) }}" class="btn btn-primary w-100 mt-2">Ir para Entrega</a>
             {% else %}
                 <p class="text-center text-muted mt-4">Seu carrinho está vazio.</p>
             {% endif %}

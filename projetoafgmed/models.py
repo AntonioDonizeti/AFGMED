@@ -27,6 +27,24 @@ class Medico(database.Model):
     foto = database.Column(database.String, default="default.jpg")
     data_criacao = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
 
+class Consulta(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    medico_id = database.Column(
+        database.Integer,
+        database.ForeignKey('medico.id'),  # usa o nome correto da tabela de médicos
+        nullable=False
+    )
+    paciente_nome = database.Column(database.String(100), nullable=False)
+    horario = database.Column(database.String(20), nullable=False)
+    data = database.Column(database.Date, default=datetime.today)
+
+    # Relacionamento opcional para facilitar consultas
+    medico = database.relationship('Medico', backref=database.backref('consultas', lazy=True))
+
+    def __repr__(self):
+        return f'<Consulta {self.paciente_nome} - {self.horario}>'
+
+
 class Produto(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     nome = database.Column(database.String, nullable=False)
@@ -58,4 +76,17 @@ class ItemCarrinho(database.Model):
 
     produto = database.relationship('Produto')
 
+class Entrega(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    id_carrinho = database.Column(database.Integer, database.ForeignKey('carrinho.id'), nullable=False)
+    endereco = database.Column(database.String(200), nullable=False)
+    cidade = database.Column(database.String(50), nullable=False)
+    estado = database.Column(database.String(50), nullable=False)
+    cep = database.Column(database.String(20), nullable=False)
+    telefone = database.Column(database.String(20), nullable=False)
+    data_criacao = database.Column(database.DateTime, default=datetime.utcnow)
 
+    carrinho = database.relationship('Carrinho', backref=database.backref('entrega', uselist=False))
+
+    def __repr__(self):
+        return f'<Entrega {self.endereco} - {self.cidade}>'

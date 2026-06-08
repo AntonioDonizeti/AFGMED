@@ -1,5 +1,5 @@
 from projetoafgmed import app, database, bcrypt
-from projetoafgmed.models import Usuario, Medico, Produto, Carrinho, ItemCarrinho
+from projetoafgmed.models import Usuario, Medico, Produto, Carrinho, ItemCarrinho, Consulta, Entrega
 from projetoafgmed.forms import FormProduto, FormCriarConta, FormLogin, FormMedico
 from flask import render_template, redirect, url_for, flash, current_app, request
 from flask_login import login_user, logout_user, login_required, current_user
@@ -111,6 +111,29 @@ def cadastro_medico():
         return redirect(url_for("medicos"))
 
     return render_template("cadastro_medico.html", form=form)
+
+# ----------------- CONSULTAS -----------------
+
+@app.route('/consultas/<int:medico_id>', methods=['GET', 'POST'])
+def consultas(medico_id):
+    medico = Medico.query.get_or_404(medico_id)
+    horarios = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00']
+
+    if request.method == 'POST':
+        paciente_nome = request.form.get('paciente_nome')
+        horario = request.form.get('horario')
+
+        existente = Consulta.query.filter_by(medico_id=medico.id, horario=horario).first()
+        if existente:
+            return "Horário já reservado!", 400
+
+        nova_consulta = Consulta(medico_id=medico.id, paciente_nome=paciente_nome, horario=horario)
+        database.session.add(nova_consulta)
+        database.session.commit()
+        return redirect(url_for('consultas', medico_id=medico.id))
+
+    consultas_marcadas = Consulta.query.filter_by(medico_id=medico.id).all()
+    return render_template('consultas.html', medico=medico, horarios=horarios, consultas=consultas_marcadas)
 
 # ----------------- EDITAR MÉDICO -----------------
 @app.route("/editar-medico/<int:id_medico>", methods=["GET", "POST"])
@@ -378,3 +401,34 @@ def ativar_produto(id_produto):
     database.session.commit()
     flash("Produto ativado.", "success")
     return redirect(url_for("produtos"))
+
+# ----------------- ENTREGA -----------------
+
+@app.route('/entrega/<int:id_carrinho>', methods=['GET', 'POST'])
+def entrega(id_carrinho):
+    carrinho = Carrinho.query.get_or_404(id_carrinho)
+
+    if request.method == 'POST':
+        endereco = request.form.get('endereco')
+        cidade = request.form.get('cidade')
+        estado = request.form.get('estado')
+        cep = request.form.get('cep')
+        telefone = request.form.get('telefone')
+
+        nova_entrega = Entrega(
+            id_carrinho=carrinho.id,
+            endereco=endereco,
+            cidade=cidade,
+            estado=estado,
+            cep=cep,
+            telefone=telefone
+        )
+
+        database.session.add(nova_entrega)
+        carrinho.status = 'finalizado'
+        database.session.commit()
+
+        flash('Compra finalizada com sucesso!', 'success')
+        return redirect(url_for('homepage'))
+
+    return render_template('entrega.html', carrinho=carrinho)
