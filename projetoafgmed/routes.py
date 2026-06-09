@@ -1,9 +1,10 @@
 from projetoafgmed import app, database, bcrypt
 from projetoafgmed.models import Usuario, Medico, Produto, Carrinho, ItemCarrinho, Consulta, Entrega
 from projetoafgmed.forms import FormProduto, FormCriarConta, FormLogin, FormMedico
-from flask import render_template, redirect, url_for, flash, current_app, request
+from flask import render_template, redirect, url_for, flash, current_app, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
+from datetime import datetime
 import os
 
 
@@ -113,27 +114,82 @@ def cadastro_medico():
     return render_template("cadastro_medico.html", form=form)
 
 # ----------------- CONSULTAS -----------------
-
 @app.route('/consultas/<int:medico_id>', methods=['GET', 'POST'])
+@login_required
 def consultas(medico_id):
     medico = Medico.query.get_or_404(medico_id)
     horarios = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00']
 
     if request.method == 'POST':
-        paciente_nome = request.form.get('paciente_nome')
+        paciente_nome = current_user.nome
         horario = request.form.get('horario')
+        data_consulta = request.form.get('data_consulta')
 
-        existente = Consulta.query.filter_by(medico_id=medico.id, horario=horario).first()
+        if not horario or not data_consulta:
+            flash("Escolha data e horário para continuar.", "warning")
+            return redirect(url_for('consultas', medico_id=medico.id))
+
+        data_obj = datetime.strptime(data_consulta, '%Y-%m-%d').date()
+
+        # Verifica se horário já está ocupado para a mesma data
+        existente = Consulta.query.filter_by(
+            medico_id=medico.id,
+            horario=horario,
+            data=data_obj
+        ).first()
+
         if existente:
-            return "Horário já reservado!", 400
+            flash("Horário já reservado para essa data!", "danger")
+            return redirect(url_for('consultas', medico_id=medico.id))
 
-        nova_consulta = Consulta(medico_id=medico.id, paciente_nome=paciente_nome, horario=horario)
+        nova_consulta = Consulta(
+            medico_id=medico.id,
+            paciente_nome=paciente_nome,
+            horario=horario,
+            data=data_obj
+        )
         database.session.add(nova_consulta)
         database.session.commit()
-        return redirect(url_for('consultas', medico_id=medico.id))
+
+        # Redireciona para a página de agendamentos
+        return redirect(url_for('meus_agendamentos'))
 
     consultas_marcadas = Consulta.query.filter_by(medico_id=medico.id).all()
     return render_template('consultas.html', medico=medico, horarios=horarios, consultas=consultas_marcadas)
+
+# ----------------- HORARIOS DISPONIVEIS -----------------
+@app.route('/horarios_disponiveis/<int:medico_id>/<data>')
+@login_required
+def horarios_disponiveis(medico_id, data):
+    try:
+        data_obj = datetime.strptime(data, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify([])
+
+    consultas = Consulta.query.filter_by(medico_id=medico_id, data=data_obj).all()
+    horarios_ocupados = [c.horario for c in consultas]
+    return jsonify(horarios_ocupados)
+
+# ----------------- MEUS AGENDAMENTOS -----------------
+@app.route('/meus_agendamentos')
+@login_required
+def meus_agendamentos():
+    consultas = Consulta.query.filter_by(paciente_nome=current_user.nome).order_by(Consulta.data, Consulta.horario).all()
+    return render_template('meus_agendamentos.html', consultas=consultas)
+
+# ----------------- CANCELAR AGENDAMENTOS -----------------
+@app.route('/cancelar_consulta/<int:consulta_id>', methods=['POST'])
+@login_required
+def cancelar_consulta(consulta_id):
+    consulta = Consulta.query.get_or_404(consulta_id)
+    if consulta.paciente_nome != current_user.nome:
+        flash('Você não pode cancelar esta consulta.', 'danger')
+        return redirect(url_for('meus_agendamentos'))
+
+    database.session.delete(consulta)
+    database.session.commit()
+    flash('Consulta cancelada com sucesso!', 'success')
+    return redirect(url_for('meus_agendamentos'))
 
 # ----------------- EDITAR MÉDICO -----------------
 @app.route("/editar-medico/<int:id_medico>", methods=["GET", "POST"])

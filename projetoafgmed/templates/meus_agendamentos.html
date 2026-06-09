@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Meus Agendamentos</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if consultas %}
+        <ul class="list-group">
+            {% for c in consultas %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Dr(a). {{ c.medico.nome }}</strong> -
+                        {{ c.data.strftime('%d/%m/%Y') }} às {{ c.horario }}
+                    </div>
+                    <form method="POST" action="{{ url_for('cancelar_consulta', consulta_id=c.id) }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Você não possui consultas agendadas.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -40,6 +40,10 @@
                     <a class="nav-link" href="{{ url_for('produtos') }}">Produtos</a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a>
+                </li>
+
                 {% if current_user.is_authenticated %}
 
                     {% if current_user.is_admin %}
