@@ -1,5 +1,5 @@
 from projetoafgmed import app, database, bcrypt
-from projetoafgmed.models import Usuario, Medico, Produto, Carrinho, ItemCarrinho, Consulta, Entrega
+from projetoafgmed.models import Usuario, Medico, Produto, Carrinho, ItemCarrinho, Consulta, Entrega, PerfilUsuario
 from projetoafgmed.forms import FormProduto, FormCriarConta, FormLogin, FormMedico
 from flask import render_template, redirect, url_for, flash, current_app, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
@@ -76,6 +76,43 @@ def logout():
     logout_user()
     return redirect(url_for("homepage"))
 
+
+# Perfil do usuário
+@app.route("/perfil", methods=["GET","POST"])
+@login_required
+def perfil():
+    usuario = current_user
+    perfil = usuario.perfil or PerfilUsuario(usuario=usuario)
+
+    if request.method == "POST":
+        # Foto
+        if "foto" in request.files and request.files["foto"].filename:
+            arquivo = request.files["foto"]
+            nome_foto = secure_filename(arquivo.filename)
+            caminho = os.path.join(app.root_path, "static/fotos_perfil", nome_foto)
+            arquivo.save(caminho)
+            usuario.foto = nome_foto
+
+        # Endereço
+        perfil.endereco = request.form.get("endereco")
+        perfil.cidade = request.form.get("cidade")
+        perfil.estado = request.form.get("estado")
+        perfil.cep = request.form.get("cep")
+
+        # Pagamento
+        perfil.numero_cartao = request.form.get("numero_cartao")
+        perfil.nome_cartao = request.form.get("nome_cartao")
+        perfil.validade_cartao = request.form.get("validade_cartao")
+        perfil.cvv = request.form.get("cvv")
+
+        database.session.add(usuario)
+        database.session.add(perfil)
+        database.session.commit()
+        flash("Perfil atualizado com sucesso!", "success")
+        return redirect(url_for("perfil"))
+
+    return render_template("perfil.html", usuario=usuario, perfil=perfil)
+
 # ----------------- MÉDICOS -----------------
 @app.route("/medicos")
 @login_required
@@ -114,6 +151,7 @@ def cadastro_medico():
     return render_template("cadastro_medico.html", form=form)
 
 # ----------------- CONSULTAS -----------------
+# ----------------- CONSULTAS -----------------
 @app.route('/consultas/<int:medico_id>', methods=['GET', 'POST'])
 @login_required
 def consultas(medico_id):
@@ -121,7 +159,6 @@ def consultas(medico_id):
     horarios = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00']
 
     if request.method == 'POST':
-        paciente_nome = current_user.nome
         horario = request.form.get('horario')
         data_consulta = request.form.get('data_consulta')
 
@@ -131,7 +168,7 @@ def consultas(medico_id):
 
         data_obj = datetime.strptime(data_consulta, '%Y-%m-%d').date()
 
-        # Verifica se horário já está ocupado para a mesma data
+        # Verifica se já existe consulta nesse horário e data
         existente = Consulta.query.filter_by(
             medico_id=medico.id,
             horario=horario,
@@ -142,16 +179,16 @@ def consultas(medico_id):
             flash("Horário já reservado para essa data!", "danger")
             return redirect(url_for('consultas', medico_id=medico.id))
 
+        # Cria a nova consulta vinculada ao usuário logado
         nova_consulta = Consulta(
             medico_id=medico.id,
-            paciente_nome=paciente_nome,
+            usuario_id=current_user.id,
             horario=horario,
             data=data_obj
         )
         database.session.add(nova_consulta)
         database.session.commit()
-
-        # Redireciona para a página de agendamentos
+        flash("Consulta agendada com sucesso!", "success")
         return redirect(url_for('meus_agendamentos'))
 
     consultas_marcadas = Consulta.query.filter_by(medico_id=medico.id).all()
@@ -174,7 +211,10 @@ def horarios_disponiveis(medico_id, data):
 @app.route('/meus_agendamentos')
 @login_required
 def meus_agendamentos():
-    consultas = Consulta.query.filter_by(paciente_nome=current_user.nome).order_by(Consulta.data, Consulta.horario).all()
+    # Busca apenas consultas do usuário logado
+    consultas = Consulta.query.filter_by(usuario_id=current_user.id)\
+        .order_by(Consulta.data.asc(), Consulta.horario.asc())\
+        .all()
     return render_template('meus_agendamentos.html', consultas=consultas)
 
 # ----------------- CANCELAR AGENDAMENTOS -----------------
@@ -182,7 +222,7 @@ def meus_agendamentos():
 @login_required
 def cancelar_consulta(consulta_id):
     consulta = Consulta.query.get_or_404(consulta_id)
-    if consulta.paciente_nome != current_user.nome:
+    if consulta.usuario_id != current_user.id:
         flash('Você não pode cancelar esta consulta.', 'danger')
         return redirect(url_for('meus_agendamentos'))
 
@@ -460,16 +500,19 @@ def ativar_produto(id_produto):
 
 # ----------------- ENTREGA -----------------
 
-@app.route('/entrega/<int:id_carrinho>', methods=['GET', 'POST'])
+@app.route("/entrega/<int:id_carrinho>", methods=["GET","POST"])
+@login_required
 def entrega(id_carrinho):
     carrinho = Carrinho.query.get_or_404(id_carrinho)
+    usuario = current_user
+    perfil = usuario.perfil
 
-    if request.method == 'POST':
-        endereco = request.form.get('endereco')
-        cidade = request.form.get('cidade')
-        estado = request.form.get('estado')
-        cep = request.form.get('cep')
-        telefone = request.form.get('telefone')
+    if request.method == "POST":
+        endereco = request.form.get("endereco") or perfil.endereco
+        cidade = request.form.get("cidade") or perfil.cidade
+        estado = request.form.get("estado") or perfil.estado
+        cep = request.form.get("cep") or perfil.cep
+        telefone = request.form.get("telefone")
 
         nova_entrega = Entrega(
             id_carrinho=carrinho.id,
@@ -479,12 +522,10 @@ def entrega(id_carrinho):
             cep=cep,
             telefone=telefone
         )
-
         database.session.add(nova_entrega)
-        carrinho.status = 'finalizado'
+        carrinho.status = "finalizado"
         database.session.commit()
+        flash("Compra finalizada!", "success")
+        return redirect(url_for("homepage"))
 
-        flash('Compra finalizada com sucesso!', 'success')
-        return redirect(url_for('homepage'))
-
-    return render_template('entrega.html', carrinho=carrinho)
+    return render_template("entrega.html", carrinho=carrinho, perfil=perfil)

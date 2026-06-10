@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Meu Perfil</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label>Foto de perfil</label><br>
+            <img src="{{ url_for('static', filename='fotos_perfil/' + usuario.foto) }}" width="120" class="mb-2 rounded-circle">
+            <input type="file" name="foto" class="form-control mt-1">
+        </div>
+
+        <h4>Endereço</h4>
+        <input type="text" name="endereco" placeholder="Endereço" class="form-control mb-2" value="{{ perfil.endereco or '' }}">
+        <input type="text" name="cidade" placeholder="Cidade" class="form-control mb-2" value="{{ perfil.cidade or '' }}">
+        <input type="text" name="estado" placeholder="Estado" class="form-control mb-2" value="{{ perfil.estado or '' }}">
+        <input type="text" name="cep" placeholder="CEP" class="form-control mb-2" value="{{ perfil.cep or '' }}">
+
+        <h4>Pagamento</h4>
+        <input type="text" name="numero_cartao" placeholder="Número do cartão" class="form-control mb-2" value="{{ perfil.numero_cartao or '' }}">
+        <input type="text" name="nome_cartao" placeholder="Nome no cartão" class="form-control mb-2" value="{{ perfil.nome_cartao or '' }}">
+        <input type="text" name="validade_cartao" placeholder="Validade" class="form-control mb-2" value="{{ perfil.validade_cartao or '' }}">
+        <input type="text" name="cvv" placeholder="CVV" class="form-control mb-2" value="{{ perfil.cvv or '' }}">
+
+        <button type="submit" class="btn btn-primary mt-3">Salvar</button>
+    </form>
+</div>
+{% endblock %}

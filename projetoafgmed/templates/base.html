@@ -1,4 +1,3 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -26,63 +25,62 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-center">
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('homepage') }}">Home</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('medicos') }}">Consulta</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('produtos') }}">Produtos</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('homepage') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('medicos') }}">Consulta</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('produtos') }}">Produtos</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a></li>
 
                 {% if current_user.is_authenticated %}
-
                     {% if current_user.is_admin %}
                         <li class="nav-item ms-2">
                             <a class="btn btn-primary" href="{{ url_for('cadastro_medico') }}">Cadastrar Médico</a>
                         </li>
-
                         <li class="nav-item ms-2">
                             <a class="btn btn-primary" href="{{ url_for('cadastro_produto') }}">Cadastrar Produto</a>
                         </li>
                     {% endif %}
+                {% endif %}
+            </ul>
 
-                    <li class="nav-item ms-2">
-                        <a class="btn btn-success" href="{{ url_for('logout') }}">Logout</a>
+            <ul class="navbar-nav ms-3 align-items-center">
+
+                {% if current_user.is_authenticated %}
+                    <!-- Perfil -->
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ url_for('static', filename='fotos_usuarios/' + (current_user.foto if current_user.foto else 'default.jpg')) }}"
+                                 alt="Perfil"
+                                 class="rounded-circle"
+                                 style="width:35px; height:35px; object-fit:cover;">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('perfil') }}">Meu Perfil</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Sair</a></li>
+                        </ul>
                     </li>
 
+                    <!-- Carrinho -->
+                    <li class="nav-item position-relative">
+                        <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#carrinhoLateral" aria-controls="carrinhoLateral">
+                            <i class="bi bi-cart3" style="font-size: 1.5rem;"></i>
+                            {% if carrinho %}
+                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                    {{ quantidade_carrinho }}
+                                </span>
+                            {% endif %}
+                        </a>
+                    </li>
                 {% else %}
-
                     <li class="nav-item ms-2">
                         <a class="btn btn-primary" href="{{ url_for('criar_conta') }}">Criar Conta</a>
                     </li>
-
                     <li class="nav-item ms-2">
                         <a class="btn btn-success" href="{{ url_for('login') }}">Login</a>
                     </li>
-
                 {% endif %}
 
-                <!-- Ícone do carrinho -->
-                <li class="nav-item position-relative ms-3">
-                    <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#carrinhoLateral" aria-controls="carrinhoLateral">
-                        <i class="bi bi-cart3" style="font-size: 1.5rem;"></i>
-                        {% if carrinho %}
-                            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
-                                {{ quantidade_carrinho }}
-                            </span>
-                        {% endif %}
-                    </a>
-                </li>
             </ul>
         </div>
     </div>
@@ -108,7 +106,6 @@
                          alt="Logo AFGMED"
                          width="48"
                          class="footer-logo me-2">
-
                     <h5 class="mb-0 fw-bold">AFGMED</h5>
                 </div>
 
@@ -120,7 +117,6 @@
 
             <div class="col-md-2">
                 <h6 class="footer-title">Navegação</h6>
-
                 <ul class="footer-links">
                     <li><a href="{{ url_for('homepage') }}">Home</a></li>
                     <li><a href="{{ url_for('medicos') }}">Consulta</a></li>
@@ -130,7 +126,6 @@
 
             <div class="col-md-3">
                 <h6 class="footer-title">Atendimento</h6>
-
                 <ul class="footer-links">
                     <li><i class="bi bi-clock"></i> Seg. a Sex. das 08h às 18h</li>
                     <li><i class="bi bi-envelope"></i> atendimento@afgmed.com</li>
@@ -140,11 +135,9 @@
 
             <div class="col-md-3">
                 <h6 class="footer-title">Segurança</h6>
-
                 <p class="footer-text">
                     Seus dados e pedidos são tratados com segurança durante toda a experiência.
                 </p>
-
                 <div class="footer-icons">
                     <i class="bi bi-shield-check"></i>
                     <i class="bi bi-heart-pulse"></i>
@@ -164,7 +157,6 @@
     </div>
 </footer>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
