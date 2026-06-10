@@ -6,25 +6,64 @@
     <h2>Meu Perfil</h2>
 
     <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label>Foto de perfil</label><br>
-            <img src="{{ url_for('static', filename='fotos_perfil/' + usuario.foto) }}" width="120" class="mb-2 rounded-circle">
-            <input type="file" name="foto" class="form-control mt-1">
+        <div class="row mb-4">
+            <div class="col-md-3 text-center">
+                <label>Foto de perfil</label><br>
+                <img src="{{ url_for('static', filename='fotos_perfil/' + (usuario.foto or 'usuario_padrao.jpg')) }}"
+                     class="mb-2 rounded-circle border"
+                     style="width:150px; height:150px; object-fit:cover;">
+                <input type="file" name="foto" class="form-control mt-2">
+            </div>
+
+            <div class="col-md-9">
+                <h4>Dados Pessoais</h4>
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <input type="text" name="nome" placeholder="Nome" class="form-control" value="{{ usuario.nome }}">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input type="text" name="sobrenome" placeholder="Sobrenome" class="form-control" value="{{ usuario.sobrenome }}">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input type="email" name="email" placeholder="E-mail" class="form-control" value="{{ usuario.email }}">
+                    </div>
+                </div>
+
+                <h4>Endereço</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <input type="text" name="endereco" placeholder="Endereço" class="form-control" value="{{ perfil.endereco or '' }}">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input type="text" name="cidade" placeholder="Cidade" class="form-control" value="{{ perfil.cidade or '' }}">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input type="text" name="estado" placeholder="Estado" class="form-control" value="{{ perfil.estado or '' }}">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input type="text" name="cep" placeholder="CEP" class="form-control" value="{{ perfil.cep or '' }}">
+                    </div>
+                </div>
+
+                <h4>Pagamento</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <input type="text" name="numero_cartao" placeholder="Número do cartão" class="form-control" value="{{ perfil.numero_cartao or '' }}">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <input type="text" name="nome_cartao" placeholder="Nome no cartão" class="form-control" value="{{ perfil.nome_cartao or '' }}">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input type="text" name="validade_cartao" placeholder="Validade" class="form-control" value="{{ perfil.validade_cartao or '' }}">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input type="text" name="cvv" placeholder="CVV" class="form-control" value="{{ perfil.cvv or '' }}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Salvar Alterações</button>
+            </div>
         </div>
-
-        <h4>Endereço</h4>
-        <input type="text" name="endereco" placeholder="Endereço" class="form-control mb-2" value="{{ perfil.endereco or '' }}">
-        <input type="text" name="cidade" placeholder="Cidade" class="form-control mb-2" value="{{ perfil.cidade or '' }}">
-        <input type="text" name="estado" placeholder="Estado" class="form-control mb-2" value="{{ perfil.estado or '' }}">
-        <input type="text" name="cep" placeholder="CEP" class="form-control mb-2" value="{{ perfil.cep or '' }}">
-
-        <h4>Pagamento</h4>
-        <input type="text" name="numero_cartao" placeholder="Número do cartão" class="form-control mb-2" value="{{ perfil.numero_cartao or '' }}">
-        <input type="text" name="nome_cartao" placeholder="Nome no cartão" class="form-control mb-2" value="{{ perfil.nome_cartao or '' }}">
-        <input type="text" name="validade_cartao" placeholder="Validade" class="form-control mb-2" value="{{ perfil.validade_cartao or '' }}">
-        <input type="text" name="cvv" placeholder="CVV" class="form-control mb-2" value="{{ perfil.cvv or '' }}">
-
-        <button type="submit" class="btn btn-primary mt-3">Salvar</button>
     </form>
 </div>
 {% endblock %}

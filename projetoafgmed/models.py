@@ -32,6 +32,7 @@ class PerfilUsuario(database.Model):
     estado = database.Column(database.String(50))
     cep = database.Column(database.String(20))
 
+
     # Dados de pagamento
     numero_cartao = database.Column(database.String(20))
     nome_cartao = database.Column(database.String(100))

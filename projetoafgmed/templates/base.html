@@ -26,38 +26,43 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
-
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('homepage') }}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('medicos') }}">Consulta</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('produtos') }}">Produtos</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a></li>
 
-                {% if current_user.is_authenticated %}
-                    {% if current_user.is_admin %}
-                        <li class="nav-item ms-2">
-                            <a class="btn btn-primary" href="{{ url_for('cadastro_medico') }}">Cadastrar Médico</a>
-                        </li>
-                        <li class="nav-item ms-2">
-                            <a class="btn btn-primary" href="{{ url_for('cadastro_produto') }}">Cadastrar Produto</a>
-                        </li>
-                    {% endif %}
+
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-primary" href="{{ url_for('cadastro_medico') }}">Cadastrar Médico</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-primary" href="{{ url_for('cadastro_produto') }}">Cadastrar Produto</a>
+                    </li>
                 {% endif %}
             </ul>
 
             <ul class="navbar-nav ms-3 align-items-center">
-
                 {% if current_user.is_authenticated %}
                     <!-- Perfil -->
                     <li class="nav-item dropdown me-3">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{{ url_for('static', filename='fotos_usuarios/' + (current_user.foto if current_user.foto else 'default.jpg')) }}"
+                            <img src="{{ url_for('static', filename='fotos_perfil/' + (current_user.foto or 'usuario_padrao.jpg')) }}"
                                  alt="Perfil"
                                  class="rounded-circle"
-                                 style="width:35px; height:35px; object-fit:cover;">
+                                 style="width:40px; height:40px; object-fit:cover;">
+                            <span class="ms-2">{{ current_user.nome }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('perfil') }}">Meu Perfil</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Sair</a></li>
+                            <li><a class="dropdown-item d-flex align-items-center" href="{{ url_for('perfil') }}">
+                                <i class="bi bi-person-circle me-2"></i> Meu Perfil
+                            </a></li>
+                            <li><a class="dropdown-item d-flex align-items-center" href="{{ url_for('meus_agendamentos') }}">
+                                <i class="bi bi-calendar-check me-2"></i> Meus Agendamentos
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item d-flex align-items-center" href="{{ url_for('logout') }}">
+                                <i class="bi bi-box-arrow-right me-2"></i> Sair
+                            </a></li>
                         </ul>
                     </li>
 
@@ -80,7 +85,6 @@
                         <a class="btn btn-success" href="{{ url_for('login') }}">Login</a>
                     </li>
                 {% endif %}
-
             </ul>
         </div>
     </div>
@@ -89,26 +93,19 @@
 <!-- Offcanvas Carrinho -->
 {% include "_carrinho_lateral.html" %}
 
-<!-- Conteúdo principal -->
 <main class="container mt-5">
     {% block content %}{% endblock %}
 </main>
 
-<!-- Rodapé -->
+<!-- Rodapé completo -->
 <footer class="footer-afg mt-5">
     <div class="container py-5">
-
         <div class="row g-4">
-
             <div class="col-md-4">
                 <div class="d-flex align-items-center mb-3">
-                    <img src="{{ url_for('static', filename='imagens/logo.jpg') }}"
-                         alt="Logo AFGMED"
-                         width="48"
-                         class="footer-logo me-2">
+                    <img src="{{ url_for('static', filename='imagens/logo.jpg') }}" alt="Logo AFGMED" width="48" class="footer-logo me-2">
                     <h5 class="mb-0 fw-bold">AFGMED</h5>
                 </div>
-
                 <p class="footer-text">
                     Plataforma de saúde criada para facilitar o acesso a consultas,
                     produtos farmacêuticos e cuidados essenciais.
@@ -121,6 +118,7 @@
                     <li><a href="{{ url_for('homepage') }}">Home</a></li>
                     <li><a href="{{ url_for('medicos') }}">Consulta</a></li>
                     <li><a href="{{ url_for('produtos') }}">Produtos</a></li>
+                    <li><a href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a></li>
                 </ul>
             </div>
 
@@ -144,7 +142,6 @@
                     <i class="bi bi-cart-check"></i>
                 </div>
             </div>
-
         </div>
 
         <hr class="footer-line">
@@ -153,7 +150,6 @@
             <small>© 2026 AFGMED. Todos os direitos reservados.</small>
             <small>Sistema de saúde e farmácia digital.</small>
         </div>
-
     </div>
 </footer>
 
