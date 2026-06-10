@@ -1,36 +1,87 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% block title %}Meus Agendamentos{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Meus Agendamentos</h2>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <h2 class="mb-4 fw-bold" style="color:#072B59;">Meus Agendamentos</h2>
 
     {% if consultas %}
-        <ul class="list-group">
-            {% for c in consultas %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>Dr(a). {{ c.medico.nome }}</strong> -
-                        {{ c.data.strftime('%d/%m/%Y') }} às {{ c.horario }}
+    <div class="row g-4">
+        {% for c in consultas %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card shadow-lg h-100 p-4 border-0 rounded-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="border border-primary rounded-circle p-1 me-3">
+                        <img src="{{ url_for('static', filename='fotos_medicos/' + c.medico.foto) }}"
+                             alt="{{ c.medico.nome }}"
+                             class="rounded-circle"
+                             style="width:70px; height:70px; object-fit:cover;">
                     </div>
-                    <form method="POST" action="{{ url_for('cancelar_consulta', consulta_id=c.id) }}">
-                        <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
+                    <div>
+                        <h5 class="mb-0 fw-bold" style="color:#072B59;">{{ c.medico.nome }}</h5>
+                        <small class="text-primary">{{ c.medico.especialidade }}</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Data:</strong> {{ c.data.strftime('%d/%m/%Y') }}</p>
+                    <p class="mb-0"><strong>Horário:</strong> {{ c.horario }}</p>
+                </div>
+
+                <button class="btn btn-outline-danger w-100 fw-bold btn-cancelar" data-bs-toggle="modal" data-bs-target="#confirmModal{{ c.id }}">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmação -->
+        <div class="modal fade" id="confirmModal{{ c.id }}" tabindex="-1" aria-labelledby="modalLabel{{ c.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow-lg">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalLabel{{ c.id }}">Confirmar Cancelamento</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </div>
+              <div class="modal-body">
+                <p>Tem certeza que deseja cancelar o agendamento com <strong>{{ c.medico.nome }}</strong> no dia <strong>{{ c.data.strftime('%d/%m/%Y') }}</strong> às <strong>{{ c.horario }}</strong>?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <form action="{{ url_for('cancelar_consulta', consulta_id=c.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Sim, cancelar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
     {% else %}
-        <p>Você não possui consultas agendadas.</p>
+        <p class="text-muted fs-5 mt-4">Você não possui agendamentos.</p>
     {% endif %}
 </div>
+
+<style>
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(7, 43, 89, 0.12);
+}
+.btn-cancelar:hover {
+    background-color: #a71d2a;
+    color: #fff;
+    border-color: #a71d2a;
+}
+.modal-content {
+    border-radius: 20px;
+}
+.modal-header {
+    border-bottom: none;
+}
+.modal-footer {
+    border-top: none;
+}
+</style>
 {% endblock %}

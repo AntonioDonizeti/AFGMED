@@ -1,10 +1,15 @@
+/* ========================== */
+/*       GLOBAL STYLES        */
+/* ========================== */
 body {
     background: #f4f8fb;
     color: #273444;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* NAVBAR */
+/* ========================== */
+/*         NAVBAR             */
+/* ========================== */
 .navbar {
     background: #072B59 !important;
     box-shadow: 0 4px 18px rgba(7, 43, 89, 0.18);
@@ -29,7 +34,9 @@ body {
     color: #7ee0d2 !important;
 }
 
-/* BANNER */
+/* ========================== */
+/*         BANNER             */
+/* ========================== */
 .hero-banner {
     min-height: 430px;
     border-radius: 24px;
@@ -52,6 +59,7 @@ body {
 .hero-conteudo {
     position: relative;
     z-index: 2;
+    padding-left: 3rem; /* deslocamento do texto para direita */
 }
 
 .hero-conteudo h1 {
@@ -63,7 +71,9 @@ body {
     color: rgba(255,255,255,.88) !important;
 }
 
-/* BOTÕES */
+/* ========================== */
+/*          BOTÕES            */
+/* ========================== */
 .btn {
     border-radius: 12px;
     transition: .2s ease;
@@ -93,6 +103,7 @@ body {
 .btn-success:hover {
     background-color: #129585;
     border-color: #129585;
+    font-weight: 700;
 }
 
 .btn-outline-primary {
@@ -108,7 +119,9 @@ body {
     color: #fff;
 }
 
-/* CARDS */
+/* ========================== */
+/*           CARDS            */
+/* ========================== */
 .card {
     border: none;
     border-radius: 20px;
@@ -134,7 +147,25 @@ body {
     background: linear-gradient(180deg, #eef7fb, #ffffff);
 }
 
-/* TEXTOS */
+/* Ajuste automático das imagens dos médicos e produtos */
+.card-img-container {
+    width: 100%;
+    height: 200px;       
+    overflow: hidden;    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-img-container img {
+    width: auto;         
+    height: 100%;        
+    object-fit: cover;   
+}
+
+/* ========================== */
+/*          TEXTOS            */
+/* ========================== */
 h1.text-center {
     color: #072B59;
     font-weight: 800;
@@ -149,7 +180,9 @@ h1.text-center {
     color: #18A999 !important;
 }
 
-/* CARRINHO */
+/* ========================== */
+/*           CARRINHO         */
+/* ========================== */
 .badge.bg-danger {
     font-size: 0.7rem;
 }
@@ -165,7 +198,9 @@ h1.text-center {
     border: 1px solid #e5eaf0;
 }
 
-/* RODAPÉ */
+/* ========================== */
+/*           RODAPÉ           */
+/* ========================== */
 .footer-afg {
     background: #072B59;
     color: #ffffff;
@@ -210,11 +245,6 @@ h1.text-center {
     color: #7ee0d2;
 }
 
-.footer-links i {
-    color: #18A999;
-    margin-right: 6px;
-}
-
 .footer-icons {
     display: flex;
     gap: 12px;
@@ -241,7 +271,9 @@ h1.text-center {
     color: rgba(255, 255, 255, 0.68);
 }
 
-/* RESPONSIVO TABLET */
+/* ========================== */
+/*       RESPONSIVO TABLET     */
+/* ========================== */
 @media (max-width: 992px) {
     .navbar-nav {
         padding-top: 15px;
@@ -254,9 +286,16 @@ h1.text-center {
     .hero-banner {
         background-position: center;
     }
+
+    .hero-conteudo {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
 }
 
-/* RESPONSIVO MOBILE */
+/* ========================== */
+/*       RESPONSIVO MOBILE     */
+/* ========================== */
 @media (max-width: 768px) {
     main.container {
         margin-top: 25px !important;
@@ -313,7 +352,9 @@ h1.text-center {
     }
 }
 
-/* RESPONSIVO CELULAR PEQUENO */
+/* ========================== */
+/*   RESPONSIVO CELULAR PEQUENO */
+/* ========================== */
 @media (max-width: 480px) {
     .hero-conteudo h1 {
         font-size: 1.75rem;
@@ -330,21 +371,9 @@ h1.text-center {
     .btn {
         font-size: 0.95rem;
     }
-}
 
-
-/* Ajuste automático das imagens dos médicos */
-.card-img-container {
-    width: 100%;
-    height: 200px;       /* altura uniforme para todos os cards */
-    overflow: hidden;    /* corta qualquer excesso da imagem */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.card-img-container img {
-    width: auto;         /* mantém proporção original */
-    height: 100%;        /* preenche a altura do container */
-    object-fit: cover;   /* corta o excesso mantendo o foco central */
+    .hero-conteudo {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
