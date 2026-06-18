@@ -507,12 +507,20 @@ def ativar_produto(id_produto):
 
 # ----------------- ENTREGA -----------------
 
-@app.route("/entrega/<int:id_carrinho>", methods=["GET","POST"])
+@app.route("/entrega/<int:id_carrinho>", methods=["GET", "POST"])
 @login_required
 def entrega(id_carrinho):
     carrinho = Carrinho.query.get_or_404(id_carrinho)
     usuario = current_user
-    perfil = usuario.perfil
+    perfil = usuario.perfil or PerfilUsuario(usuario=usuario)
+
+    # Segurança: impede acessar carrinho de outro usuário
+    if carrinho.id_usuario != current_user.id:
+        return redirect(url_for("homepage"))
+
+    # Segurança: impede finalizar carrinho já finalizado
+    if carrinho.status != "ativo":
+        return redirect(url_for("homepage"))
 
     if request.method == "POST":
         endereco = request.form.get("endereco") or perfil.endereco
@@ -520,19 +528,34 @@ def entrega(id_carrinho):
         estado = request.form.get("estado") or perfil.estado
         cep = request.form.get("cep") or perfil.cep
 
-
         nova_entrega = Entrega(
             id_carrinho=carrinho.id,
             endereco=endereco,
             cidade=cidade,
             estado=estado,
-            cep=cep,
-
+            cep=cep
         )
+
+        database.session.add(perfil)
         database.session.add(nova_entrega)
+
         carrinho.status = "finalizado"
+
         database.session.commit()
-        flash("Compra finalizada!", "success")
+
+        # Resposta para o popup estilizado do entrega.html
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({
+                "sucesso": True,
+                "mensagem": "Compra realizada com sucesso!",
+                "redirect_url": url_for("homepage")
+            })
+
         return redirect(url_for("homepage"))
 
-    return render_template("entrega.html", carrinho=carrinho, perfil=perfil)
+    return render_template(
+        "entrega.html",
+        carrinho=carrinho,
+        perfil=perfil,
+        google_maps_api_key=current_app.config.get("GOOGLE_MAPS_API_KEY")
+    )

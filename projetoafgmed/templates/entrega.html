@@ -1,60 +1,563 @@
 {% extends "base.html" %}
-{% block title %}Entrega{% endblock %}
+{% block title %}Entrega - AFGMED{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Informações de Entrega e Pagamento</h2>
+<div class="entrega-page">
 
-    <form method="POST">
-        <h4>Endereço de Entrega</h4>
-        <div class="mb-3">
-            <label for="endereco" class="form-label">Endereço</label>
-            <input type="text" class="form-control" id="endereco" name="endereco"
-                   value="{{ current_user.perfil.endereco if current_user.perfil else '' }}" required>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="cidade" class="form-label">Cidade</label>
-                <input type="text" class="form-control" id="cidade" name="cidade"
-                       value="{{ current_user.perfil.cidade if current_user.perfil else '' }}" required>
-            </div>
-            <div class="col-md-3 mb-3">
-                <label for="estado" class="form-label">Estado</label>
-                <input type="text" class="form-control" id="estado" name="estado"
-                       value="{{ current_user.perfil.estado if current_user.perfil else '' }}" required>
-            </div>
-            <div class="col-md-3 mb-3">
-                <label for="cep" class="form-label">CEP</label>
-                <input type="text" class="form-control" id="cep" name="cep"
-                       value="{{ current_user.perfil.cep if current_user.perfil else '' }}" required>
+    <div class="entrega-header mb-4">
+        <span class="entrega-badge">
+            <i class="bi bi-truck"></i>
+            Entrega AFGMED
+        </span>
+
+        <h2 class="fw-bold mt-3 mb-2">Entrega e Pagamento</h2>
+
+        <p class="text-muted mb-0">
+            Confirme seu endereço, visualize a rota da entrega e finalize sua compra.
+        </p>
+    </div>
+
+    <div class="row g-4 align-items-start">
+
+        <!-- FORMULÁRIO -->
+        <div class="col-12 col-lg-5">
+            <div class="card entrega-card">
+                <div class="card-body">
+
+                    <div class="entrega-section-title">
+                        <div class="entrega-icon">
+                            <i class="bi bi-shop"></i>
+                        </div>
+                        <div>
+                            <h4>Ponto de Saída</h4>
+                            <small class="text-muted">
+                                Av. Ramiro Colleoni, 110 - Vila Bastos, Santo André - SP
+                            </small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="entrega-section-title">
+                        <div class="entrega-icon">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+                        <div>
+                            <h4>Endereço de Entrega</h4>
+                            <small class="text-muted">
+                                Informe onde o pedido será entregue
+                            </small>
+                        </div>
+                    </div>
+
+                    <form method="POST" id="form-entrega">
+
+                        <div class="mb-3">
+                            <label for="endereco" class="form-label">Endereço</label>
+                            <input type="text"
+                                   class="form-control entrega-input"
+                                   id="endereco"
+                                   name="endereco"
+                                   placeholder="Rua, número e bairro"
+                                   value="{{ perfil.endereco if perfil and perfil.endereco else '' }}"
+                                   required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-7 mb-3">
+                                <label for="cidade" class="form-label">Cidade</label>
+                                <input type="text"
+                                       class="form-control entrega-input"
+                                       id="cidade"
+                                       name="cidade"
+                                       value="{{ perfil.cidade if perfil and perfil.cidade else '' }}"
+                                       required>
+                            </div>
+
+                            <div class="col-md-5 mb-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <input type="text"
+                                       class="form-control entrega-input"
+                                       id="estado"
+                                       name="estado"
+                                       value="{{ perfil.estado if perfil and perfil.estado else '' }}"
+                                       required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cep" class="form-label">CEP</label>
+                            <input type="text"
+                                   class="form-control entrega-input"
+                                   id="cep"
+                                   name="cep"
+                                   placeholder="00000-000"
+                                   value="{{ perfil.cep if perfil and perfil.cep else '' }}"
+                                   required>
+                        </div>
+
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+
+                        <button type="button"
+                                class="btn btn-outline-primary w-100 mb-4"
+                                id="btn-minha-localizacao">
+                            <i class="bi bi-crosshair"></i>
+                            Usar minha localização atual
+                        </button>
+
+                        <div class="alert alert-light border rounded-4 mb-4" id="resumo-rota">
+                            <div class="d-flex gap-2 align-items-start">
+                                <i class="bi bi-info-circle text-primary"></i>
+                                <small class="text-muted">
+                                    A rota será exibida automaticamente após informar o endereço.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="entrega-section-title mt-4">
+                            <div class="entrega-icon">
+                                <i class="bi bi-credit-card"></i>
+                            </div>
+                            <div>
+                                <h4>Pagamento</h4>
+                                <small class="text-muted">
+                                    Confirme os dados do cartão
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="numero_cartao" class="form-label">Número do Cartão</label>
+                            <input type="text"
+                                   class="form-control entrega-input"
+                                   id="numero_cartao"
+                                   name="numero_cartao"
+                                   placeholder="0000 0000 0000 0000"
+                                   value="{{ perfil.numero_cartao if perfil and perfil.numero_cartao else '' }}"
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nome_cartao" class="form-label">Nome no Cartão</label>
+                            <input type="text"
+                                   class="form-control entrega-input"
+                                   id="nome_cartao"
+                                   name="nome_cartao"
+                                   value="{{ perfil.nome_cartao if perfil and perfil.nome_cartao else '' }}"
+                                   required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="validade_cartao" class="form-label">Validade</label>
+                                <input type="text"
+                                       class="form-control entrega-input"
+                                       id="validade_cartao"
+                                       name="validade_cartao"
+                                       placeholder="MM/AA"
+                                       value="{{ perfil.validade_cartao if perfil and perfil.validade_cartao else '' }}"
+                                       required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text"
+                                       class="form-control entrega-input"
+                                       id="cvv"
+                                       name="cvv"
+                                       placeholder="000"
+                                       value="{{ perfil.cvv if perfil and perfil.cvv else '' }}"
+                                       required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 entrega-btn-finalizar">
+                            <i class="bi bi-check-circle"></i>
+                            Finalizar Compra
+                        </button>
+
+                    </form>
+                </div>
             </div>
         </div>
 
-        <h4 class="mt-4">Dados de Pagamento</h4>
-        <div class="mb-3">
-            <label for="numero_cartao" class="form-label">Número do Cartão</label>
-            <input type="text" class="form-control" id="numero_cartao" name="numero_cartao"
-                   value="{{ current_user.perfil.numero_cartao if current_user.perfil else '' }}" required>
-        </div>
-        <div class="mb-3">
-            <label for="nome_cartao" class="form-label">Nome no Cartão</label>
-            <input type="text" class="form-control" id="nome_cartao" name="nome_cartao"
-                   value="{{ current_user.perfil.nome_cartao if current_user.perfil else '' }}" required>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="validade_cartao" class="form-label">Validade (MM/AA)</label>
-                <input type="text" class="form-control" id="validade_cartao" name="validade_cartao"
-                       value="{{ current_user.perfil.validade_cartao if current_user.perfil else '' }}" required>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="cvv" class="form-label">CVV</label>
-                <input type="text" class="form-control" id="cvv" name="cvv"
-                       value="{{ current_user.perfil.cvv if current_user.perfil else '' }}" required>
+        <!-- MAPA -->
+        <div class="col-12 col-lg-7">
+            <div class="card entrega-card entrega-mapa-card">
+                <div class="entrega-mapa-topo">
+                    <div>
+                        <h4 class="mb-1">Rota da Entrega</h4>
+                        <small class="text-muted">
+                            Saída da AFGMED até o endereço do cliente.
+                        </small>
+                    </div>
+
+                    <div class="entrega-mapa-status">
+                        <i class="bi bi-map"></i>
+                    </div>
+                </div>
+
+                <div class="entrega-mapa-wrapper">
+                    <div id="mapa-entrega"></div>
+                </div>
+
+                <div class="entrega-mapa-rodape">
+                    <i class="bi bi-signpost-split"></i>
+                    <span>
+                        Origem: Av. Ramiro Colleoni, 110 - Vila Bastos, Santo André - SP, 09040-160.
+                    </span>
+                </div>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 mt-4">Finalizar Compra</button>
-    </form>
+    </div>
 </div>
+
+<!-- Popup de compra realizada -->
+<div class="modal fade" id="modalCompraSucesso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-compra-sucesso">
+            <div class="modal-body text-center p-5">
+
+                <div class="compra-sucesso-icon">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+
+                <h3 class="fw-bold mt-4 mb-2">
+                    Compra realizada com sucesso!
+                </h3>
+
+                <p class="text-muted mb-4">
+                    Seu pedido foi confirmado e será preparado para entrega.
+                </p>
+
+                <div class="compra-sucesso-loading">
+                    Redirecionando para a página inicial...
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let mapa;
+let geocoder;
+let autocomplete;
+let directionsService;
+let directionsRenderer;
+let marcadorOrigem;
+let marcadorDestino;
+
+const enderecoOrigem = "Av. Ramiro Colleoni, 110 - Vila Bastos, Santo André - SP, 09040-160";
+
+function iniciarMapaEntrega() {
+    const localInicial = {
+        lat: -23.6637,
+        lng: -46.5322
+    };
+
+    mapa = new google.maps.Map(document.getElementById("mapa-entrega"), {
+        center: localInicial,
+        zoom: 14,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: true
+    });
+
+    geocoder = new google.maps.Geocoder();
+    directionsService = new google.maps.DirectionsService();
+
+    directionsRenderer = new google.maps.DirectionsRenderer({
+        map: mapa,
+        suppressMarkers: true
+    });
+
+    geocoder.geocode({ address: enderecoOrigem }, function(results, status) {
+        if (status === "OK" && results[0]) {
+            const origemLocation = results[0].geometry.location;
+
+            mapa.setCenter(origemLocation);
+
+            marcadorOrigem = new google.maps.Marker({
+                map: mapa,
+                position: origemLocation,
+                title: "Saída da entrega - AFGMED",
+                label: "A"
+            });
+        }
+    });
+
+    marcadorDestino = new google.maps.Marker({
+        map: mapa,
+        draggable: true,
+        title: "Destino da entrega",
+        label: "B"
+    });
+
+    const enderecoInput = document.getElementById("endereco");
+
+    autocomplete = new google.maps.places.Autocomplete(enderecoInput, {
+        fields: ["address_components", "formatted_address", "geometry"],
+        componentRestrictions: { country: "br" }
+    });
+
+    autocomplete.addListener("place_changed", function () {
+        const place = autocomplete.getPlace();
+
+        if (!place.geometry || !place.geometry.location) {
+            return;
+        }
+
+        document.getElementById("endereco").value = place.formatted_address;
+        document.getElementById("latitude").value = place.geometry.location.lat();
+        document.getElementById("longitude").value = place.geometry.location.lng();
+
+        preencherCamposEndereco(place);
+        atualizarRotaEntrega(place.geometry.location);
+    });
+
+    marcadorDestino.addListener("dragend", function () {
+        const posicao = marcadorDestino.getPosition();
+
+        document.getElementById("latitude").value = posicao.lat();
+        document.getElementById("longitude").value = posicao.lng();
+
+        geocoder.geocode({ location: posicao }, function (results, status) {
+            if (status === "OK" && results[0]) {
+                document.getElementById("endereco").value = results[0].formatted_address;
+                atualizarRotaEntrega(posicao);
+            }
+        });
+    });
+
+    document.getElementById("btn-minha-localizacao").addEventListener("click", usarMinhaLocalizacao);
+
+    ["endereco", "cidade", "estado", "cep"].forEach(function(id) {
+        document.getElementById(id).addEventListener("blur", function() {
+            const destino = montarEnderecoDestino();
+
+            if (destino.length > 15 && document.getElementById("endereco").value.trim()) {
+                atualizarRotaEntrega(destino);
+            }
+        });
+    });
+
+    carregarEnderecoDoCadastro();
+}
+
+function montarEnderecoDestino() {
+    const endereco = document.getElementById("endereco").value;
+    const cidade = document.getElementById("cidade").value;
+    const estado = document.getElementById("estado").value;
+    const cep = document.getElementById("cep").value;
+
+    return `${endereco}, ${cidade}, ${estado}, ${cep}, Brasil`;
+}
+
+function atualizarRotaEntrega(destino) {
+    const resumoRota = document.getElementById("resumo-rota");
+
+    resumoRota.innerHTML = `
+        <div class="d-flex gap-2 align-items-start">
+            <i class="bi bi-hourglass-split text-primary"></i>
+            <small class="text-muted">Buscando rota de entrega...</small>
+        </div>
+    `;
+
+    directionsService.route(
+        {
+            origin: enderecoOrigem,
+            destination: destino,
+            travelMode: google.maps.TravelMode.DRIVING,
+            region: "BR"
+        },
+        function(response, status) {
+            if (status === "OK") {
+                directionsRenderer.setDirections(response);
+
+                const rota = response.routes[0];
+                const perna = rota.legs[0];
+
+                marcadorDestino.setPosition(perna.end_location);
+
+                document.getElementById("latitude").value = perna.end_location.lat();
+                document.getElementById("longitude").value = perna.end_location.lng();
+
+                resumoRota.innerHTML = `
+                    <div class="d-flex gap-2 align-items-start">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <div>
+                            <strong style="color:#072B59;">Rota encontrada</strong><br>
+                            <small class="text-muted">
+                                Distância aproximada: <strong>${perna.distance.text}</strong><br>
+                                Tempo estimado: <strong>${perna.duration.text}</strong>
+                            </small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resumoRota.innerHTML = `
+                    <div class="d-flex gap-2 align-items-start">
+                        <i class="bi bi-exclamation-triangle text-danger"></i>
+                        <small class="text-muted">
+                            Não foi possível encontrar a rota. Verifique o endereço informado.
+                        </small>
+                    </div>
+                `;
+            }
+        }
+    );
+}
+
+function preencherCamposEndereco(place) {
+    let cidade = "";
+    let estado = "";
+    let cep = "";
+
+    if (!place.address_components) {
+        return;
+    }
+
+    place.address_components.forEach(function (component) {
+        const tipos = component.types;
+
+        if (tipos.includes("administrative_area_level_2")) {
+            cidade = component.long_name;
+        }
+
+        if (tipos.includes("administrative_area_level_1")) {
+            estado = component.short_name;
+        }
+
+        if (tipos.includes("postal_code")) {
+            cep = component.long_name;
+        }
+    });
+
+    if (cidade) {
+        document.getElementById("cidade").value = cidade;
+    }
+
+    if (estado) {
+        document.getElementById("estado").value = estado;
+    }
+
+    if (cep) {
+        document.getElementById("cep").value = cep;
+    }
+}
+
+function carregarEnderecoDoCadastro() {
+    const endereco = document.getElementById("endereco").value.trim();
+
+    if (!endereco) {
+        return;
+    }
+
+    const destino = montarEnderecoDestino();
+    atualizarRotaEntrega(destino);
+}
+
+function usarMinhaLocalizacao() {
+    if (!navigator.geolocation) {
+        alert("Seu navegador não permite acessar a localização.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            const localizacaoAtual = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+
+            document.getElementById("latitude").value = localizacaoAtual.lat;
+            document.getElementById("longitude").value = localizacaoAtual.lng;
+
+            geocoder.geocode({ location: localizacaoAtual }, function (results, status) {
+                if (status === "OK" && results[0]) {
+                    document.getElementById("endereco").value = results[0].formatted_address;
+                }
+
+                atualizarRotaEntrega(localizacaoAtual);
+            });
+        },
+        function () {
+            alert("Não foi possível obter sua localização.");
+        }
+    );
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const formEntrega = document.getElementById("form-entrega");
+
+    if (!formEntrega) {
+        return;
+    }
+
+    formEntrega.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const botaoFinalizar = formEntrega.querySelector(".entrega-btn-finalizar");
+        const textoOriginal = botaoFinalizar.innerHTML;
+
+        botaoFinalizar.disabled = true;
+        botaoFinalizar.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Finalizando...
+        `;
+
+        fetch(formEntrega.action || window.location.href, {
+            method: "POST",
+            body: new FormData(formEntrega),
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            if (data.sucesso) {
+                const modalElemento = document.getElementById("modalCompraSucesso");
+                const modal = new bootstrap.Modal(modalElemento, {
+                    backdrop: "static",
+                    keyboard: false
+                });
+
+                modal.show();
+
+                setTimeout(function () {
+                    window.location.href = data.redirect_url;
+                }, 2500);
+            } else {
+                botaoFinalizar.disabled = false;
+                botaoFinalizar.innerHTML = textoOriginal;
+                alert("Não foi possível finalizar a compra.");
+            }
+        })
+        .catch(function () {
+            botaoFinalizar.disabled = false;
+            botaoFinalizar.innerHTML = textoOriginal;
+            alert("Erro ao finalizar a compra.");
+        });
+    });
+});
+</script>
+
+{% if google_maps_api_key %}
+<script async
+        src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=iniciarMapaEntrega">
+</script>
+{% else %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("mapa-entrega").innerHTML =
+        "<div class='entrega-mapa-sem-chave'>Configure a chave GOOGLE_MAPS_API_KEY para exibir o mapa.</div>";
+});
+</script>
+{% endif %}
+
 {% endblock %}

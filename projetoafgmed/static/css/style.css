@@ -59,7 +59,7 @@ body {
 .hero-conteudo {
     position: relative;
     z-index: 2;
-    padding-left: 3rem; /* deslocamento do texto para direita */
+    padding-left: 3rem;
 }
 
 .hero-conteudo h1 {
@@ -272,7 +272,231 @@ h1.text-center {
 }
 
 /* ========================== */
-/*       RESPONSIVO TABLET     */
+/*        FOTO DE PERFIL      */
+/* ========================== */
+.foto-perfil {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* ========================== */
+/*       FORMULÁRIO PERFIL    */
+/* ========================== */
+.perfil-form input,
+.perfil-form select {
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ced4da;
+}
+
+.perfil-form button {
+    border-radius: 8px;
+    padding: 10px 20px;
+}
+
+/* ========================== */
+/*          ENTREGA           */
+/* ========================== */
+.entrega-page {
+    padding-bottom: 30px;
+}
+
+.entrega-header h2 {
+    color: #072B59;
+}
+
+.entrega-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    color: #072B59;
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(7,43,89,.08);
+}
+
+.entrega-badge i {
+    color: #18A999;
+}
+
+.entrega-card {
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.entrega-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.entrega-section-title h4 {
+    color: #072B59;
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 0;
+}
+
+.entrega-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: rgba(24, 169, 153, 0.12);
+    color: #18A999;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.entrega-input {
+    border-radius: 12px;
+    border: 1px solid #d8e1ea;
+    padding: 11px 13px;
+    transition: .2s ease;
+}
+
+.entrega-input:focus {
+    border-color: #18A999;
+    box-shadow: 0 0 0 0.2rem rgba(24, 169, 153, 0.15);
+}
+
+.entrega-btn-finalizar {
+    padding: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.entrega-mapa-card {
+    height: auto;
+    align-self: flex-start;
+}
+
+.entrega-mapa-topo {
+    padding: 22px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #e5eaf0;
+}
+
+.entrega-mapa-topo h4 {
+    color: #072B59;
+    font-weight: 800;
+}
+
+.entrega-mapa-status {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: #072B59;
+    background: #eef7fb;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.entrega-mapa-wrapper {
+    width: 100%;
+    height: 430px;
+    background: #e9eef5;
+}
+
+#mapa-entrega {
+    width: 100%;
+    height: 100%;
+}
+
+.entrega-mapa-rodape {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 14px 20px;
+    background: #f8fbfd;
+    border-top: 1px solid #e5eaf0;
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.entrega-mapa-rodape i {
+    color: #18A999;
+    margin-top: 2px;
+}
+
+.entrega-mapa-sem-chave {
+    height: 100%;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    text-align: center;
+    padding: 30px;
+}
+
+/* ========================== */
+/*    POPUP COMPRA SUCESSO    */
+/* ========================== */
+.modal-compra-sucesso {
+    border: none;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(7, 43, 89, 0.22);
+}
+
+.compra-sucesso-icon {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: rgba(24, 169, 153, 0.14);
+    color: #18A999;
+    display: grid;
+    place-items: center;
+    font-size: 3rem;
+    animation: compraPulse 1.4s ease infinite;
+}
+
+.modal-compra-sucesso h3 {
+    color: #072B59;
+}
+
+.compra-sucesso-loading {
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+@keyframes compraPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(24, 169, 153, 0.35);
+    }
+
+    70% {
+        transform: scale(1.04);
+        box-shadow: 0 0 0 18px rgba(24, 169, 153, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(24, 169, 153, 0);
+    }
+}
+
+/* ========================== */
+/*       RESPONSIVO TABLET    */
 /* ========================== */
 @media (max-width: 992px) {
     .navbar-nav {
@@ -291,10 +515,14 @@ h1.text-center {
         padding-left: 2rem;
         padding-right: 2rem;
     }
+
+    .entrega-mapa-wrapper {
+        height: 380px;
+    }
 }
 
 /* ========================== */
-/*       RESPONSIVO MOBILE     */
+/*       RESPONSIVO MOBILE    */
 /* ========================== */
 @media (max-width: 768px) {
     main.container {
@@ -350,6 +578,26 @@ h1.text-center {
     .footer-icons {
         justify-content: center;
     }
+
+    .entrega-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .entrega-mapa-topo {
+        align-items: flex-start;
+    }
+
+    .entrega-mapa-wrapper {
+        height: 340px;
+    }
+
+    .entrega-section-title {
+        align-items: flex-start;
+    }
+
+    .modal-compra-sucesso .modal-body {
+        padding: 35px 24px !important;
+    }
 }
 
 /* ========================== */
@@ -376,26 +624,27 @@ h1.text-center {
         padding-left: 1rem;
         padding-right: 1rem;
     }
-}
 
-/* Fotos de perfil */
-.foto-perfil {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%; /* sempre circular */
-    object-fit: cover;
-}
+    .entrega-badge {
+        font-size: 0.9rem;
+    }
 
-/* Formulário perfil */
-.perfil-form input,
-.perfil-form select {
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    border: 1px solid #ced4da;
-}
+    .entrega-mapa-wrapper {
+        height: 300px;
+    }
 
-.perfil-form button {
-    border-radius: 8px;
-    padding: 10px 20px;
+    .entrega-mapa-topo,
+    .entrega-mapa-rodape {
+        padding: 16px;
+    }
+
+    .compra-sucesso-icon {
+        width: 74px;
+        height: 74px;
+        font-size: 2.5rem;
+    }
+
+    .modal-compra-sucesso h3 {
+        font-size: 1.45rem;
+    }
 }
