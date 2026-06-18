@@ -280,10 +280,17 @@ def remover_medico(id_medico):
         return redirect(url_for("homepage"))
 
     medico = Medico.query.get_or_404(id_medico)
+
+    # ✅ APAGA AS CONSULTAS PRIMEIRO
+    Consulta.query.filter_by(medico_id=id_medico).delete()
+
+    # ✅ AGORA APAGA O MÉDICO
     database.session.delete(medico)
     database.session.commit()
+
     flash("Médico removido com sucesso!", "success")
     return redirect(url_for("medicos"))
+
 
 # ----------------- PRODUTOS -----------------
 @app.route("/produtos")
@@ -512,7 +519,7 @@ def entrega(id_carrinho):
         cidade = request.form.get("cidade") or perfil.cidade
         estado = request.form.get("estado") or perfil.estado
         cep = request.form.get("cep") or perfil.cep
-        telefone = request.form.get("telefone")
+
 
         nova_entrega = Entrega(
             id_carrinho=carrinho.id,
@@ -520,7 +527,7 @@ def entrega(id_carrinho):
             cidade=cidade,
             estado=estado,
             cep=cep,
-            telefone=telefone
+
         )
         database.session.add(nova_entrega)
         carrinho.status = "finalizado"

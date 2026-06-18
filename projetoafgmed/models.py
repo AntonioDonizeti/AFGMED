@@ -104,7 +104,6 @@ class Entrega(database.Model):
     cidade = database.Column(database.String(50), nullable=False)
     estado = database.Column(database.String(50), nullable=False)
     cep = database.Column(database.String(20), nullable=False)
-    telefone = database.Column(database.String(20), nullable=False)
     data_criacao = database.Column(database.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
