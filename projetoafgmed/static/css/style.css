@@ -496,6 +496,60 @@ h1.text-center {
 }
 
 /* ========================== */
+/*   POPUP EMAIL CADASTRADO   */
+/* ========================== */
+.modal-email-existente {
+    border: none;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 24px 70px rgba(7, 43, 89, 0.22);
+}
+
+.email-existente-icon {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: rgba(255, 193, 7, 0.16);
+    color: #d99a00;
+    display: grid;
+    place-items: center;
+    font-size: 2.8rem;
+    animation: emailPulse 1.4s ease infinite;
+}
+
+.modal-email-existente h3 {
+    color: #072B59;
+}
+
+.email-existente-info {
+    background: #f8fbfd;
+    border: 1px solid #e5eaf0;
+    color: #072B59;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+@keyframes emailPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.32);
+    }
+
+    70% {
+        transform: scale(1.04);
+        box-shadow: 0 0 0 18px rgba(255, 193, 7, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+/* ========================== */
 /*       RESPONSIVO TABLET    */
 /* ========================== */
 @media (max-width: 992px) {
@@ -595,7 +649,8 @@ h1.text-center {
         align-items: flex-start;
     }
 
-    .modal-compra-sucesso .modal-body {
+    .modal-compra-sucesso .modal-body,
+    .modal-email-existente .modal-body {
         padding: 35px 24px !important;
     }
 }
@@ -638,13 +693,15 @@ h1.text-center {
         padding: 16px;
     }
 
-    .compra-sucesso-icon {
+    .compra-sucesso-icon,
+    .email-existente-icon {
         width: 74px;
         height: 74px;
-        font-size: 2.5rem;
+        font-size: 2.4rem;
     }
 
-    .modal-compra-sucesso h3 {
+    .modal-compra-sucesso h3,
+    .modal-email-existente h3 {
         font-size: 1.45rem;
     }
 }

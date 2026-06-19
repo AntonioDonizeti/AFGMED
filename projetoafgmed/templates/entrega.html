@@ -13,7 +13,7 @@
         <h2 class="fw-bold mt-3 mb-2">Entrega e Pagamento</h2>
 
         <p class="text-muted mb-0">
-            Confirme seu endereço, visualize a rota da entrega e finalize sua compra.
+            Confirme seu endereço, visualize a rota da entrega e siga para o pagamento seguro.
         </p>
     </div>
 
@@ -117,64 +117,29 @@
 
                         <div class="entrega-section-title mt-4">
                             <div class="entrega-icon">
-                                <i class="bi bi-credit-card"></i>
+                                <i class="bi bi-shield-check"></i>
                             </div>
                             <div>
-                                <h4>Pagamento</h4>
+                                <h4>Pagamento Seguro</h4>
                                 <small class="text-muted">
-                                    Confirme os dados do cartão
+                                    O pagamento será realizado pelo Mercado Pago
                                 </small>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="numero_cartao" class="form-label">Número do Cartão</label>
-                            <input type="text"
-                                   class="form-control entrega-input"
-                                   id="numero_cartao"
-                                   name="numero_cartao"
-                                   placeholder="0000 0000 0000 0000"
-                                   value="{{ perfil.numero_cartao if perfil and perfil.numero_cartao else '' }}"
-                                   required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="nome_cartao" class="form-label">Nome no Cartão</label>
-                            <input type="text"
-                                   class="form-control entrega-input"
-                                   id="nome_cartao"
-                                   name="nome_cartao"
-                                   value="{{ perfil.nome_cartao if perfil and perfil.nome_cartao else '' }}"
-                                   required>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="validade_cartao" class="form-label">Validade</label>
-                                <input type="text"
-                                       class="form-control entrega-input"
-                                       id="validade_cartao"
-                                       name="validade_cartao"
-                                       placeholder="MM/AA"
-                                       value="{{ perfil.validade_cartao if perfil and perfil.validade_cartao else '' }}"
-                                       required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="cvv" class="form-label">CVV</label>
-                                <input type="text"
-                                       class="form-control entrega-input"
-                                       id="cvv"
-                                       name="cvv"
-                                       placeholder="000"
-                                       value="{{ perfil.cvv if perfil and perfil.cvv else '' }}"
-                                       required>
+                        <div class="alert alert-light border rounded-4 mb-4">
+                            <div class="d-flex gap-2 align-items-start">
+                                <i class="bi bi-credit-card text-primary"></i>
+                                <small class="text-muted">
+                                    Ao finalizar, você será direcionado para o ambiente seguro do Mercado Pago,
+                                    onde poderá pagar com Pix, cartão ou outros métodos disponíveis.
+                                </small>
                             </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 entrega-btn-finalizar">
-                            <i class="bi bi-check-circle"></i>
-                            Finalizar Compra
+                            <i class="bi bi-lock-fill"></i>
+                            Ir para pagamento
                         </button>
 
                     </form>
@@ -211,33 +176,6 @@
             </div>
         </div>
 
-    </div>
-</div>
-
-<!-- Popup de compra realizada -->
-<div class="modal fade" id="modalCompraSucesso" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-compra-sucesso">
-            <div class="modal-body text-center p-5">
-
-                <div class="compra-sucesso-icon">
-                    <i class="bi bi-check-lg"></i>
-                </div>
-
-                <h3 class="fw-bold mt-4 mb-2">
-                    Compra realizada com sucesso!
-                </h3>
-
-                <p class="text-muted mb-4">
-                    Seu pedido foi confirmado e será preparado para entrega.
-                </p>
-
-                <div class="compra-sucesso-loading">
-                    Redirecionando para a página inicial...
-                </div>
-
-            </div>
-        </div>
     </div>
 </div>
 
@@ -506,7 +444,7 @@ document.addEventListener("DOMContentLoaded", function () {
         botaoFinalizar.disabled = true;
         botaoFinalizar.innerHTML = `
             <span class="spinner-border spinner-border-sm me-2"></span>
-            Finalizando...
+            Redirecionando...
         `;
 
         fetch(formEntrega.action || window.location.href, {
@@ -520,28 +458,18 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json();
         })
         .then(function (data) {
-            if (data.sucesso) {
-                const modalElemento = document.getElementById("modalCompraSucesso");
-                const modal = new bootstrap.Modal(modalElemento, {
-                    backdrop: "static",
-                    keyboard: false
-                });
-
-                modal.show();
-
-                setTimeout(function () {
-                    window.location.href = data.redirect_url;
-                }, 2500);
+            if (data.sucesso && data.redirect_url) {
+                window.location.href = data.redirect_url;
             } else {
                 botaoFinalizar.disabled = false;
                 botaoFinalizar.innerHTML = textoOriginal;
-                alert("Não foi possível finalizar a compra.");
+                alert(data.mensagem || "Não foi possível iniciar o pagamento.");
             }
         })
         .catch(function () {
             botaoFinalizar.disabled = false;
             botaoFinalizar.innerHTML = textoOriginal;
-            alert("Erro ao finalizar a compra.");
+            alert("Erro ao iniciar o pagamento.");
         });
     });
 });

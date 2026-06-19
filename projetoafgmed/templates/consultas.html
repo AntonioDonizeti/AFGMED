@@ -3,13 +3,14 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row">
-        <!-- Card do médico (layout antigo completo) -->
+        <!-- Card do médico -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm rounded-4 text-center p-3">
                 <img src="{{ url_for('static', filename='fotos_medicos/' ~ medico.foto) }}"
                      class="rounded-circle mx-auto"
                      style="width:150px; height:150px; object-fit:cover;"
                      alt="{{ medico.nome }}">
+
                 <div class="card-body">
                     <h5 class="card-title mt-3">{{ medico.nome }}</h5>
                     <p class="text-primary mb-1">{{ medico.especialidade }}</p>
@@ -24,6 +25,7 @@
                             <i class="bi bi-person"></i>
                             Experiência: 10 anos
                         </li>
+
                         <li>
                             <i class="bi bi-calendar-check"></i>
                             Consultório: 101
@@ -47,64 +49,101 @@
                 <!-- Data picker -->
                 <div class="mb-3">
                     <label class="form-label">Escolha uma data</label>
-                    <input type="date" class="form-control" id="data_consulta" name="data_consulta" required>
+                    <input type="date"
+                           class="form-control"
+                           id="data_consulta"
+                           name="data_consulta"
+                           required>
                 </div>
 
                 <!-- Horários -->
                 <div class="mb-3">
                     <label class="form-label">Escolha um horário</label>
+
                     <div class="d-flex flex-wrap gap-2" id="horarios_container">
                         {% for h in horarios %}
-                            <button type="button" class="btn btn-outline-primary horario-btn">{{ h }}</button>
+                            <button type="button" class="btn btn-outline-primary horario-btn">
+                                {{ h }}
+                            </button>
                         {% endfor %}
                     </div>
+
                     <input type="hidden" name="horario" id="horario_hidden">
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Marcar consulta</button>
+                <button type="submit" class="btn btn-primary w-100">
+                    Marcar consulta
+                </button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
+// Define a data mínima como hoje para impedir seleção visual de data passada
+document.addEventListener("DOMContentLoaded", function () {
+    const inputData = document.getElementById("data_consulta");
+
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoje.getDate()).padStart(2, "0");
+
+    inputData.min = `${ano}-${mes}-${dia}`;
+});
+
 // Seleção de horário
-function atualizarHorarioSelecionado(btn){
-    document.getElementById('horario_hidden').value = btn.textContent.trim();
-    document.querySelectorAll('.horario-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+function atualizarHorarioSelecionado(btn) {
+    if (btn.classList.contains("disabled")) {
+        return;
+    }
+
+    document.getElementById("horario_hidden").value = btn.textContent.trim();
+
+    document.querySelectorAll(".horario-btn").forEach(function (b) {
+        b.classList.remove("active");
+    });
+
+    btn.classList.add("active");
 }
 
 // Inicializa os botões
-document.querySelectorAll('.horario-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>atualizarHorarioSelecionado(btn));
+document.querySelectorAll(".horario-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+        atualizarHorarioSelecionado(btn);
+    });
 });
 
 // Atualiza horários ocupados ao mudar a data via AJAX
-document.getElementById('data_consulta').addEventListener('change', async()=>{
-    const data=document.getElementById('data_consulta').value;
-    const medico_id="{{ medico.id }}";
+document.getElementById("data_consulta").addEventListener("change", async function () {
+    const data = document.getElementById("data_consulta").value;
+    const medico_id = "{{ medico.id }}";
 
-    document.getElementById('horario_hidden').value='';
+    document.getElementById("horario_hidden").value = "";
 
-    document.querySelectorAll('.horario-btn').forEach(btn=>{
-        btn.classList.remove('active','btn-secondary','disabled');
-        btn.classList.add('btn-outline-primary');
+    document.querySelectorAll(".horario-btn").forEach(function (btn) {
+        btn.classList.remove("active", "btn-secondary", "disabled");
+        btn.classList.add("btn-outline-primary");
+        btn.disabled = false;
     });
 
-    if(!data) return;
+    if (!data) {
+        return;
+    }
 
-    try{
-        const response=await fetch(`/horarios_disponiveis/${medico_id}/${data}`);
-        const ocupados=await response.json();
-        document.querySelectorAll('.horario-btn').forEach(btn=>{
-            if(ocupados.includes(btn.textContent.trim())){
-                btn.classList.remove('btn-outline-primary');
-                btn.classList.add('btn-secondary','disabled');
+    try {
+        const response = await fetch(`/horarios_disponiveis/${medico_id}/${data}`);
+        const ocupados = await response.json();
+
+        document.querySelectorAll(".horario-btn").forEach(function (btn) {
+            if (ocupados.includes(btn.textContent.trim())) {
+                btn.classList.remove("btn-outline-primary");
+                btn.classList.add("btn-secondary", "disabled");
+                btn.disabled = true;
             }
         });
-    }catch(err){
-        console.error('Erro ao buscar horários:',err);
+    } catch (err) {
+        console.error("Erro ao buscar horários:", err);
     }
 });
 </script>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Pagamento não aprovado{% endblock %}
+
+{% block content %}
+<div class="card mx-auto text-center p-4" style="max-width: 520px;">
+    <div class="card-body">
+        <i class="bi bi-x-circle text-danger" style="font-size: 4rem;"></i>
+
+        <h3 class="fw-bold mt-3" style="color:#072B59;">
+            Pagamento não aprovado
+        </h3>
+
+        <p class="text-muted">
+            Não foi possível concluir o pagamento. Tente novamente.
+        </p>
+
+        <a href="{{ url_for('produtos') }}" class="btn btn-primary">
+            Voltar aos produtos
+        </a>
+    </div>
+</div>
+{% endblock %}

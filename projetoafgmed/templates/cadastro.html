@@ -8,32 +8,105 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h3 class="text-center mb-4">Criar Conta</h3>
+
                 <form method="POST">
                     {{ form.hidden_tag() }}
+
                     <div class="mb-3">
                         {{ form.nome.label(class="form-label") }}
                         {{ form.nome(class="form-control") }}
                     </div>
+
                     <div class="mb-3">
                         {{ form.sobrenome.label(class="form-label") }}
                         {{ form.sobrenome(class="form-control") }}
                     </div>
+
                     <div class="mb-3">
                         {{ form.email.label(class="form-label") }}
                         {{ form.email(class="form-control") }}
                     </div>
+
                     <div class="mb-3">
                         {{ form.senha.label(class="form-label") }}
                         {{ form.senha(class="form-control") }}
                     </div>
+
                     <div class="mb-3">
                         {{ form.confirmacao_senha.label(class="form-label") }}
                         {{ form.confirmacao_senha(class="form-control") }}
                     </div>
+
                     {{ form.botao_confirmacao(class="btn btn-primary w-100") }}
                 </form>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Já possui conta?
+                        <a href="{{ url_for('login') }}" class="fw-bold" style="color:#072B59;">
+                            Fazer login
+                        </a>
+                    </small>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Popup de e-mail já cadastrado -->
+<div class="modal fade" id="modalEmailDuplicado" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-email-existente">
+            <div class="modal-body text-center p-5">
+
+                <div class="email-existente-icon">
+                    <i class="bi bi-envelope-exclamation"></i>
+                </div>
+
+                <h3 class="fw-bold mt-4 mb-2">
+                    E-mail já cadastrado
+                </h3>
+
+                <p class="text-muted mb-4">
+                    O e-mail informado já possui uma conta na AFGMED.
+                    Tente fazer login ou utilize outro endereço de e-mail.
+                </p>
+
+                {% if email_informado %}
+                    <div class="email-existente-info mb-4">
+                        {{ email_informado }}
+                    </div>
+                {% endif %}
+
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Ir para Login
+                    </a>
+
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                        Usar outro e-mail
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if email_duplicado %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const modalElemento = document.getElementById("modalEmailDuplicado");
+
+    const modal = new bootstrap.Modal(modalElemento, {
+        backdrop: "static",
+        keyboard: true
+    });
+
+    modal.show();
+});
+</script>
+{% endif %}
+
 {% endblock %}
