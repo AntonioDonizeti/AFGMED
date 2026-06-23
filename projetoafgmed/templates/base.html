@@ -15,17 +15,48 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="{{ url_for('homepage') }}">
+
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('homepage') }}">
             <img src="{{ url_for('static', filename='imagens/logo.jpg') }}" alt="Logo" width="50" class="me-2">
             AFGMED
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <!-- Carrinho mobile + botão menu -->
+        <div class="d-flex align-items-center gap-2 d-lg-none">
+
+            {% if current_user.is_authenticated and (not current_user.is_medico or current_user.is_admin) %}
+                <a class="nav-link carrinho-mobile-btn position-relative"
+                   href="#"
+                   data-bs-toggle="offcanvas"
+                   data-bs-target="#carrinhoLateral"
+                   aria-controls="carrinhoLateral">
+
+                    <i class="bi bi-cart3"></i>
+
+                    {% if carrinho %}
+                        <span class="badge bg-danger badge-carrinho position-absolute top-0 start-100 translate-middle">
+                            {{ quantidade_carrinho }}
+                        </span>
+                    {% endif %}
+                </a>
+            {% endif %}
+
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Abrir menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+        </div>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
+
+            <ul class="navbar-nav ms-auto align-items-lg-center">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('homepage') }}">Home</a>
                 </li>
@@ -45,19 +76,26 @@
                 </li>
 
                 {% if current_user.is_authenticated and current_user.is_admin %}
-                    <li class="nav-item ms-2">
-                        <a class="btn btn-primary" href="{{ url_for('cadastro_medico') }}">Cadastrar Médico</a>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-primary" href="{{ url_for('cadastro_medico') }}">
+                            Cadastrar Médico
+                        </a>
                     </li>
-                    <li class="nav-item ms-2">
-                        <a class="btn btn-primary" href="{{ url_for('cadastro_produto') }}">Cadastrar Produto</a>
+
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-primary" href="{{ url_for('cadastro_produto') }}">
+                            Cadastrar Produto
+                        </a>
                     </li>
                 {% endif %}
             </ul>
 
-            <ul class="navbar-nav ms-3 align-items-center">
+            <ul class="navbar-nav ms-lg-3 align-items-lg-center">
+
                 {% if current_user.is_authenticated %}
+
                     <!-- Perfil -->
-                    <li class="nav-item dropdown me-3">
+                    <li class="nav-item dropdown me-lg-3">
                         <a class="nav-link dropdown-toggle d-flex align-items-center"
                            href="#"
                            id="perfilDropdown"
@@ -74,6 +112,7 @@
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
+
                             <li>
                                 <a class="dropdown-item d-flex align-items-center" href="{{ url_for('perfil') }}">
                                     <i class="bi bi-person-circle me-2"></i>
@@ -114,35 +153,46 @@
                                     Sair
                                 </a>
                             </li>
+
                         </ul>
                     </li>
 
+                    <!-- Carrinho desktop -->
                     {% if not current_user.is_medico or current_user.is_admin %}
-                        <!-- Carrinho -->
-                        <li class="nav-item position-relative">
+                        <li class="nav-item position-relative d-none d-lg-block">
                             <a class="nav-link"
                                href="#"
                                data-bs-toggle="offcanvas"
                                data-bs-target="#carrinhoLateral"
                                aria-controls="carrinhoLateral">
+
                                 <i class="bi bi-cart3" style="font-size: 1.5rem;"></i>
 
                                 {% if carrinho %}
-                                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                    <span class="badge bg-danger badge-carrinho position-absolute top-0 start-100 translate-middle">
                                         {{ quantidade_carrinho }}
                                     </span>
                                 {% endif %}
                             </a>
                         </li>
                     {% endif %}
+
                 {% else %}
-                    <li class="nav-item ms-2">
-                        <a class="btn btn-primary" href="{{ url_for('criar_conta') }}">Criar Conta</a>
+
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-primary" href="{{ url_for('criar_conta') }}">
+                            Criar Conta
+                        </a>
                     </li>
-                    <li class="nav-item ms-2">
-                        <a class="btn btn-success" href="{{ url_for('login') }}">Login</a>
+
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-success" href="{{ url_for('login') }}">
+                            Login
+                        </a>
                     </li>
+
                 {% endif %}
+
             </ul>
         </div>
     </div>
@@ -161,11 +211,13 @@
 <footer class="footer-afg mt-5">
     <div class="container py-5">
         <div class="row g-4">
+
             <div class="col-md-4">
                 <div class="d-flex align-items-center mb-3">
                     <img src="{{ url_for('static', filename='imagens/logo.jpg') }}" alt="Logo AFGMED" width="48" class="footer-logo me-2">
                     <h5 class="mb-0 fw-bold">AFGMED</h5>
                 </div>
+
                 <p class="footer-text">
                     Plataforma de saúde criada para facilitar o acesso a consultas,
                     produtos farmacêuticos e cuidados essenciais.
@@ -174,6 +226,7 @@
 
             <div class="col-md-2">
                 <h6 class="footer-title">Navegação</h6>
+
                 <ul class="footer-links">
                     <li><a href="{{ url_for('homepage') }}">Home</a></li>
 
@@ -198,6 +251,7 @@
 
             <div class="col-md-3">
                 <h6 class="footer-title">Atendimento</h6>
+
                 <ul class="footer-links">
                     <li><i class="bi bi-clock"></i> Seg. a Sex. das 08h às 18h</li>
                     <li><i class="bi bi-envelope"></i> atendimento@afgmed.com</li>
@@ -207,15 +261,18 @@
 
             <div class="col-md-3">
                 <h6 class="footer-title">Segurança</h6>
+
                 <p class="footer-text">
                     Seus dados e pedidos são tratados com segurança durante toda a experiência.
                 </p>
+
                 <div class="footer-icons">
                     <i class="bi bi-shield-check"></i>
                     <i class="bi bi-heart-pulse"></i>
                     <i class="bi bi-cart-check"></i>
                 </div>
             </div>
+
         </div>
 
         <hr class="footer-line">

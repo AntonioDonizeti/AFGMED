@@ -139,12 +139,10 @@ document.addEventListener("DOMContentLoaded", function () {
             container.innerHTML = html;
         }
 
-        const badgeAtual = document.querySelector(".badge.bg-danger");
-
-        if (badgeAtual) {
+            document.querySelectorAll(".badge-carrinho").forEach(function (badgeAtual) {
             badgeAtual.textContent = data.quantidade;
-            badgeAtual.style.display = data.quantidade > 0 ? "inline-block" : "none";
-        }
+            badgeAtual.style.display = data.quantidade > 0 ? "inline-flex" : "none";
+        });
     }
 
     async function enviarAcaoCarrinho(url, dados = null) {
