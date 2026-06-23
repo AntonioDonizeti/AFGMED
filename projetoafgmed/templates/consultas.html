@@ -9,10 +9,13 @@
                 <img src="{{ url_for('static', filename='fotos_medicos/' ~ medico.foto) }}"
                      class="rounded-circle mx-auto"
                      style="width:150px; height:150px; object-fit:cover;"
-                     alt="{{ medico.nome }}">
+                     alt="{{ medico.nome }} {{ medico.sobrenome }}">
 
                 <div class="card-body">
-                    <h5 class="card-title mt-3">{{ medico.nome }}</h5>
+                    <h5 class="card-title mt-3">
+                        {{ medico.nome }} {{ medico.sobrenome }}
+                    </h5>
+
                     <p class="text-primary mb-1">{{ medico.especialidade }}</p>
                     <p class="text-muted">CRM {{ medico.id }}</p>
 
@@ -37,16 +40,16 @@
 
         <!-- Formulário de marcação -->
         <div class="col-md-8">
-            <h2 class="mb-4">Marcar consulta com Dr(a). {{ medico.nome }}</h2>
+            <h2 class="mb-4">
+                Marcar consulta com Dr(a). {{ medico.nome }} {{ medico.sobrenome }}
+            </h2>
 
             <form method="POST" id="form_consulta">
-                <!-- Nome do paciente preenchido automaticamente -->
                 <div class="mb-3">
                     <label class="form-label">Seu nome</label>
                     <input type="text" class="form-control" value="{{ current_user.nome }}" readonly>
                 </div>
 
-                <!-- Data picker -->
                 <div class="mb-3">
                     <label class="form-label">Escolha uma data</label>
                     <input type="date"
@@ -56,7 +59,6 @@
                            required>
                 </div>
 
-                <!-- Horários -->
                 <div class="mb-3">
                     <label class="form-label">Escolha um horário</label>
 
@@ -80,7 +82,6 @@
 </div>
 
 <script>
-// Define a data mínima como hoje para impedir seleção visual de data passada
 document.addEventListener("DOMContentLoaded", function () {
     const inputData = document.getElementById("data_consulta");
 
@@ -92,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function () {
     inputData.min = `${ano}-${mes}-${dia}`;
 });
 
-// Seleção de horário
 function atualizarHorarioSelecionado(btn) {
     if (btn.classList.contains("disabled")) {
         return;
@@ -107,14 +107,12 @@ function atualizarHorarioSelecionado(btn) {
     btn.classList.add("active");
 }
 
-// Inicializa os botões
 document.querySelectorAll(".horario-btn").forEach(function (btn) {
     btn.addEventListener("click", function () {
         atualizarHorarioSelecionado(btn);
     });
 });
 
-// Atualiza horários ocupados ao mudar a data via AJAX
 document.getElementById("data_consulta").addEventListener("change", async function () {
     const data = document.getElementById("data_consulta").value;
     const medico_id = "{{ medico.id }}";

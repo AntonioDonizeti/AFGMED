@@ -13,12 +13,14 @@
                 <div class="d-flex align-items-center mb-3">
                     <div class="border border-primary rounded-circle p-1 me-3">
                         <img src="{{ url_for('static', filename='fotos_medicos/' + c.medico.foto) }}"
-                             alt="{{ c.medico.nome }}"
+                             alt="{{ c.medico.nome }} {{ c.medico.sobrenome }}"
                              class="rounded-circle"
                              style="width:70px; height:70px; object-fit:cover;">
                     </div>
                     <div>
-                        <h5 class="mb-0 fw-bold" style="color:#072B59;">{{ c.medico.nome }}</h5>
+                        <h5 class="mb-0 fw-bold" style="color:#072B59;">
+                            {{ c.medico.nome }} {{ c.medico.sobrenome }}
+                        </h5>
                         <small class="text-primary">{{ c.medico.especialidade }}</small>
                     </div>
                 </div>
@@ -28,13 +30,14 @@
                     <p class="mb-0"><strong>Horário:</strong> {{ c.horario }}</p>
                 </div>
 
-                <button class="btn btn-outline-danger w-100 fw-bold btn-cancelar" data-bs-toggle="modal" data-bs-target="#confirmModal{{ c.id }}">
+                <button class="btn btn-outline-danger w-100 fw-bold btn-cancelar"
+                        data-bs-toggle="modal"
+                        data-bs-target="#confirmModal{{ c.id }}">
                     Cancelar
                 </button>
             </div>
         </div>
 
-        <!-- Modal de Confirmação -->
         <div class="modal fade" id="confirmModal{{ c.id }}" tabindex="-1" aria-labelledby="modalLabel{{ c.id }}" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow-lg">
@@ -43,7 +46,12 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
               </div>
               <div class="modal-body">
-                <p>Tem certeza que deseja cancelar o agendamento com <strong>{{ c.medico.nome }}</strong> no dia <strong>{{ c.data.strftime('%d/%m/%Y') }}</strong> às <strong>{{ c.horario }}</strong>?</p>
+                <p>
+                    Tem certeza que deseja cancelar o agendamento com
+                    <strong>{{ c.medico.nome }} {{ c.medico.sobrenome }}</strong>
+                    no dia <strong>{{ c.data.strftime('%d/%m/%Y') }}</strong>
+                    às <strong>{{ c.horario }}</strong>?
+                </p>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>

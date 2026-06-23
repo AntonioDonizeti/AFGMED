@@ -3,6 +3,7 @@ from wtforms import StringField, PasswordField, SubmitField, EmailField, FloatFi
 from wtforms.validators import DataRequired, Email, EqualTo
 from flask_wtf.file import FileField, FileAllowed
 
+
 class FormCriarConta(FlaskForm):
     nome = StringField("Nome", validators=[DataRequired()])
     sobrenome = StringField("Sobrenome", validators=[DataRequired()])
@@ -10,6 +11,7 @@ class FormCriarConta(FlaskForm):
     senha = PasswordField("Senha", validators=[DataRequired()])
     confirmacao_senha = PasswordField("Confirme a Senha", validators=[DataRequired(), EqualTo("senha")])
     botao_confirmacao = SubmitField("Cadastrar")
+
 
 class FormLogin(FlaskForm):
     email = EmailField("Email", validators=[DataRequired(), Email()])
@@ -19,12 +21,13 @@ class FormLogin(FlaskForm):
 
 class FormMedico(FlaskForm):
     nome = StringField("Nome", validators=[DataRequired()])
+    sobrenome = StringField("Sobrenome", validators=[DataRequired()])
     especialidade = StringField("Especialidade", validators=[DataRequired()])
-    email = EmailField ("Email", validators=[DataRequired(), Email()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
     telefone = StringField("Telefone")
     foto = FileField(
         "Foto",
-        validators=[FileAllowed(['jpg','jpeg','png'], "Apenas imagens são permitidas!")]
+        validators=[FileAllowed(["jpg", "jpeg", "png"], "Apenas imagens são permitidas!")]
     )
     botao_confirmacao = SubmitField("Cadastrar")
 
@@ -40,7 +43,7 @@ class FormProduto(FlaskForm):
 
     foto = FileField(
         "Foto",
-        validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Apenas imagens são permitidas!')]
+        validators=[FileAllowed(["jpg", "png", "jpeg"], "Apenas imagens são permitidas!")]
     )
 
     botao_confirmacao = SubmitField("Cadastrar")

@@ -18,13 +18,12 @@ class Usuario(database.Model, UserMixin):
 
     is_admin = database.Column(database.Boolean, default=False)
     is_medico = database.Column(database.Boolean, default=False, nullable=False)
-
-    # Quando o usuário for médico, este campo aponta para o cadastro em Medico
     id_medico = database.Column(database.Integer, database.ForeignKey("medico.id"), nullable=True)
 
     perfil = database.relationship("PerfilUsuario", backref="usuario", uselist=False)
     carrinho = database.relationship("Carrinho", backref="usuario", uselist=False)
     consultas = database.relationship("Consulta", backref="usuario", lazy=True)
+    pedidos = database.relationship("Pedido", backref="usuario", lazy=True)
 
     medico = database.relationship(
         "Medico",
@@ -46,6 +45,7 @@ class PerfilUsuario(database.Model):
 class Medico(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     nome = database.Column(database.String, nullable=False)
+    sobrenome = database.Column(database.String, nullable=False, default="AFGMED")
     especialidade = database.Column(database.String, nullable=False)
     email = database.Column(database.String)
     telefone = database.Column(database.String)
@@ -83,11 +83,9 @@ class Carrinho(database.Model):
     id_usuario = database.Column(database.Integer, database.ForeignKey("usuario.id"), nullable=False)
     data_criacao = database.Column(database.DateTime, default=datetime.utcnow)
 
-    # ativo, aguardando_pagamento ou finalizado
     status = database.Column(database.String, default="ativo")
     ativo = database.Column(database.Boolean, default=True, nullable=False)
 
-    # Mercado Pago
     status_pagamento = database.Column(database.String(30), default="pendente")
     mercado_pago_preference_id = database.Column(database.String(120), nullable=True)
     mercado_pago_payment_id = database.Column(database.String(120), nullable=True)
@@ -95,6 +93,7 @@ class Carrinho(database.Model):
 
     itens = database.relationship("ItemCarrinho", backref="carrinho", lazy=True)
     entrega = database.relationship("Entrega", backref="carrinho", uselist=False)
+    pedido = database.relationship("Pedido", backref="carrinho", uselist=False)
 
 
 class ItemCarrinho(database.Model):
@@ -118,3 +117,52 @@ class Entrega(database.Model):
 
     def __repr__(self):
         return f"<Entrega {self.endereco} - {self.cidade}>"
+
+
+class Pedido(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+
+    id_usuario = database.Column(database.Integer, database.ForeignKey("usuario.id"), nullable=False)
+    id_carrinho = database.Column(database.Integer, database.ForeignKey("carrinho.id"), nullable=False, unique=True)
+
+    status = database.Column(database.String(30), default="aguardando_pagamento", nullable=False)
+    status_pagamento = database.Column(database.String(30), default="pending", nullable=False)
+
+    total_produtos = database.Column(database.Float, default=0, nullable=False)
+    total_entrega = database.Column(database.Float, default=0, nullable=False)
+    total = database.Column(database.Float, default=0, nullable=False)
+
+    endereco = database.Column(database.String(200), nullable=False)
+    cidade = database.Column(database.String(100), nullable=False)
+    estado = database.Column(database.String(50), nullable=False)
+    cep = database.Column(database.String(20), nullable=False)
+
+    mercado_pago_preference_id = database.Column(database.String(120), nullable=True)
+    mercado_pago_payment_id = database.Column(database.String(120), nullable=True)
+    mercado_pago_init_point = database.Column(database.String(500), nullable=True)
+
+    data_criacao = database.Column(database.DateTime, default=datetime.utcnow)
+    data_atualizacao = database.Column(database.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    itens = database.relationship(
+        "ItemPedido",
+        backref="pedido",
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+
+class ItemPedido(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    id_pedido = database.Column(database.Integer, database.ForeignKey("pedido.id"), nullable=False)
+    id_produto = database.Column(database.Integer, database.ForeignKey("produto.id"), nullable=True)
+
+    nome_produto = database.Column(database.String, nullable=False)
+    descricao_produto = database.Column(database.String)
+    foto_produto = database.Column(database.String)
+
+    quantidade = database.Column(database.Integer, nullable=False)
+    preco_unitario = database.Column(database.Float, nullable=False)
+    subtotal = database.Column(database.Float, nullable=False)
+
+    produto = database.relationship("Produto")

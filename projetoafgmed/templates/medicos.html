@@ -13,11 +13,14 @@
                 <div class="card-img-container">
                     <img src="{{ url_for('static', filename='fotos_medicos/' ~ medico.foto) }}"
                          class="card-img-top"
-                         alt="{{ medico.nome }}">
+                         alt="{{ medico.nome }} {{ medico.sobrenome }}">
                 </div>
 
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title fw-bold">{{ medico.nome }}</h5>
+                    <h5 class="card-title fw-bold">
+                        {{ medico.nome }} {{ medico.sobrenome }}
+                    </h5>
+
                     <p class="text-muted">{{ medico.especialidade }}</p>
                     <p>Email: {{ medico.email }}</p>
                     <p>Telefone: {{ medico.telefone }}</p>
@@ -30,12 +33,10 @@
 
                     {% if current_user.is_admin %}
                     <div class="mt-auto d-grid gap-2">
-                        <!-- Editar Médico -->
                         <a href="{{ url_for('editar_medico', id_medico=medico.id) }}" class="btn btn-sm btn-warning">
                             Editar Médico
                         </a>
 
-                        <!-- Remover Médico -->
                         <form action="{{ url_for('remover_medico', id_medico=medico.id) }}" method="post">
                             <button type="submit"
                                     class="btn btn-sm btn-danger"

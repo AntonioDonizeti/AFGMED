@@ -18,7 +18,8 @@
 
                     {% if medico %}
                         <p class="text-muted mb-0">
-                            Consultas agendadas para Dr(a). {{ medico.nome }} — {{ medico.especialidade }}
+                            Consultas agendadas para Dr(a).
+                            {{ medico.nome }} {{ medico.sobrenome }} — {{ medico.especialidade }}
                         </p>
                     {% else %}
                         <p class="text-muted mb-0">
