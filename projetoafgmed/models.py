@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from datetime import datetime
 from projetoafgmed import database, login_manager
 
+
 @login_manager.user_loader
 def load_usuario(id_usuario):
     return Usuario.query.get(int(id_usuario))
@@ -14,11 +15,22 @@ class Usuario(database.Model, UserMixin):
     email = database.Column(database.String, nullable=False, unique=True)
     senha = database.Column(database.String, nullable=False)
     foto = database.Column(database.String(200), nullable=True, default="usuario_padrao.jpg")
+
     is_admin = database.Column(database.Boolean, default=False)
+    is_medico = database.Column(database.Boolean, default=False, nullable=False)
+
+    # Quando o usuário for médico, este campo aponta para o cadastro em Medico
+    id_medico = database.Column(database.Integer, database.ForeignKey("medico.id"), nullable=True)
 
     perfil = database.relationship("PerfilUsuario", backref="usuario", uselist=False)
     carrinho = database.relationship("Carrinho", backref="usuario", uselist=False)
     consultas = database.relationship("Consulta", backref="usuario", lazy=True)
+
+    medico = database.relationship(
+        "Medico",
+        backref=database.backref("usuario_acesso", uselist=False),
+        foreign_keys=[id_medico]
+    )
 
 
 class PerfilUsuario(database.Model):
@@ -79,6 +91,7 @@ class Carrinho(database.Model):
     status_pagamento = database.Column(database.String(30), default="pendente")
     mercado_pago_preference_id = database.Column(database.String(120), nullable=True)
     mercado_pago_payment_id = database.Column(database.String(120), nullable=True)
+    mercado_pago_init_point = database.Column(database.String(500), nullable=True)
 
     itens = database.relationship("ItemCarrinho", backref="carrinho", lazy=True)
     entrega = database.relationship("Entrega", backref="carrinho", uselist=False)

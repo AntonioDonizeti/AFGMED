@@ -5,6 +5,7 @@
 {% block content %}
 <div class="container py-5">
     <h2 class="mb-4 text-center">Nossa Equipe</h2>
+
     <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for medico in medicos %}
         <div class="col">
@@ -14,12 +15,18 @@
                          class="card-img-top"
                          alt="{{ medico.nome }}">
                 </div>
+
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title fw-bold">{{ medico.nome }}</h5>
                     <p class="text-muted">{{ medico.especialidade }}</p>
                     <p>Email: {{ medico.email }}</p>
                     <p>Telefone: {{ medico.telefone }}</p>
-                    <a href="{{ url_for('consultas', medico_id=medico.id) }}" class="btn btn-success mt-2">Marcar consulta</a>
+
+                    {% if not current_user.is_medico or current_user.is_admin %}
+                        <a href="{{ url_for('consultas', medico_id=medico.id) }}" class="btn btn-success mt-2">
+                            Marcar consulta
+                        </a>
+                    {% endif %}
 
                     {% if current_user.is_admin %}
                     <div class="mt-auto d-grid gap-2">
@@ -30,7 +37,8 @@
 
                         <!-- Remover Médico -->
                         <form action="{{ url_for('remover_medico', id_medico=medico.id) }}" method="post">
-                            <button type="submit" class="btn btn-sm btn-danger"
+                            <button type="submit"
+                                    class="btn btn-sm btn-danger"
                                     onclick="return confirm('Deseja realmente remover este médico?');">
                                 Remover Médico
                             </button>

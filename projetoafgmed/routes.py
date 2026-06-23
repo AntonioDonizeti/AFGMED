@@ -37,6 +37,28 @@ def carrinho_global():
     }
 
 
+def montar_resposta_carrinho(carrinho):
+    itens = carrinho.itens if carrinho else []
+
+    return {
+        "sucesso": True,
+        "carrinho_id": carrinho.id if carrinho else None,
+        "quantidade": sum(item.quantidade for item in itens),
+        "total": sum(item.quantidade * item.preco_unitario for item in itens),
+        "itens": [
+            {
+                "id": item.id,
+                "produto": item.produto.nome,
+                "quantidade": item.quantidade,
+                "preco_unitario": float(item.preco_unitario),
+                "subtotal": float(item.quantidade * item.preco_unitario),
+                "estoque": item.produto.estoque
+            }
+            for item in itens
+        ]
+    }
+
+
 # ----------------- HOME -----------------
 @app.route("/")
 def homepage():
@@ -97,6 +119,10 @@ def login():
 
         if usuario and bcrypt.check_password_hash(usuario.senha, form.senha.data):
             login_user(usuario)
+
+            if getattr(usuario, "is_medico", False) and not getattr(usuario, "is_admin", False):
+                return redirect(url_for("medicos"))
+
             return redirect(url_for("homepage"))
 
         flash("Email ou senha incorretos.", "danger")
@@ -116,7 +142,7 @@ def logout():
 @login_required
 def perfil():
     usuario = current_user
-    perfil = usuario.perfil or PerfilUsuario(usuario=usuario)
+    perfil_usuario = usuario.perfil or PerfilUsuario(usuario=usuario)
 
     if request.method == "POST":
         if "foto" in request.files and request.files["foto"].filename:
@@ -138,25 +164,120 @@ def perfil():
         if email_novo:
             usuario.email = email_novo.strip().lower()
 
-        perfil.endereco = request.form.get("endereco")
-        perfil.cidade = request.form.get("cidade")
-        perfil.estado = request.form.get("estado")
-        perfil.cep = request.form.get("cep")
+        perfil_usuario.endereco = request.form.get("endereco")
+        perfil_usuario.cidade = request.form.get("cidade")
+        perfil_usuario.estado = request.form.get("estado")
+        perfil_usuario.cep = request.form.get("cep")
 
         database.session.add(usuario)
-        database.session.add(perfil)
+        database.session.add(perfil_usuario)
         database.session.commit()
 
         flash("Perfil atualizado com sucesso!", "success")
         return redirect(url_for("perfil"))
 
-    return render_template("perfil.html", usuario=usuario, perfil=perfil)
+    return render_template("perfil.html", usuario=usuario, perfil=perfil_usuario)
 
+# ----------------- CONFIG MEDICOS -----------------
+SENHA_PADRAO_MEDICO = "123456"
+
+
+def separar_nome_sobrenome(nome_completo):
+    partes = (nome_completo or "").strip().split()
+
+    if not partes:
+        return "Médico", "AFGMED"
+
+    nome = partes[0]
+    sobrenome = " ".join(partes[1:]) if len(partes) > 1 else "AFGMED"
+
+    return nome, sobrenome
+
+
+def sincronizar_usuario_medico(medico):
+    email_medico = (medico.email or "").strip().lower()
+
+    if not email_medico:
+        return None, "Informe um e-mail para o médico."
+
+    usuario_com_email = Usuario.query.filter_by(email=email_medico).first()
+    usuario_vinculado = Usuario.query.filter_by(id_medico=medico.id).first()
+
+    if usuario_com_email and usuario_com_email.id_medico and usuario_com_email.id_medico != medico.id:
+        return None, "Este e-mail já está vinculado a outro médico."
+
+    if usuario_vinculado and usuario_vinculado.email != email_medico:
+        email_em_uso = Usuario.query.filter_by(email=email_medico).first()
+
+        if email_em_uso and email_em_uso.id != usuario_vinculado.id:
+            return None, "Este e-mail já está sendo usado por outro usuário."
+
+        usuario = usuario_vinculado
+        usuario.email = email_medico
+
+    elif usuario_com_email:
+        usuario = usuario_com_email
+
+    else:
+        nome, sobrenome = separar_nome_sobrenome(medico.nome)
+
+        senha_hash = bcrypt.generate_password_hash(SENHA_PADRAO_MEDICO).decode("utf-8")
+
+        usuario = Usuario(
+            nome=nome,
+            sobrenome=sobrenome,
+            email=email_medico,
+            senha=senha_hash,
+            is_medico=True,
+            id_medico=medico.id
+        )
+
+        database.session.add(usuario)
+
+    usuario.is_medico = True
+    usuario.id_medico = medico.id
+
+    if not usuario.nome:
+        nome, sobrenome = separar_nome_sobrenome(medico.nome)
+        usuario.nome = nome
+        usuario.sobrenome = sobrenome
+
+    return usuario, None
+
+
+def medico_logado():
+    if not getattr(current_user, "is_medico", False):
+        return None
+
+    if not current_user.id_medico:
+        return None
+
+    return Medico.query.get(current_user.id_medico)
 
 # ----------------- MÉDICOS -----------------
 @app.route("/medicos")
 @login_required
 def medicos():
+    if getattr(current_user, "is_medico", False) and not getattr(current_user, "is_admin", False):
+        medico = medico_logado()
+
+        if not medico:
+            flash("Seu usuário médico ainda não está vinculado a um cadastro médico.", "warning")
+            return render_template("consultas_medico.html", medico=None, consultas=[])
+
+        consultas_medico = Consulta.query.filter_by(
+            medico_id=medico.id
+        ).order_by(
+            Consulta.data.asc(),
+            Consulta.horario.asc()
+        ).all()
+
+        return render_template(
+            "consultas_medico.html",
+            medico=medico,
+            consultas=consultas_medico
+        )
+
     return render_template("medicos.html", medicos=Medico.query.all())
 
 
@@ -170,6 +291,16 @@ def cadastro_medico():
     form = FormMedico()
 
     if form.validate_on_submit():
+        email_medico = form.email.data.strip().lower()
+
+        medico_existente = Medico.query.filter(
+            database.func.lower(Medico.email) == email_medico
+        ).first()
+
+        if medico_existente:
+            flash("Já existe um médico cadastrado com este e-mail.", "danger")
+            return redirect(url_for("cadastro_medico"))
+
         nome_arquivo = "default.jpg"
 
         if form.foto.data:
@@ -188,15 +319,28 @@ def cadastro_medico():
         medico = Medico(
             nome=form.nome.data,
             especialidade=form.especialidade.data,
-            email=form.email.data,
+            email=email_medico,
             telefone=form.telefone.data,
             foto=nome_arquivo
         )
 
         database.session.add(medico)
+        database.session.flush()
+
+        usuario_medico, erro_usuario = sincronizar_usuario_medico(medico)
+
+        if erro_usuario:
+            database.session.rollback()
+            flash(erro_usuario, "danger")
+            return redirect(url_for("cadastro_medico"))
+
         database.session.commit()
 
-        flash("Médico cadastrado com sucesso!", "success")
+        flash(
+            "Médico cadastrado com sucesso! Usuário médico criado/vinculado com senha padrão 123456.",
+            "success"
+        )
+
         return redirect(url_for("medicos"))
 
     return render_template("cadastro_medico.html", form=form)
@@ -206,6 +350,10 @@ def cadastro_medico():
 @app.route("/consultas/<int:medico_id>", methods=["GET", "POST"])
 @login_required
 def consultas(medico_id):
+    if getattr(current_user, "is_medico", False) and not getattr(current_user, "is_admin", False):
+        flash("Usuários médicos não podem marcar consultas como pacientes.", "warning")
+        return redirect(url_for("medicos"))
+
     medico = Medico.query.get_or_404(medico_id)
     horarios = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"]
 
@@ -272,6 +420,9 @@ def horarios_disponiveis(medico_id, data):
     except ValueError:
         return jsonify([])
 
+    if data_obj < datetime.today().date():
+        return jsonify([])
+
     consultas = Consulta.query.filter_by(
         medico_id=medico_id,
         data=data_obj
@@ -326,9 +477,20 @@ def editar_medico(id_medico):
         form.telefone.data = medico.telefone
 
     if form.validate_on_submit():
+        email_medico = form.email.data.strip().lower()
+
+        medico_com_email = Medico.query.filter(
+            database.func.lower(Medico.email) == email_medico,
+            Medico.id != medico.id
+        ).first()
+
+        if medico_com_email:
+            flash("Já existe outro médico cadastrado com este e-mail.", "danger")
+            return redirect(url_for("editar_medico", id_medico=medico.id))
+
         medico.nome = form.nome.data
         medico.especialidade = form.especialidade.data
-        medico.email = form.email.data
+        medico.email = email_medico
         medico.telefone = form.telefone.data
 
         if form.foto.data:
@@ -346,9 +508,16 @@ def editar_medico(id_medico):
 
             medico.foto = nome_foto
 
+        usuario_medico, erro_usuario = sincronizar_usuario_medico(medico)
+
+        if erro_usuario:
+            database.session.rollback()
+            flash(erro_usuario, "danger")
+            return redirect(url_for("editar_medico", id_medico=medico.id))
+
         database.session.commit()
 
-        flash("Médico atualizado com sucesso!", "success")
+        flash("Médico atualizado com sucesso! Usuário médico sincronizado.", "success")
         return redirect(url_for("medicos"))
 
     return render_template("cadastro_medico.html", form=form, medico=medico)
@@ -363,13 +532,90 @@ def remover_medico(id_medico):
 
     medico = Medico.query.get_or_404(id_medico)
 
+    usuario_medico = Usuario.query.filter_by(id_medico=medico.id).first()
+
     Consulta.query.filter_by(medico_id=id_medico).delete()
+
+    if usuario_medico:
+        usuario_medico.is_medico = False
+        usuario_medico.id_medico = None
 
     database.session.delete(medico)
     database.session.commit()
 
-    flash("Médico removido com sucesso!", "success")
+    flash("Médico removido com sucesso! O usuário vinculado deixou de ser médico.", "success")
     return redirect(url_for("medicos"))
+
+# ----------------- MEUS PEDIDOS -----------------
+
+def status_visual_carrinho(carrinho):
+    status_pagamento = (carrinho.status_pagamento or "").lower()
+
+    if carrinho.status == "finalizado" or status_pagamento == "approved":
+        return {
+            "classe": "bg-success",
+            "icone": "bi-check-circle",
+            "texto": "Pagamento aprovado",
+            "descricao": "Pedido confirmado e em preparação."
+        }
+
+    if carrinho.status == "aguardando_pagamento" or status_pagamento in ["pendente", "pending", "in_process"]:
+        return {
+            "classe": "bg-warning text-dark",
+            "icone": "bi-clock-history",
+            "texto": "Aguardando pagamento",
+            "descricao": "O pagamento ainda está pendente de confirmação."
+        }
+
+    if status_pagamento in ["falha", "rejected", "cancelled"]:
+        return {
+            "classe": "bg-danger",
+            "icone": "bi-x-circle",
+            "texto": "Pagamento não aprovado",
+            "descricao": "O pagamento não foi concluído. Você pode tentar comprar novamente."
+        }
+
+    return {
+        "classe": "bg-secondary",
+        "icone": "bi-info-circle",
+        "texto": "Status em análise",
+        "descricao": "Estamos verificando o status do pedido."
+    }
+
+
+@app.route("/minhas-compras")
+@login_required
+def meus_pedidos():
+    pedidos = Carrinho.query.filter(
+        Carrinho.id_usuario == current_user.id
+    ).filter(
+        (
+            Carrinho.status.in_(["aguardando_pagamento", "finalizado"])
+        ) |
+        (
+            Carrinho.status_pagamento.in_(["approved", "falha", "rejected", "cancelled", "pending", "in_process"])
+        )
+    ).filter(
+        Carrinho.itens.any()
+    ).order_by(
+        Carrinho.data_criacao.desc()
+    ).all()
+
+    pedidos_formatados = []
+
+    for pedido in pedidos:
+        total = sum(item.quantidade * item.preco_unitario for item in pedido.itens)
+
+        pedidos_formatados.append({
+            "carrinho": pedido,
+            "total": total,
+            "status": status_visual_carrinho(pedido)
+        })
+
+    return render_template(
+        "meus_pedidos.html",
+        pedidos=pedidos_formatados
+    )
 
 
 # ----------------- PRODUTOS -----------------
@@ -527,10 +773,19 @@ def adicionar_carrinho(id_produto):
 def atualizar_item(id_item):
     acao = request.form.get("acao")
     item = ItemCarrinho.query.get_or_404(id_item)
+    carrinho = item.carrinho
 
-    if item.carrinho.id_usuario != current_user.id:
-        flash("Você não pode alterar este item.", "danger")
-        return redirect(request.referrer or url_for("homepage"))
+    if carrinho.id_usuario != current_user.id:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Você não pode alterar este item."
+        }), 403
+
+    if carrinho.status != "ativo":
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Este carrinho já está em pagamento e não pode ser alterado."
+        }), 400
 
     produto = Produto.query.get_or_404(item.id_produto)
 
@@ -539,7 +794,10 @@ def atualizar_item(id_item):
             item.quantidade += 1
             produto.estoque -= 1
         else:
-            flash("Produto sem estoque.", "warning")
+            return jsonify({
+                "sucesso": False,
+                "mensagem": "Produto sem estoque."
+            }), 400
 
     elif acao == "diminuir":
         if item.quantidade > 1:
@@ -549,19 +807,34 @@ def atualizar_item(id_item):
             produto.estoque += item.quantidade
             database.session.delete(item)
 
+    else:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Ação inválida."
+        }), 400
+
     database.session.commit()
 
-    return redirect(request.referrer or url_for("homepage") + "#carrinho-aberto")
+    return jsonify(montar_resposta_carrinho(carrinho))
 
 
 @app.route("/remover-item/<int:id_item>", methods=["POST"])
 @login_required
 def remover_item(id_item):
     item = ItemCarrinho.query.get_or_404(id_item)
+    carrinho = item.carrinho
 
-    if item.carrinho.id_usuario != current_user.id:
-        flash("Você não pode remover este item.", "danger")
-        return redirect(request.referrer or url_for("homepage"))
+    if carrinho.id_usuario != current_user.id:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Você não pode remover este item."
+        }), 403
+
+    if carrinho.status != "ativo":
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Este carrinho já está em pagamento e não pode ser alterado."
+        }), 400
 
     produto = Produto.query.get(item.id_produto)
 
@@ -571,8 +844,7 @@ def remover_item(id_item):
     database.session.delete(item)
     database.session.commit()
 
-    flash("Item removido do carrinho!", "info")
-    return redirect(url_for("ver_carrinho"))
+    return jsonify(montar_resposta_carrinho(carrinho))
 
 
 @app.route("/ver-carrinho")
@@ -718,6 +990,9 @@ def atualizar_carrinho_por_pagamento(pagamento_id):
 
     elif status_pagamento in ["rejected", "cancelled"]:
         carrinho.status = "ativo"
+        carrinho.mercado_pago_preference_id = None
+        carrinho.mercado_pago_payment_id = None
+        carrinho.mercado_pago_init_point = None
 
     database.session.commit()
 
@@ -730,19 +1005,19 @@ def atualizar_carrinho_por_pagamento(pagamento_id):
 def entrega(id_carrinho):
     carrinho = Carrinho.query.get_or_404(id_carrinho)
     usuario = current_user
-    perfil = usuario.perfil or PerfilUsuario(usuario=usuario)
+    perfil_usuario = usuario.perfil or PerfilUsuario(usuario=usuario)
 
     if carrinho.id_usuario != current_user.id:
         return redirect(url_for("homepage"))
 
-    if carrinho.status != "ativo":
+    if carrinho.status not in ["ativo", "aguardando_pagamento"]:
         return redirect(url_for("homepage"))
 
     if request.method == "POST":
-        endereco = request.form.get("endereco") or perfil.endereco
-        cidade = request.form.get("cidade") or perfil.cidade
-        estado = request.form.get("estado") or perfil.estado
-        cep = request.form.get("cep") or perfil.cep
+        endereco = request.form.get("endereco") or perfil_usuario.endereco
+        cidade = request.form.get("cidade") or perfil_usuario.cidade
+        estado = request.form.get("estado") or perfil_usuario.estado
+        cep = request.form.get("cep") or perfil_usuario.cep
 
         if not endereco or not cidade or not estado or not cep:
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
@@ -769,7 +1044,28 @@ def entrega(id_carrinho):
             )
             database.session.add(nova_entrega)
 
-        database.session.add(perfil)
+        perfil_usuario.endereco = endereco
+        perfil_usuario.cidade = cidade
+        perfil_usuario.estado = estado
+        perfil_usuario.cep = cep
+
+        database.session.add(perfil_usuario)
+
+        if (
+            carrinho.status == "aguardando_pagamento"
+            and carrinho.status_pagamento == "pendente"
+            and carrinho.mercado_pago_preference_id
+            and carrinho.mercado_pago_init_point
+        ):
+            database.session.commit()
+
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return jsonify({
+                    "sucesso": True,
+                    "redirect_url": carrinho.mercado_pago_init_point
+                })
+
+            return redirect(carrinho.mercado_pago_init_point)
 
         carrinho.status = "aguardando_pagamento"
         carrinho.status_pagamento = "pendente"
@@ -781,6 +1077,9 @@ def entrega(id_carrinho):
         if not preference:
             carrinho.status = "ativo"
             carrinho.status_pagamento = "pendente"
+            carrinho.mercado_pago_preference_id = None
+            carrinho.mercado_pago_payment_id = None
+            carrinho.mercado_pago_init_point = None
             database.session.commit()
 
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
@@ -792,14 +1091,14 @@ def entrega(id_carrinho):
             flash(f"Erro Mercado Pago: {erro_mp}", "danger")
             return redirect(url_for("entrega", id_carrinho=carrinho.id))
 
-        carrinho.mercado_pago_preference_id = preference.get("id")
-        database.session.commit()
-
         link_pagamento = preference.get("init_point") or preference.get("sandbox_init_point")
 
         if not link_pagamento:
             carrinho.status = "ativo"
             carrinho.status_pagamento = "pendente"
+            carrinho.mercado_pago_preference_id = None
+            carrinho.mercado_pago_payment_id = None
+            carrinho.mercado_pago_init_point = None
             database.session.commit()
 
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
@@ -810,6 +1109,10 @@ def entrega(id_carrinho):
 
             flash("Mercado Pago não retornou link de pagamento.", "danger")
             return redirect(url_for("entrega", id_carrinho=carrinho.id))
+
+        carrinho.mercado_pago_preference_id = preference.get("id")
+        carrinho.mercado_pago_init_point = link_pagamento
+        database.session.commit()
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return jsonify({
@@ -822,7 +1125,7 @@ def entrega(id_carrinho):
     return render_template(
         "entrega.html",
         carrinho=carrinho,
-        perfil=perfil,
+        perfil=perfil_usuario,
         google_maps_api_key=current_app.config.get("GOOGLE_MAPS_API_KEY")
     )
 
@@ -868,6 +1171,9 @@ def pagamento_falha():
     if carrinho:
         carrinho.status_pagamento = "falha"
         carrinho.status = "ativo"
+        carrinho.mercado_pago_preference_id = None
+        carrinho.mercado_pago_payment_id = None
+        carrinho.mercado_pago_init_point = None
         database.session.commit()
 
     return render_template("pagamento_falha.html", carrinho=carrinho)
@@ -899,12 +1205,26 @@ def pagamento_pendente():
 
 
 @app.route("/status-pagamento/<int:id_carrinho>")
+@login_required
 def status_pagamento(id_carrinho):
     carrinho = Carrinho.query.get_or_404(id_carrinho)
 
+    if carrinho.id_usuario != current_user.id:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Você não pode acessar este pedido."
+        }), 403
+
+    status = status_visual_carrinho(carrinho)
+
     return jsonify({
+        "sucesso": True,
         "status": carrinho.status,
-        "status_pagamento": carrinho.status_pagamento
+        "status_pagamento": carrinho.status_pagamento,
+        "classe": status["classe"],
+        "icone": status["icone"],
+        "texto": status["texto"],
+        "descricao": status["descricao"]
     })
 
 

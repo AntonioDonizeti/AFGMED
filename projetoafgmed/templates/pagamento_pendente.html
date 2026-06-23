@@ -10,13 +10,46 @@
             Pagamento pendente
         </h3>
 
-        <p class="text-muted">
-            Seu pagamento ainda está sendo processado. Assim que for aprovado, o pedido será confirmado.
+        <p class="text-muted mb-2">
+            Seu pagamento ainda está sendo processado.
         </p>
+
+        <p class="text-muted small mb-4">
+            Assim que for aprovado, você será redirecionado automaticamente.
+        </p>
+
+        <div class="spinner-border text-primary mb-4" role="status">
+            <span class="visually-hidden">Verificando pagamento...</span>
+        </div>
 
         <a href="{{ url_for('homepage') }}" class="btn btn-primary">
             Voltar para Home
         </a>
     </div>
 </div>
+
+{% if carrinho %}
+<script>
+const statusUrl = "{{ url_for('status_pagamento', id_carrinho=carrinho.id) }}";
+const homeUrl = "{{ url_for('homepage') }}";
+
+const verificarPagamento = setInterval(async function () {
+    try {
+        const resposta = await fetch(statusUrl, {
+            cache: "no-store"
+        });
+
+        const data = await resposta.json();
+
+        if (data.status === "finalizado" || data.status_pagamento === "approved") {
+            clearInterval(verificarPagamento);
+            window.location.href = homeUrl;
+        }
+
+    } catch (erro) {
+        console.log("Aguardando confirmação do pagamento...");
+    }
+}, 3000);
+</script>
+{% endif %}
 {% endblock %}

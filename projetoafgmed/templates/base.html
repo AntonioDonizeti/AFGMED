@@ -26,10 +26,23 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('homepage') }}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('medicos') }}">Consulta</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('produtos') }}">Produtos</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('homepage') }}">Home</a>
+                </li>
 
+                {% if current_user.is_authenticated and current_user.is_medico and not current_user.is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('medicos') }}">Minhas Consultas</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('medicos') }}">Consulta</a>
+                    </li>
+                {% endif %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('produtos') }}">Produtos</a>
+                </li>
 
                 {% if current_user.is_authenticated and current_user.is_admin %}
                     <li class="nav-item ms-2">
@@ -45,38 +58,83 @@
                 {% if current_user.is_authenticated %}
                     <!-- Perfil -->
                     <li class="nav-item dropdown me-3">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center"
+                           href="#"
+                           id="perfilDropdown"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+
                             <img src="{{ url_for('static', filename='fotos_perfil/' + (current_user.foto or 'usuario_padrao.jpg')) }}"
                                  alt="Perfil"
                                  class="rounded-circle"
                                  style="width:40px; height:40px; object-fit:cover;">
+
                             <span class="ms-2">{{ current_user.nome }}</span>
                         </a>
+
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
-                            <li><a class="dropdown-item d-flex align-items-center" href="{{ url_for('perfil') }}">
-                                <i class="bi bi-person-circle me-2"></i> Meu Perfil
-                            </a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="{{ url_for('meus_agendamentos') }}">
-                                <i class="bi bi-calendar-check me-2"></i> Meus Agendamentos
-                            </a></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ url_for('perfil') }}">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    Meu Perfil
+                                </a>
+                            </li>
+
+                            {% if current_user.is_medico and not current_user.is_admin %}
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ url_for('medicos') }}">
+                                        <i class="bi bi-calendar-check me-2"></i>
+                                        Minhas Consultas
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ url_for('meus_agendamentos') }}">
+                                        <i class="bi bi-calendar-check me-2"></i>
+                                        Meus Agendamentos
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if not current_user.is_medico or current_user.is_admin %}
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ url_for('meus_pedidos') }}">
+                                        <i class="bi bi-bag-check me-2"></i>
+                                        Minhas Compras
+                                    </a>
+                                </li>
+                            {% endif %}
+
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item d-flex align-items-center" href="{{ url_for('logout') }}">
-                                <i class="bi bi-box-arrow-right me-2"></i> Sair
-                            </a></li>
+
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    Sair
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
-                    <!-- Carrinho -->
-                    <li class="nav-item position-relative">
-                        <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#carrinhoLateral" aria-controls="carrinhoLateral">
-                            <i class="bi bi-cart3" style="font-size: 1.5rem;"></i>
-                            {% if carrinho %}
-                                <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
-                                    {{ quantidade_carrinho }}
-                                </span>
-                            {% endif %}
-                        </a>
-                    </li>
+                    {% if not current_user.is_medico or current_user.is_admin %}
+                        <!-- Carrinho -->
+                        <li class="nav-item position-relative">
+                            <a class="nav-link"
+                               href="#"
+                               data-bs-toggle="offcanvas"
+                               data-bs-target="#carrinhoLateral"
+                               aria-controls="carrinhoLateral">
+                                <i class="bi bi-cart3" style="font-size: 1.5rem;"></i>
+
+                                {% if carrinho %}
+                                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                        {{ quantidade_carrinho }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endif %}
                 {% else %}
                     <li class="nav-item ms-2">
                         <a class="btn btn-primary" href="{{ url_for('criar_conta') }}">Criar Conta</a>
@@ -91,7 +149,9 @@
 </nav>
 
 <!-- Offcanvas Carrinho -->
-{% include "_carrinho_lateral.html" %}
+{% if not current_user.is_authenticated or not current_user.is_medico or current_user.is_admin %}
+    {% include "_carrinho_lateral.html" %}
+{% endif %}
 
 <main class="container mt-5">
     {% block content %}{% endblock %}
@@ -116,9 +176,23 @@
                 <h6 class="footer-title">Navegação</h6>
                 <ul class="footer-links">
                     <li><a href="{{ url_for('homepage') }}">Home</a></li>
-                    <li><a href="{{ url_for('medicos') }}">Consulta</a></li>
+
+                    {% if current_user.is_authenticated and current_user.is_medico and not current_user.is_admin %}
+                        <li><a href="{{ url_for('medicos') }}">Minhas Consultas</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('medicos') }}">Consulta</a></li>
+                    {% endif %}
+
                     <li><a href="{{ url_for('produtos') }}">Produtos</a></li>
-                    <li><a href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a></li>
+
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_medico and not current_user.is_admin %}
+                            <li><a href="{{ url_for('medicos') }}">Minhas Consultas</a></li>
+                        {% else %}
+                            <li><a href="{{ url_for('meus_agendamentos') }}">Meus Agendamentos</a></li>
+                            <li><a href="{{ url_for('meus_pedidos') }}">Minhas Compras</a></li>
+                        {% endif %}
+                    {% endif %}
                 </ul>
             </div>
 

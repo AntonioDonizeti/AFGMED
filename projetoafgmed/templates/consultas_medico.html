@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Minhas Consultas - AFGMED{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <span class="badge bg-primary mb-2">
+                        Área do Médico
+                    </span>
+
+                    <h2 class="fw-bold mb-1" style="color:#072B59;">
+                        Minhas Consultas
+                    </h2>
+
+                    {% if medico %}
+                        <p class="text-muted mb-0">
+                            Consultas agendadas para Dr(a). {{ medico.nome }} — {{ medico.especialidade }}
+                        </p>
+                    {% else %}
+                        <p class="text-muted mb-0">
+                            Nenhum cadastro médico vinculado ao seu usuário.
+                        </p>
+                    {% endif %}
+                </div>
+
+                {% if medico %}
+                    <div class="text-md-end">
+                        <small class="text-muted d-block">Total de consultas</small>
+                        <strong class="fs-4" style="color:#072B59;">
+                            {{ consultas|length }}
+                        </strong>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if consultas %}
+        <div class="row g-4">
+            {% for consulta in consultas %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4">
+
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                     style="width:52px; height:52px; background:rgba(24,169,153,.12); color:#18A999; font-size:1.5rem;">
+                                    <i class="bi bi-person-check"></i>
+                                </div>
+
+                                <div>
+                                    <h5 class="fw-bold mb-0" style="color:#072B59;">
+                                        {{ consulta.usuario.nome }} {{ consulta.usuario.sobrenome }}
+                                    </h5>
+
+                                    <small class="text-muted">
+                                        {{ consulta.usuario.email }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <p class="mb-2">
+                                <i class="bi bi-calendar-event text-primary"></i>
+                                <strong>Data:</strong>
+                                {{ consulta.data.strftime('%d/%m/%Y') }}
+                            </p>
+
+                            <p class="mb-0">
+                                <i class="bi bi-clock text-primary"></i>
+                                <strong>Horário:</strong>
+                                {{ consulta.horario }}
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center p-5">
+                <i class="bi bi-calendar-x text-muted" style="font-size:4rem;"></i>
+
+                <h4 class="fw-bold mt-3" style="color:#072B59;">
+                    Nenhuma consulta agendada
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Quando pacientes agendarem consultas com este médico, elas aparecerão aqui.
+                </p>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

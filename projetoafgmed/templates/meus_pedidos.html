@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+{% block title %}Minhas Compras - AFGMED{% endblock %}
+
+{% block content %}
+<div class="container mt-5 minhas-compras-page">
+
+    <div class="compras-header mb-4">
+        <span class="compras-badge">
+            <i class="bi bi-bag-check"></i>
+            Área do Cliente
+        </span>
+
+        <h2 class="fw-bold mt-3 mb-2" style="color:#072B59;">
+            Minhas Compras
+        </h2>
+
+        <p class="text-muted mb-0">
+            Acompanhe seus medicamentos comprados, pagamentos pendentes e pedidos confirmados.
+        </p>
+    </div>
+
+    {% if pedidos %}
+        <div class="row g-4">
+            {% for compra in pedidos %}
+                {% set pedido = compra.carrinho %}
+                {% set status = compra.status %}
+
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-4 pedido-card"
+                         data-status-url="{{ url_for('status_pagamento', id_carrinho=pedido.id) }}"
+                         data-pendente="{% if pedido.status == 'aguardando_pagamento' or pedido.status_pagamento in ['pendente', 'pending', 'in_process'] %}1{% else %}0{% endif %}">
+
+                        <div class="card-body p-4">
+
+                            <!-- TOPO DO PEDIDO -->
+                            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
+
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="pedido-icon">
+                                            <i class="bi bi-receipt"></i>
+                                        </div>
+
+                                        <div>
+                                            <h5 class="fw-bold mb-0" style="color:#072B59;">
+                                                Pedido #{{ pedido.id }}
+                                            </h5>
+
+                                            <small class="text-muted">
+                                                {{ pedido.data_criacao.strftime('%d/%m/%Y às %H:%M') }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pedido-status-area">
+                                    <span class="badge {{ status.classe }} pedido-status-badge">
+                                        <i class="bi {{ status.icone }}"></i>
+                                        <span class="pedido-status-texto">{{ status.texto }}</span>
+                                    </span>
+
+                                    <div class="small text-muted mt-2 pedido-status-descricao">
+                                        {{ status.descricao }}
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- PRODUTOS -->
+                            <div class="pedido-produtos">
+                                {% for item in pedido.itens %}
+                                <div class="pedido-produto-item">
+
+                                    <div class="pedido-produto-img">
+                                        <img src="{{ url_for('static', filename='fotos_produtos/' + (item.produto.foto or 'default.jpg')) }}"
+                                             alt="{{ item.produto.nome }}">
+                                    </div>
+
+                                    <div class="pedido-produto-info">
+                                        <h6 class="fw-bold mb-1" style="color:#072B59;">
+                                            {{ item.produto.nome }}
+                                        </h6>
+
+                                        <p class="text-muted small mb-0">
+                                            {{ item.quantidade }} unidade(s) ·
+                                            R$ {{ '%.2f' % item.preco_unitario }} cada
+                                        </p>
+                                    </div>
+
+                                    <div class="pedido-produto-total">
+                                        R$ {{ '%.2f' % (item.quantidade * item.preco_unitario) }}
+                                    </div>
+
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- ENTREGA E TOTAL -->
+                            <div class="pedido-footer mt-4 pt-4">
+
+                                <div class="pedido-entrega">
+                                    {% if pedido.entrega %}
+                                        <div class="d-flex gap-2 align-items-start">
+                                            <i class="bi bi-geo-alt text-primary mt-1"></i>
+                                            <div>
+                                                <strong style="color:#072B59;">Endereço de entrega</strong>
+                                                <p class="text-muted small mb-0">
+                                                    {{ pedido.entrega.endereco }},
+                                                    {{ pedido.entrega.cidade }} -
+                                                    {{ pedido.entrega.estado }},
+                                                    CEP {{ pedido.entrega.cep }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="d-flex gap-2 align-items-start">
+                                            <i class="bi bi-info-circle text-muted mt-1"></i>
+                                            <p class="text-muted small mb-0">
+                                                Endereço de entrega ainda não registrado.
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="pedido-total-area">
+                                    <small class="text-muted">Total do pedido</small>
+
+                                    <strong class="pedido-total">
+                                        R$ {{ '%.2f' % compra.total }}
+                                    </strong>
+
+                                    {% if pedido.status == "aguardando_pagamento" and pedido.mercado_pago_init_point %}
+                                        <a href="{{ pedido.mercado_pago_init_point }}"
+                                           class="btn btn-outline-primary btn-sm pedido-btn-pagamento mt-2">
+                                            <i class="bi bi-credit-card"></i>
+                                            Continuar pagamento
+                                        </a>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center p-5">
+
+                <div class="compras-vazio-icon">
+                    <i class="bi bi-bag-x"></i>
+                </div>
+
+                <h4 class="fw-bold mt-4 mb-2" style="color:#072B59;">
+                    Nenhuma compra encontrada
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Quando você comprar medicamentos, seus pedidos aparecerão aqui.
+                </p>
+
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+
+<style>
+.minhas-compras-page {
+    padding-bottom: 40px;
+}
+
+.compras-header {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(7, 43, 89, 0.08);
+}
+
+.compras-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(24, 169, 153, 0.12);
+    color: #072B59;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.compras-badge i {
+    color: #18A999;
+}
+
+.pedido-card {
+    overflow: hidden;
+}
+
+.pedido-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    background: rgba(24, 169, 153, 0.12);
+    color: #18A999;
+    display: grid;
+    place-items: center;
+    font-size: 1.35rem;
+    flex-shrink: 0;
+}
+
+.pedido-status-area {
+    text-align: right;
+    max-width: 280px;
+}
+
+.pedido-status-badge {
+    padding: 9px 13px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pedido-produtos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pedido-produto-item {
+    display: grid;
+    grid-template-columns: 76px 1fr auto;
+    align-items: center;
+    gap: 16px;
+    background: #f8fbfd;
+    border: 1px solid #e5eaf0;
+    border-radius: 18px;
+    padding: 14px;
+}
+
+.pedido-produto-img {
+    width: 76px;
+    height: 76px;
+    border-radius: 16px;
+    background: #ffffff;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.pedido-produto-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+}
+
+.pedido-produto-total {
+    font-weight: 800;
+    color: #072B59;
+    white-space: nowrap;
+}
+
+.pedido-footer {
+    border-top: 1px solid #e5eaf0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: center;
+}
+
+.pedido-total-area {
+    text-align: right;
+    min-width: 180px;
+}
+
+.pedido-total {
+    display: block;
+    color: #072B59;
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+.pedido-btn-pagamento {
+    font-weight: 700;
+}
+
+.compras-vazio-icon {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #6b7280;
+    display: grid;
+    place-items: center;
+    font-size: 3rem;
+}
+
+@media (max-width: 768px) {
+    .compras-header {
+        padding: 22px;
+        border-radius: 20px;
+    }
+
+    .pedido-status-area {
+        text-align: left;
+        max-width: 100%;
+    }
+
+    .pedido-produto-item {
+        grid-template-columns: 64px 1fr;
+    }
+
+    .pedido-produto-img {
+        width: 64px;
+        height: 64px;
+    }
+
+    .pedido-produto-total {
+        grid-column: 2;
+        text-align: left;
+    }
+
+    .pedido-footer {
+        grid-template-columns: 1fr;
+    }
+
+    .pedido-total-area {
+        text-align: left;
+    }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const cardsPendentes = document.querySelectorAll(".pedido-card[data-pendente='1']");
+
+    cardsPendentes.forEach(function (card) {
+        const statusUrl = card.dataset.statusUrl;
+
+        const intervalo = setInterval(async function () {
+            try {
+                const resposta = await fetch(statusUrl, {
+                    cache: "no-store"
+                });
+
+                if (!resposta.ok) {
+                    return;
+                }
+
+                const data = await resposta.json();
+
+                const badge = card.querySelector(".pedido-status-badge");
+                const texto = card.querySelector(".pedido-status-texto");
+                const descricao = card.querySelector(".pedido-status-descricao");
+                const botaoPagamento = card.querySelector(".pedido-btn-pagamento");
+
+                if (badge && texto && descricao) {
+                    badge.className = "badge pedido-status-badge " + data.classe;
+                    texto.textContent = data.texto;
+                    descricao.textContent = data.descricao;
+                }
+
+                if (data.status === "finalizado" || data.status_pagamento === "approved") {
+                    card.dataset.pendente = "0";
+                    clearInterval(intervalo);
+
+                    if (botaoPagamento) {
+                        botaoPagamento.remove();
+                    }
+                }
+
+            } catch (erro) {
+                console.log("Aguardando atualização do status do pedido...");
+            }
+        }, 5000);
+    });
+});
+</script>
+{% endblock %}

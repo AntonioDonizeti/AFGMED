@@ -20,7 +20,7 @@ class FormLogin(FlaskForm):
 class FormMedico(FlaskForm):
     nome = StringField("Nome", validators=[DataRequired()])
     especialidade = StringField("Especialidade", validators=[DataRequired()])
-    email = StringField("Email")
+    email = EmailField ("Email", validators=[DataRequired(), Email()])
     telefone = StringField("Telefone")
     foto = FileField(
         "Foto",

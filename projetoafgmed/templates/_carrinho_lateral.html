@@ -20,11 +20,24 @@
 
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <div class="d-flex align-items-center gap-2">
-                            <button class="btn btn-sm btn-outline-secondary btn-aumentar" data-id="{{ item.id }}" {% if item.produto.estoque <= 0 %}disabled{% endif %}>+</button>
+                            <button class="btn btn-sm btn-outline-secondary btn-aumentar"
+                                    data-id="{{ item.id }}"
+                                    {% if item.produto.estoque <= 0 %}disabled{% endif %}>
+                                +
+                            </button>
+
                             <span class="fw-bold">{{ item.quantidade }}</span>
-                            <button class="btn btn-sm btn-outline-secondary btn-diminuir" data-id="{{ item.id }}">-</button>
+
+                            <button class="btn btn-sm btn-outline-secondary btn-diminuir"
+                                    data-id="{{ item.id }}">
+                                -
+                            </button>
                         </div>
-                        <button class="btn btn-sm btn-outline-danger btn-remover" data-id="{{ item.id }}">Remover</button>
+
+                        <button class="btn btn-sm btn-outline-danger btn-remover"
+                                data-id="{{ item.id }}">
+                            Remover
+                        </button>
                     </div>
                 </div>
                 {% endfor %}
@@ -36,7 +49,10 @@
                     </div>
                 </div>
 
-                <a href="{{ url_for('entrega', id_carrinho=carrinho.id) }}" class="btn btn-primary w-100 mt-2">Ir para Entrega</a>
+                <a href="{{ url_for('entrega', id_carrinho=carrinho.id) }}"
+                   class="btn btn-primary w-100 mt-2">
+                    Ir para Entrega
+                </a>
             {% else %}
                 <p class="text-center text-muted mt-4">Seu carrinho está vazio.</p>
             {% endif %}
@@ -45,62 +61,136 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-    // Função para atualizar o conteúdo do carrinho sem reload
-    function atualizarCarrinho() {
-        fetch("{{ url_for('ver_carrinho') }}")
-            .then(resp => resp.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const itens = doc.getElementById('itens-carrinho-container');
-                document.getElementById('itens-carrinho-container').innerHTML = itens.innerHTML;
-
-                // Atualiza badge na navbar
-                const badgeNovo = doc.querySelector('.badge');
-                if (badgeNovo) {
-                    const badgeAtual = document.querySelector('.badge');
-                    if (badgeAtual) badgeAtual.textContent = badgeNovo.textContent;
-                }
-            });
+    function dinheiro(valor) {
+        return "R$ " + Number(valor).toFixed(2).replace(".", ",");
     }
 
-    // Eventos para + / - / Remover
-    document.body.addEventListener("click", function(e) {
+    function renderizarCarrinho(data) {
+        if (!data || data.sucesso === false) {
+            alert(data && data.mensagem ? data.mensagem : "Não foi possível atualizar o carrinho.");
+            return;
+        }
+
+        const container = document.getElementById("itens-carrinho-container");
+
+        if (!container) {
+            return;
+        }
+
+        if (!data.itens || data.itens.length === 0) {
+            container.innerHTML = `
+                <p class="text-center text-muted mt-4">Seu carrinho está vazio.</p>
+            `;
+        } else {
+            let html = "";
+
+            data.itens.forEach(function (item) {
+                html += `
+                    <div class="carrinho-item border rounded p-2 mb-2" data-id="${item.id}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="mb-1 fw-semibold">${item.produto}</p>
+                                <small>${item.quantidade}x de ${dinheiro(item.preco_unitario)}</small>
+                            </div>
+                            <strong>${dinheiro(item.subtotal)}</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-sm btn-outline-secondary btn-aumentar"
+                                        data-id="${item.id}"
+                                        ${item.estoque <= 0 ? "disabled" : ""}>
+                                    +
+                                </button>
+
+                                <span class="fw-bold">${item.quantidade}</span>
+
+                                <button class="btn btn-sm btn-outline-secondary btn-diminuir"
+                                        data-id="${item.id}">
+                                    -
+                                </button>
+                            </div>
+
+                            <button class="btn btn-sm btn-outline-danger btn-remover"
+                                    data-id="${item.id}">
+                                Remover
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="carrinho-total mt-3 border-top pt-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Total:</strong>
+                        <strong id="total-carrinho">${dinheiro(data.total)}</strong>
+                    </div>
+                </div>
+
+                <a href="/entrega/${data.carrinho_id}"
+                   class="btn btn-primary w-100 mt-2">
+                    Ir para Entrega
+                </a>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        const badgeAtual = document.querySelector(".badge.bg-danger");
+
+        if (badgeAtual) {
+            badgeAtual.textContent = data.quantidade;
+            badgeAtual.style.display = data.quantidade > 0 ? "inline-block" : "none";
+        }
+    }
+
+    async function enviarAcaoCarrinho(url, dados = null) {
+        const opcoes = {
+            method: "POST"
+        };
+
+        if (dados) {
+            opcoes.body = new URLSearchParams(dados);
+        }
+
+        const resposta = await fetch(url, opcoes);
+
+        if (!resposta.ok) {
+            alert("Não foi possível atualizar o carrinho.");
+            return;
+        }
+
+        const data = await resposta.json();
+        renderizarCarrinho(data);
+    }
+
+    document.body.addEventListener("click", function (e) {
         const target = e.target;
 
         if (target.classList.contains("btn-aumentar")) {
             e.preventDefault();
-            const id = target.dataset.id;
-            fetch(`/atualizar-item/${id}`, {
-                method: 'POST',
-                body: new URLSearchParams({acao: 'aumentar'})
-            }).then(() => atualizarCarrinho());
+
+            enviarAcaoCarrinho(`/atualizar-item/${target.dataset.id}`, {
+                acao: "aumentar"
+            });
         }
 
         if (target.classList.contains("btn-diminuir")) {
             e.preventDefault();
-            const id = target.dataset.id;
-            fetch(`/atualizar-item/${id}`, {
-                method: 'POST',
-                body: new URLSearchParams({acao: 'diminuir'})
-            }).then(() => atualizarCarrinho());
+
+            enviarAcaoCarrinho(`/atualizar-item/${target.dataset.id}`, {
+                acao: "diminuir"
+            });
         }
 
         if (target.classList.contains("btn-remover")) {
             e.preventDefault();
-            const id = target.dataset.id;
-            fetch(`/remover-item/${id}`, {method: 'POST'})
-                .then(() => atualizarCarrinho());
-        }
-    });
 
-    // Finalizar compra
-    document.getElementById("finalizar-compra")?.addEventListener("click", function(e){
-        e.preventDefault();
-        fetch(`/finalizar-carrinho`, {method: 'POST'})
-            .then(() => atualizarCarrinho());
+            enviarAcaoCarrinho(`/remover-item/${target.dataset.id}`);
+        }
     });
 
 });

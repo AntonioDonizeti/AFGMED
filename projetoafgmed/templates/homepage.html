@@ -22,11 +22,13 @@
                 </p>
 
                 <div class="d-flex gap-3 flex-wrap">
+                    {% if not current_user.is_authenticated or not current_user.is_medico %}
                     <a href="{{ url_for('medicos') }}"
                        class="btn text-white py-2 px-4 fw-bold"
                        style="background-color: #072B59;">
                         Agendar consultas
                     </a>
+                    {% endif %}
 
                     <a href="{{ url_for('produtos') }}"
                        class="btn btn-light py-2 px-4 fw-bold">
