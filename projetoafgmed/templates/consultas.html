@@ -1,89 +1,602 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% block title %}Agendar Consulta - AFGMED{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <!-- Card do médico -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm rounded-4 text-center p-3">
-                <img src="{{ url_for('static', filename='fotos_medicos/' ~ medico.foto) }}"
-                     class="rounded-circle mx-auto"
-                     style="width:150px; height:150px; object-fit:cover;"
-                     alt="{{ medico.nome }} {{ medico.sobrenome }}">
+<div class="consulta-page">
 
-                <div class="card-body">
-                    <h5 class="card-title mt-3">
-                        {{ medico.nome }} {{ medico.sobrenome }}
-                    </h5>
+    <!-- CABEÇALHO -->
+    <section class="consulta-hero mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <span class="consulta-badge">
+                    <i class="bi bi-calendar2-heart"></i>
+                    Agendamento AFGMED
+                </span>
 
-                    <p class="text-primary mb-1">{{ medico.especialidade }}</p>
-                    <p class="text-muted">CRM {{ medico.id }}</p>
+                <h1 class="fw-bold mt-3 mb-2">
+                    Marcar consulta
+                </h1>
 
-                    <div class="alert alert-light mt-3 py-2" role="alert" style="font-size:0.9rem;">
-                        Atendimento humanizado e comprometido com sua saúde.
+                <p class="mb-0 text-muted">
+                    Escolha a melhor data e horário para atendimento com Dr(a).
+                    <strong>{{ medico.nome }} {{ medico.sobrenome }}</strong>.
+                </p>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="consulta-hero-mini-card">
+                    <div class="consulta-mini-icon">
+                        <i class="bi bi-shield-check"></i>
                     </div>
-
-                    <ul class="list-unstyled mt-3 mb-0 text-start">
-                        <li class="mb-2">
-                            <i class="bi bi-person"></i>
-                            Experiência: 10 anos
-                        </li>
-
-                        <li>
-                            <i class="bi bi-calendar-check"></i>
-                            Consultório: 101
-                        </li>
-                    </ul>
+                    <div>
+                        <small class="text-muted d-block">Atendimento seguro</small>
+                        <strong>Confirmação imediata</strong>
+                    </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Formulário de marcação -->
-        <div class="col-md-8">
-            <h2 class="mb-4">
-                Marcar consulta com Dr(a). {{ medico.nome }} {{ medico.sobrenome }}
-            </h2>
+    <div class="row g-4 align-items-start">
 
-            <form method="POST" id="form_consulta">
-                <div class="mb-3">
-                    <label class="form-label">Seu nome</label>
-                    <input type="text" class="form-control" value="{{ current_user.nome }}" readonly>
-                </div>
+        <!-- CARD DO MÉDICO -->
+        <aside class="col-12 col-lg-4">
+            <div class="consulta-medico-card">
+                <div class="consulta-medico-cover"></div>
 
-                <div class="mb-3">
-                    <label class="form-label">Escolha uma data</label>
-                    <input type="date"
-                           class="form-control"
-                           id="data_consulta"
-                           name="data_consulta"
-                           required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Escolha um horário</label>
-
-                    <div class="d-flex flex-wrap gap-2" id="horarios_container">
-                        {% for h in horarios %}
-                            <button type="button" class="btn btn-outline-primary horario-btn">
-                                {{ h }}
-                            </button>
-                        {% endfor %}
+                <div class="consulta-medico-body text-center">
+                    <div class="consulta-foto-wrap">
+                        <img src="{{ url_for('static', filename='fotos_medicos/' ~ (medico.foto or 'default.jpg')) }}"
+                             alt="{{ medico.nome }} {{ medico.sobrenome }}"
+                             class="consulta-foto">
                     </div>
 
-                    <input type="hidden" name="horario" id="horario_hidden">
+                    <h4 class="fw-bold mt-3 mb-1">
+                        Dr(a). {{ medico.nome }} {{ medico.sobrenome }}
+                    </h4>
+
+                    <span class="consulta-especialidade">
+                        {{ medico.especialidade }}
+                    </span>
+
+                    <div class="consulta-medico-dados mt-4">
+                        <div class="consulta-dado-item">
+                            <div class="consulta-dado-icon">
+                                <i class="bi bi-patch-check"></i>
+                            </div>
+                            <div class="text-start">
+                                <small>Registro</small>
+                                <strong>CRM {{ medico.id }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="consulta-dado-item">
+                            <div class="consulta-dado-icon">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <div class="text-start">
+                                <small>Horários</small>
+                                <strong>Seg. a Sex.</strong>
+                            </div>
+                        </div>
+
+                        <div class="consulta-dado-item">
+                            <div class="consulta-dado-icon">
+                                <i class="bi bi-hospital"></i>
+                            </div>
+                            <div class="text-start">
+                                <small>Local</small>
+                                <strong>Consultório 101</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="consulta-ajuda-card mt-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-info-circle"></i>
+                    Como funciona?
+                </h5>
+
+                <div class="consulta-step">
+                    <span>1</span>
+                    <p>Escolha uma data disponível.</p>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">
-                    Marcar consulta
-                </button>
-            </form>
-        </div>
+                <div class="consulta-step">
+                    <span>2</span>
+                    <p>Selecione um horário livre.</p>
+                </div>
+
+                <div class="consulta-step">
+                    <span>3</span>
+                    <p>Confirme e acompanhe em Meus Agendamentos.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- FORMULÁRIO -->
+        <section class="col-12 col-lg-8">
+            <div class="consulta-agendamento-card">
+
+                <div class="consulta-card-header">
+                    <div>
+                        <span class="consulta-card-label">Dados do agendamento</span>
+                        <h3 class="fw-bold mb-1">Escolha data e horário</h3>
+                        <p class="text-muted mb-0">
+                            Os horários ocupados serão bloqueados automaticamente após selecionar a data.
+                        </p>
+                    </div>
+
+                    <div class="consulta-card-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+
+                <form method="POST" id="form_consulta" class="mt-4">
+
+                    <div class="consulta-form-grid">
+                        <div class="consulta-field">
+                            <label class="form-label">Paciente</label>
+                            <div class="consulta-input-icon">
+                                <i class="bi bi-person"></i>
+                                <input type="text"
+                                       class="form-control"
+                                       value="{{ current_user.nome }} {{ current_user.sobrenome }}"
+                                       readonly>
+                            </div>
+                        </div>
+
+                        <div class="consulta-field">
+                            <label class="form-label">Data da consulta</label>
+                            <div class="consulta-input-icon">
+                                <i class="bi bi-calendar-event"></i>
+                                <input type="date"
+                                       class="form-control"
+                                       id="data_consulta"
+                                       name="data_consulta"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="consulta-horarios-area mt-4">
+                        <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
+                            <div>
+                                <label class="form-label mb-1">Horários disponíveis</label>
+                                <p class="text-muted small mb-0" id="horarios_status">
+                                    Selecione uma data para verificar os horários.
+                                </p>
+                            </div>
+
+                            <span class="consulta-legenda">
+                                <span class="legenda-livre"></span> Livre
+                                <span class="legenda-ocupado ms-2"></span> Ocupado
+                            </span>
+                        </div>
+
+                        <div class="consulta-horarios-grid" id="horarios_container">
+                            {% for h in horarios %}
+                                <button type="button"
+                                        class="horario-btn"
+                                        data-horario="{{ h }}">
+                                    <i class="bi bi-clock"></i>
+                                    {{ h }}
+                                </button>
+                            {% endfor %}
+                        </div>
+
+                        <input type="hidden" name="horario" id="horario_hidden">
+                    </div>
+
+                    <div class="consulta-resumo mt-4" id="resumo_consulta">
+                        <div class="consulta-resumo-icon">
+                            <i class="bi bi-clipboard2-check"></i>
+                        </div>
+
+                        <div>
+                            <strong>Resumo da consulta</strong>
+                            <p class="mb-0 text-muted" id="resumo_texto">
+                                Escolha a data e o horário para continuar.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                            class="btn consulta-btn-confirmar w-100 mt-4"
+                            id="btn_confirmar_consulta">
+                        <i class="bi bi-check2-circle"></i>
+                        Confirmar agendamento
+                    </button>
+
+                </form>
+            </div>
+        </section>
+
     </div>
 </div>
+
+<style>
+.consulta-page {
+    padding-bottom: 40px;
+}
+
+.consulta-hero,
+.consulta-agendamento-card,
+.consulta-medico-card,
+.consulta-ajuda-card {
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    background: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 16px 40px rgba(7, 43, 89, 0.08);
+    overflow: hidden;
+}
+
+.consulta-hero {
+    padding: 34px;
+    background:
+        radial-gradient(circle at top right, rgba(24, 169, 153, 0.18), transparent 32%),
+        linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
+}
+
+.consulta-hero h1,
+.consulta-card-header h3,
+.consulta-medico-body h4,
+.consulta-ajuda-card h5 {
+    color: #072B59;
+}
+
+.consulta-badge,
+.consulta-card-label,
+.consulta-especialidade {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    font-weight: 800;
+}
+
+.consulta-badge {
+    padding: 9px 15px;
+    color: #072B59;
+    background: rgba(24, 169, 153, 0.13);
+}
+
+.consulta-card-label {
+    margin-bottom: 8px;
+    padding: 7px 12px;
+    color: #18A999;
+    background: rgba(24, 169, 153, 0.10);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.consulta-hero-mini-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(7, 43, 89, 0.08);
+}
+
+.consulta-mini-icon,
+.consulta-card-icon,
+.consulta-dado-icon,
+.consulta-resumo-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    background: rgba(24, 169, 153, 0.13);
+    color: #18A999;
+}
+
+.consulta-mini-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 18px;
+    font-size: 1.45rem;
+}
+
+.consulta-medico-cover {
+    height: 112px;
+    background:
+        linear-gradient(135deg, rgba(7, 43, 89, 0.96), rgba(24, 169, 153, 0.88)),
+        url("{{ url_for('static', filename='imagens/banner.jpg') }}") center/cover;
+}
+
+.consulta-medico-body {
+    padding: 0 26px 28px;
+}
+
+.consulta-foto-wrap {
+    width: 142px;
+    height: 142px;
+    margin: -72px auto 0;
+    padding: 6px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(7, 43, 89, 0.18);
+}
+
+.consulta-foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.consulta-especialidade {
+    padding: 8px 13px;
+    color: #072B59;
+    background: #f0f7fb;
+    font-size: 0.92rem;
+}
+
+.consulta-medico-dados {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.consulta-dado-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+    background: #f8fbfd;
+    border: 1px solid #e9f0f5;
+}
+
+.consulta-dado-icon,
+.consulta-resumo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 15px;
+    font-size: 1.2rem;
+}
+
+.consulta-dado-item small {
+    display: block;
+    color: #6c757d;
+    line-height: 1.1;
+}
+
+.consulta-dado-item strong {
+    color: #072B59;
+}
+
+.consulta-ajuda-card {
+    padding: 24px;
+}
+
+.consulta-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-top: 14px;
+}
+
+.consulta-step span {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    background: #072B59;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.consulta-step p {
+    margin: 3px 0 0;
+    color: #6c757d;
+}
+
+.consulta-agendamento-card {
+    padding: 30px;
+}
+
+.consulta-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e9f0f5;
+}
+
+.consulta-card-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 22px;
+    font-size: 1.75rem;
+}
+
+.consulta-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.consulta-field .form-label,
+.consulta-horarios-area .form-label {
+    color: #072B59;
+    font-weight: 800;
+}
+
+.consulta-input-icon {
+    position: relative;
+}
+
+.consulta-input-icon i {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    color: #18A999;
+    z-index: 2;
+}
+
+.consulta-input-icon .form-control {
+    min-height: 52px;
+    padding-left: 46px;
+    border-radius: 16px;
+    border: 1px solid #dce6ee;
+    background-color: #f8fbfd;
+}
+
+.consulta-input-icon .form-control:focus {
+    border-color: #18A999;
+    box-shadow: 0 0 0 0.2rem rgba(24, 169, 153, 0.13);
+}
+
+.consulta-horarios-area {
+    padding: 22px;
+    border-radius: 22px;
+    background: #f8fbfd;
+    border: 1px solid #e9f0f5;
+}
+
+.consulta-legenda {
+    display: inline-flex;
+    align-items: center;
+    color: #6c757d;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.legenda-livre,
+.legenda-ocupado {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.legenda-livre {
+    background: #18A999;
+}
+
+.legenda-ocupado {
+    background: #adb5bd;
+}
+
+.consulta-horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.horario-btn {
+    min-height: 54px;
+    border: 1px solid rgba(7, 43, 89, 0.16);
+    border-radius: 16px;
+    background: #ffffff;
+    color: #072B59;
+    font-weight: 800;
+    transition: 0.2s ease;
+}
+
+.horario-btn i {
+    margin-right: 6px;
+    color: #18A999;
+}
+
+.horario-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: #18A999;
+    box-shadow: 0 8px 18px rgba(24, 169, 153, 0.13);
+}
+
+.horario-btn.active {
+    background: #072B59;
+    color: #ffffff;
+    border-color: #072B59;
+    box-shadow: 0 10px 22px rgba(7, 43, 89, 0.20);
+}
+
+.horario-btn.active i {
+    color: #ffffff;
+}
+
+.horario-btn.disabled,
+.horario-btn:disabled {
+    background: #e9ecef;
+    color: #8d969e;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.horario-btn.disabled i,
+.horario-btn:disabled i {
+    color: #8d969e;
+}
+
+.consulta-resumo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(24, 169, 153, 0.10), rgba(7, 43, 89, 0.04));
+    border: 1px solid rgba(24, 169, 153, 0.18);
+}
+
+.consulta-resumo strong {
+    color: #072B59;
+}
+
+.consulta-btn-confirmar {
+    min-height: 54px;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #072B59, #18A999);
+    color: #ffffff;
+    font-weight: 900;
+    box-shadow: 0 12px 26px rgba(7, 43, 89, 0.20);
+}
+
+.consulta-btn-confirmar:hover {
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 16px 32px rgba(7, 43, 89, 0.24);
+}
+
+@media (max-width: 767.98px) {
+    .consulta-hero,
+    .consulta-agendamento-card {
+        padding: 24px;
+        border-radius: 22px;
+    }
+
+    .consulta-form-grid,
+    .consulta-horarios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .consulta-card-header {
+        flex-direction: column;
+    }
+}
+</style>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const inputData = document.getElementById("data_consulta");
+    const inputHorario = document.getElementById("horario_hidden");
+    const resumoTexto = document.getElementById("resumo_texto");
+    const horariosStatus = document.getElementById("horarios_status");
+    const formConsulta = document.getElementById("form_consulta");
+    const medicoId = "{{ medico.id }}";
 
     const hoje = new Date();
     const ano = hoje.getFullYear();
@@ -91,58 +604,112 @@ document.addEventListener("DOMContentLoaded", function () {
     const dia = String(hoje.getDate()).padStart(2, "0");
 
     inputData.min = `${ano}-${mes}-${dia}`;
-});
 
-function atualizarHorarioSelecionado(btn) {
-    if (btn.classList.contains("disabled")) {
-        return;
+    function formatarDataBR(valor) {
+        if (!valor) {
+            return "";
+        }
+
+        const partes = valor.split("-");
+
+        if (partes.length !== 3) {
+            return valor;
+        }
+
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
     }
 
-    document.getElementById("horario_hidden").value = btn.textContent.trim();
+    function atualizarResumo() {
+        const data = inputData.value;
+        const horario = inputHorario.value;
 
-    document.querySelectorAll(".horario-btn").forEach(function (b) {
-        b.classList.remove("active");
-    });
-
-    btn.classList.add("active");
-}
-
-document.querySelectorAll(".horario-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-        atualizarHorarioSelecionado(btn);
-    });
-});
-
-document.getElementById("data_consulta").addEventListener("change", async function () {
-    const data = document.getElementById("data_consulta").value;
-    const medico_id = "{{ medico.id }}";
-
-    document.getElementById("horario_hidden").value = "";
-
-    document.querySelectorAll(".horario-btn").forEach(function (btn) {
-        btn.classList.remove("active", "btn-secondary", "disabled");
-        btn.classList.add("btn-outline-primary");
-        btn.disabled = false;
-    });
-
-    if (!data) {
-        return;
+        if (data && horario) {
+            resumoTexto.innerHTML = `Consulta com Dr(a). {{ medico.nome }} {{ medico.sobrenome }} em <strong>${formatarDataBR(data)}</strong> às <strong>${horario}</strong>.`;
+        } else if (data) {
+            resumoTexto.textContent = `Data selecionada: ${formatarDataBR(data)}. Agora escolha um horário.`;
+        } else {
+            resumoTexto.textContent = "Escolha a data e o horário para continuar.";
+        }
     }
 
-    try {
-        const response = await fetch(`/horarios_disponiveis/${medico_id}/${data}`);
-        const ocupados = await response.json();
+    function limparHorarios() {
+        inputHorario.value = "";
 
         document.querySelectorAll(".horario-btn").forEach(function (btn) {
-            if (ocupados.includes(btn.textContent.trim())) {
-                btn.classList.remove("btn-outline-primary");
-                btn.classList.add("btn-secondary", "disabled");
-                btn.disabled = true;
-            }
+            btn.classList.remove("active", "disabled");
+            btn.disabled = false;
         });
-    } catch (err) {
-        console.error("Erro ao buscar horários:", err);
+
+        atualizarResumo();
     }
+
+    document.querySelectorAll(".horario-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            if (btn.disabled || btn.classList.contains("disabled")) {
+                return;
+            }
+
+            document.querySelectorAll(".horario-btn").forEach(function (botao) {
+                botao.classList.remove("active");
+            });
+
+            btn.classList.add("active");
+            inputHorario.value = btn.dataset.horario || btn.textContent.trim();
+            atualizarResumo();
+        });
+    });
+
+    inputData.addEventListener("change", async function () {
+        const data = inputData.value;
+        limparHorarios();
+
+        if (!data) {
+            horariosStatus.textContent = "Selecione uma data para verificar os horários.";
+            return;
+        }
+
+        horariosStatus.innerHTML = `<i class="bi bi-hourglass-split"></i> Buscando horários ocupados...`;
+
+        try {
+            const response = await fetch(`/horarios_disponiveis/${medicoId}/${data}`, {
+                cache: "no-store"
+            });
+
+            const ocupados = await response.json();
+            let totalOcupados = 0;
+
+            document.querySelectorAll(".horario-btn").forEach(function (btn) {
+                const horario = btn.dataset.horario || btn.textContent.trim();
+
+                if (ocupados.includes(horario)) {
+                    btn.classList.add("disabled");
+                    btn.disabled = true;
+                    totalOcupados += 1;
+                }
+            });
+
+            const totalHorarios = document.querySelectorAll(".horario-btn").length;
+            const totalLivres = totalHorarios - totalOcupados;
+
+            if (totalLivres > 0) {
+                horariosStatus.innerHTML = `<i class="bi bi-check-circle text-success"></i> ${totalLivres} horário(s) livre(s) para ${formatarDataBR(data)}.`;
+            } else {
+                horariosStatus.innerHTML = `<i class="bi bi-x-circle text-danger"></i> Não há horários livres para ${formatarDataBR(data)}.`;
+            }
+
+            atualizarResumo();
+        } catch (err) {
+            console.error("Erro ao buscar horários:", err);
+            horariosStatus.innerHTML = `<i class="bi bi-exclamation-triangle text-danger"></i> Não foi possível carregar os horários.`;
+        }
+    });
+
+    formConsulta.addEventListener("submit", function (event) {
+        if (!inputData.value || !inputHorario.value) {
+            event.preventDefault();
+            alert("Escolha uma data e um horário antes de confirmar o agendamento.");
+        }
+    });
 });
 </script>
 {% endblock %}

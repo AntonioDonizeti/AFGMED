@@ -60,7 +60,13 @@ class Consulta(database.Model):
     horario = database.Column(database.String(20), nullable=False)
     data = database.Column(database.Date, default=datetime.today)
 
+    # Status possíveis: agendada, cancelada, concluida
+    status = database.Column(database.String(20), nullable=False, default="agendada")
+
     medico = database.relationship("Medico", backref=database.backref("consultas", lazy=True))
+
+    def __repr__(self):
+        return f"<Consulta {self.usuario.nome} - {self.horario} - {self.status}>"
 
     def __repr__(self):
         return f"<Consulta {self.usuario.nome} - {self.horario}>"

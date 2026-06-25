@@ -4,82 +4,837 @@
 {% block title %}Produtos - AFGMED{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h2 class="mb-4">Produtos</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for produto in produtos %}
-        <div class="col">
-            <div class="card h-100 text-center shadow-sm">
-                <img src="{{ url_for('static', filename='fotos_produtos/' + produto.foto) }}"
-                     class="card-img-top p-3"
-                     style="height:180px; object-fit:contain;"
-                     alt="{{ produto.nome }}">
+<div class="produtos-page">
 
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title fw-bold">{{ produto.nome }}</h5>
-                    <p class="card-text text-truncate text-muted">{{ produto.descricao }}</p>
-                    <p class="fw-bold text-success fs-5">R$ {{ '%.2f' % produto.preco }}</p>
+    <!-- TÍTULO SIMPLES -->
+    <div class="produtos-titulo-area mb-4">
+        <h2 class="fw-bold mb-1">
+            Produtos
+        </h2>
 
-                    <p class="mb-3">
-                        {% if produto.estoque > 0 %}
-                        <small class="text-success"><i class="bi bi-check-circle"></i> Em estoque: {{ produto.estoque }}</small>
-                        {% else %}
-                        <small class="text-danger"><i class="bi bi-x-circle"></i> Produto indisponível</small>
-                        {% endif %}
-                    </p>
+        <p class="text-muted mb-0">
+            Encontre medicamentos e produtos de cuidado essenciais.
+        </p>
+    </div>
 
+    <!-- BUSCA E FILTROS -->
+    <section class="produtos-filtros mb-4">
+        <div class="row g-3 align-items-center">
 
-                        {% if produto.estoque > 0 %}
-                        <!-- Botão Adicionar ao Carrinho -->
-                        <form action="{{ url_for('adicionar_carrinho', id_produto=produto.id) }}" method="post" class="mt-auto">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
-                            </button>
-                        </form>
-                        {% else %}
-                        <button class="btn btn-secondary w-100 mt-auto" disabled>Indisponível</button>
-                        {% endif %}
+            <div class="col-12 col-lg-6">
+                <div class="produto-busca">
+                    <i class="bi bi-search"></i>
+                    <input type="text"
+                           id="buscaProduto"
+                           class="form-control"
+                           placeholder="Buscar produto por nome ou descrição...">
+                </div>
+            </div>
 
+            <div class="col-12 col-lg-6">
+                <div class="produto-filtro-botoes">
+                    <button type="button" class="produto-filtro-btn active" data-filtro="todos">
+                        Todos
+                    </button>
+
+                    <button type="button" class="produto-filtro-btn" data-filtro="estoque">
+                        Em estoque
+                    </button>
+
+                    <button type="button" class="produto-filtro-btn" data-filtro="destaque">
+                        Mais vendidos
+                    </button>
 
                     {% if current_user.is_admin %}
-                    <div class="mt-auto d-grid gap-2">
-
-                        <!-- Editar Produto -->
-                        <a href="{{ url_for('editar_produto', id_produto=produto.id) }}" class="btn btn-sm btn-warning">
-                            Editar Produto
-                        </a>
-
-                        <!-- Alternar Mais Vendidos -->
-                        <form action="{{ url_for('alternar_destaque_produto', id_produto=produto.id) }}" method="post">
-                            <button type="submit" class="btn btn-sm btn-info">
-                                {% if produto.destaque_home %}Remover dos Mais Vendidos{% else %}Adicionar aos Mais Vendidos{% endif %}
-                            </button>
-                        </form>
-
-                        <!-- Desativar / Ativar Produto -->
-                        {% if produto.ativo %}
-                        <form action="{{ url_for('desativar_produto', id_produto=produto.id) }}" method="post">
-                            <button type="submit" class="btn btn-sm btn-danger">Desativar Produto</button>
-                        </form>
-                        {% else %}
-                        <form action="{{ url_for('ativar_produto', id_produto=produto.id) }}" method="post">
-                            <button type="submit" class="btn btn-sm btn-success">Ativar Produto</button>
-                        </form>
-                        {% endif %}
-
-                    </div>
+                        <button type="button" class="produto-filtro-btn" data-filtro="indisponivel">
+                            Indisponíveis
+                        </button>
                     {% endif %}
                 </div>
             </div>
-        </div>
-        {% endfor %}
-    </div>
 
-    <!-- Botão Ver todos os produtos -->
-    <div class="text-center mt-5">
-        <a href="{{ url_for('produtos') }}" class="btn btn-outline-primary px-4 py-2 fw-bold">
-            Ver todos os produtos
-        </a>
-    </div>
+        </div>
+    </section>
+
+    <!-- GRID DE PRODUTOS -->
+    {% if produtos %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="produtosGrid">
+            {% for produto in produtos %}
+                <div class="col produto-col"
+                     data-nome="{{ produto.nome|lower }}"
+                     data-descricao="{{ (produto.descricao or '')|lower }}"
+                     data-estoque="{% if produto.estoque > 0 and produto.ativo %}1{% else %}0{% endif %}"
+                     data-destaque="{% if produto.destaque_home %}1{% else %}0{% endif %}"
+                     data-indisponivel="{% if produto.estoque <= 0 or not produto.ativo %}1{% else %}0{% endif %}">
+
+                    <div class="produto-card h-100">
+
+                        <!-- IMAGEM -->
+                        <div class="produto-img-area">
+                            <img src="{{ url_for('static', filename='fotos_produtos/' + (produto.foto or 'default.jpg')) }}"
+                                 alt="{{ produto.nome }}"
+                                 class="produto-img">
+
+                            <div class="produto-badges">
+                                {% if produto.ativo and produto.estoque > 0 %}
+                                    <span class="produto-badge badge-estoque">
+                                        <i class="bi bi-check-circle"></i>
+                                        Em estoque
+                                    </span>
+                                {% elif not produto.ativo %}
+                                    <span class="produto-badge badge-indisponivel">
+                                        <i class="bi bi-slash-circle"></i>
+                                        Inativo
+                                    </span>
+                                {% else %}
+                                    <span class="produto-badge badge-indisponivel">
+                                        <i class="bi bi-x-circle"></i>
+                                        Indisponível
+                                    </span>
+                                {% endif %}
+
+                                {% if produto.destaque_home %}
+                                    <span class="produto-badge badge-destaque">
+                                        <i class="bi bi-star-fill"></i>
+                                        Mais vendido
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- CORPO -->
+                        <div class="produto-card-body">
+
+                            <div class="produto-conteudo">
+                                <h5 class="produto-nome">
+                                    {{ produto.nome }}
+                                </h5>
+
+                                <p class="produto-descricao">
+                                    {{ produto.descricao or "Produto AFGMED para cuidado e bem-estar." }}
+                                </p>
+                            </div>
+
+                            <div class="produto-preco-area">
+                                <div>
+                                    <small>Preço</small>
+                                    <strong>
+                                        R$ {{ '%.2f' % produto.preco }}
+                                    </strong>
+                                </div>
+
+                                <div class="produto-estoque-info">
+                                    <i class="bi bi-box-seam"></i>
+                                    {{ produto.estoque }} un.
+                                </div>
+                            </div>
+
+                            <!-- BOTÃO CLIENTE -->
+                            <div class="produto-actions mt-3">
+                                {% if current_user.is_medico and not current_user.is_admin %}
+                                    <button class="btn btn-produto-disabled w-100" disabled>
+                                        <i class="bi bi-lock"></i>
+                                        Compra indisponível para médico
+                                    </button>
+                                {% else %}
+                                    {% if produto.ativo and produto.estoque > 0 %}
+                                        <form action="{{ url_for('adicionar_carrinho', id_produto=produto.id) }}"
+                                              method="post"
+                                              class="w-100">
+                                            <button type="submit" class="btn btn-produto-carrinho w-100">
+                                                <i class="bi bi-cart-plus"></i>
+                                                Adicionar ao carrinho
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <button class="btn btn-produto-disabled w-100" disabled>
+                                            <i class="bi bi-x-circle"></i>
+                                            Produto indisponível
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+
+                            <!-- ADMIN -->
+                            {% if current_user.is_admin %}
+                                <div class="produto-admin mt-3">
+                                    <button class="produto-admin-toggle"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#adminProduto{{ produto.id }}"
+                                            aria-expanded="false"
+                                            aria-controls="adminProduto{{ produto.id }}">
+                                        <span>
+                                            <i class="bi bi-gear"></i>
+                                            Gerenciar produto
+                                        </span>
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+
+                                    <div class="collapse mt-3" id="adminProduto{{ produto.id }}">
+                                        <div class="produto-admin-box">
+
+                                            <a href="{{ url_for('editar_produto', id_produto=produto.id) }}"
+                                               class="btn btn-admin-editar w-100">
+                                                <i class="bi bi-pencil-square"></i>
+                                                Editar produto
+                                            </a>
+
+                                            <form action="{{ url_for('alternar_destaque_produto', id_produto=produto.id) }}"
+                                                  method="post"
+                                                  class="w-100">
+                                                <button type="submit" class="btn btn-admin-destaque w-100">
+                                                    {% if produto.destaque_home %}
+                                                        <i class="bi bi-star"></i>
+                                                        Remover dos Mais Vendidos
+                                                    {% else %}
+                                                        <i class="bi bi-star-fill"></i>
+                                                        Adicionar aos Mais Vendidos
+                                                    {% endif %}
+                                                </button>
+                                            </form>
+
+                                            {% if produto.ativo %}
+                                                <form action="{{ url_for('desativar_produto', id_produto=produto.id) }}"
+                                                      method="post"
+                                                      class="w-100">
+                                                    <button type="submit" class="btn btn-admin-desativar w-100">
+                                                        <i class="bi bi-slash-circle"></i>
+                                                        Desativar produto
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <form action="{{ url_for('ativar_produto', id_produto=produto.id) }}"
+                                                      method="post"
+                                                      class="w-100">
+                                                    <button type="submit" class="btn btn-admin-ativar w-100">
+                                                        <i class="bi bi-check-circle"></i>
+                                                        Ativar produto
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- ESTADO SEM RESULTADO -->
+        <div class="produtos-sem-resultado text-center d-none" id="produtosSemResultado">
+            <i class="bi bi-search"></i>
+
+            <h4 class="fw-bold mt-3 mb-2">
+                Nenhum produto encontrado
+            </h4>
+
+            <p class="text-muted mb-0">
+                Tente buscar por outro nome ou alterar o filtro selecionado.
+            </p>
+        </div>
+
+    {% else %}
+        <div class="produtos-sem-resultado text-center">
+            <i class="bi bi-bag-x"></i>
+
+            <h4 class="fw-bold mt-3 mb-2">
+                Nenhum produto cadastrado
+            </h4>
+
+            <p class="text-muted mb-0">
+                Assim que houver produtos cadastrados, eles aparecerão nesta página.
+            </p>
+        </div>
+    {% endif %}
+
 </div>
+
+<style>
+.produtos-page {
+    padding-top: 0px;
+    padding-bottom: 50px;
+}
+
+/* TÍTULO */
+.produtos-titulo-area h2 {
+    color: #072B59;
+    font-size: 2.1rem;
+}
+
+.produtos-titulo-area p {
+    font-size: 1.04rem;
+}
+
+/* FILTROS */
+.produtos-filtros {
+    padding: 18px;
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    box-shadow: 0 12px 30px rgba(7, 43, 89, 0.06);
+}
+
+.produto-busca {
+    position: relative;
+}
+
+.produto-busca i {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    color: #18A999;
+    z-index: 2;
+}
+
+.produto-busca .form-control {
+    min-height: 50px;
+    border-radius: 16px;
+    border: 1px solid #dce6ee;
+    background: #f8fbfd;
+    padding-left: 46px;
+    font-weight: 600;
+}
+
+.produto-busca .form-control:focus {
+    border-color: #18A999;
+    box-shadow: 0 0 0 0.2rem rgba(24, 169, 153, 0.13);
+}
+
+.produto-filtro-botoes {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.produto-filtro-btn {
+    border: 1px solid #dce6ee;
+    background: #f8fbfd;
+    color: #072B59;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 800;
+    transition: 0.2s ease;
+}
+
+.produto-filtro-btn:hover,
+.produto-filtro-btn.active {
+    background: #072B59;
+    color: #ffffff;
+    border-color: #072B59;
+}
+
+/* CARD */
+.produto-card {
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    box-shadow: 0 16px 38px rgba(7, 43, 89, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.produto-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 50px rgba(7, 43, 89, 0.14);
+}
+
+/* IMAGEM */
+.produto-img-area {
+    position: relative;
+    min-height: 235px;
+    background:
+        radial-gradient(circle at top right, rgba(24, 169, 153, 0.12), transparent 35%),
+        #f8fbfd;
+    display: grid;
+    place-items: center;
+    padding: 26px;
+}
+
+.produto-img {
+    width: 100%;
+    height: 178px;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.25s ease;
+}
+
+.produto-card:hover .produto-img {
+    transform: scale(1.04);
+}
+
+.produto-badges {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.produto-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 7px 11px;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.badge-estoque {
+    background: rgba(25, 135, 84, 0.12);
+    color: #198754;
+}
+
+.badge-indisponivel {
+    background: rgba(220, 53, 69, 0.12);
+    color: #dc3545;
+}
+
+.badge-destaque {
+    background: rgba(255, 193, 7, 0.18);
+    color: #8a6500;
+}
+
+/* CORPO */
+.produto-card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.produto-conteudo {
+    flex: 1;
+}
+
+.produto-nome {
+    color: #072B59;
+    font-weight: 900;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+}
+
+.produto-descricao {
+    color: #6c757d;
+    margin-bottom: 0;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* PREÇO */
+.produto-preco-area {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 20px;
+    background: #f8fbfd;
+    border: 1px solid #e5eaf0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+}
+
+.produto-preco-area small {
+    display: block;
+    color: #6c757d;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.produto-preco-area strong {
+    display: block;
+    color: #18A999;
+    font-size: 1.45rem;
+    line-height: 1.1;
+}
+
+.produto-estoque-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #072B59;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* BOTÕES CLIENTE */
+.produto-actions {
+    display: flex;
+}
+
+.btn-produto-carrinho,
+.btn-produto-disabled {
+    border: none;
+    border-radius: 16px;
+    min-height: 50px;
+    font-weight: 900;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-produto-carrinho {
+    background: #18A999;
+    color: #ffffff;
+    box-shadow: 0 10px 22px rgba(24, 169, 153, 0.18);
+}
+
+.btn-produto-carrinho:hover {
+    background: #139181;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.btn-produto-disabled {
+    background: #e9ecef;
+    color: #7c858d;
+}
+
+/* ADMIN */
+.produto-admin {
+    border-top: 1px solid #e5eaf0;
+    padding-top: 14px;
+}
+
+.produto-admin-toggle {
+    width: 100%;
+    border: 1px solid #dce6ee;
+    background: #ffffff;
+    color: #072B59;
+    border-radius: 16px;
+    padding: 11px 14px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.produto-admin-toggle span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.produto-admin-toggle:hover {
+    background: #f8fbfd;
+}
+
+.produto-admin-box {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 18px;
+    background: #f8fbfd;
+    border: 1px solid #e5eaf0;
+}
+
+.btn-admin-editar,
+.btn-admin-destaque,
+.btn-admin-desativar,
+.btn-admin-ativar {
+    border: none;
+    border-radius: 14px;
+    min-height: 42px;
+    font-weight: 800;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+}
+
+.btn-admin-editar {
+    background: #ffc107;
+    color: #1f2933;
+}
+
+.btn-admin-destaque {
+    background: #0dcaf0;
+    color: #06333d;
+}
+
+.btn-admin-desativar {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+.btn-admin-ativar {
+    background: #198754;
+    color: #ffffff;
+}
+
+/* SEM RESULTADO */
+.produtos-sem-resultado {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 55px 25px;
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    box-shadow: 0 16px 38px rgba(7, 43, 89, 0.08);
+}
+
+.produtos-sem-resultado i {
+    font-size: 4rem;
+    color: #adb5bd;
+}
+
+.produtos-sem-resultado h4 {
+    color: #072B59;
+}
+
+/* TABLET */
+@media (max-width: 991.98px) {
+    .produtos-page {
+        padding-top: 22px;
+    }
+
+    .produtos-titulo-area h2 {
+        font-size: 1.95rem;
+    }
+
+    .produto-filtro-botoes {
+        justify-content: flex-start;
+    }
+
+    .produto-img-area {
+        min-height: 220px;
+    }
+
+    .produto-img {
+        height: 165px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 767.98px) {
+    .produtos-page {
+        padding-top: 18px;
+        padding-bottom: 35px;
+    }
+
+    .produtos-titulo-area {
+        text-align: left;
+        margin-bottom: 18px !important;
+    }
+
+    .produtos-titulo-area h2 {
+        font-size: 1.75rem;
+        line-height: 1.2;
+    }
+
+    .produtos-titulo-area p {
+        font-size: 0.96rem;
+    }
+
+    .produtos-filtros {
+        padding: 14px;
+        border-radius: 20px;
+    }
+
+    .produto-busca .form-control {
+        min-height: 48px;
+        font-size: 0.95rem;
+    }
+
+    .produto-filtro-botoes {
+        gap: 8px;
+        justify-content: flex-start;
+    }
+
+    .produto-filtro-btn {
+        padding: 9px 13px;
+        font-size: 0.9rem;
+    }
+
+    .produto-card {
+        border-radius: 22px;
+    }
+
+    .produto-card:hover {
+        transform: none;
+    }
+
+    .produto-img-area {
+        min-height: 205px;
+        padding: 22px;
+    }
+
+    .produto-img {
+        height: 150px;
+    }
+
+    .produto-card-body {
+        padding: 20px;
+    }
+
+    .produto-nome {
+        font-size: 1.16rem;
+    }
+
+    .produto-preco-area {
+        padding: 14px;
+    }
+
+    .produto-preco-area strong {
+        font-size: 1.3rem;
+    }
+
+    .btn-produto-carrinho,
+    .btn-produto-disabled {
+        min-height: 48px;
+        font-size: 0.95rem;
+    }
+
+    .produto-admin-toggle {
+        font-size: 0.94rem;
+    }
+}
+
+/* CELULARES PEQUENOS */
+@media (max-width: 420px) {
+    .produtos-page {
+        padding-top: 14px;
+    }
+
+    .produtos-titulo-area h2 {
+        font-size: 1.55rem;
+    }
+
+    .produtos-titulo-area p {
+        font-size: 0.9rem;
+    }
+
+    .produto-filtro-botoes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+    }
+
+    .produto-filtro-btn {
+        width: 100%;
+        padding: 9px 10px;
+        font-size: 0.86rem;
+    }
+
+    .produto-img-area {
+        min-height: 190px;
+    }
+
+    .produto-img {
+        height: 138px;
+    }
+
+    .produto-card-body {
+        padding: 18px;
+    }
+
+    .produto-preco-area {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .produto-estoque-info {
+        white-space: normal;
+    }
+
+    .produto-badge {
+        font-size: 0.72rem;
+        padding: 6px 9px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const inputBusca = document.getElementById("buscaProduto");
+    const botoesFiltro = document.querySelectorAll(".produto-filtro-btn");
+    const produtos = document.querySelectorAll(".produto-col");
+    const semResultado = document.getElementById("produtosSemResultado");
+
+    let filtroAtual = "todos";
+
+    function normalizarTexto(texto) {
+        return texto
+            .toString()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function aplicarFiltros() {
+        const busca = normalizarTexto(inputBusca ? inputBusca.value : "");
+        let quantidadeVisivel = 0;
+
+        produtos.forEach(function (produto) {
+            const nome = normalizarTexto(produto.dataset.nome || "");
+            const descricao = normalizarTexto(produto.dataset.descricao || "");
+
+            const combinaBusca = nome.includes(busca) || descricao.includes(busca);
+
+            let combinaFiltro = true;
+
+            if (filtroAtual === "estoque") {
+                combinaFiltro = produto.dataset.estoque === "1";
+            }
+
+            if (filtroAtual === "destaque") {
+                combinaFiltro = produto.dataset.destaque === "1";
+            }
+
+            if (filtroAtual === "indisponivel") {
+                combinaFiltro = produto.dataset.indisponivel === "1";
+            }
+
+            if (combinaBusca && combinaFiltro) {
+                produto.classList.remove("d-none");
+                quantidadeVisivel += 1;
+            } else {
+                produto.classList.add("d-none");
+            }
+        });
+
+        if (semResultado) {
+            if (quantidadeVisivel === 0) {
+                semResultado.classList.remove("d-none");
+            } else {
+                semResultado.classList.add("d-none");
+            }
+        }
+    }
+
+    if (inputBusca) {
+        inputBusca.addEventListener("input", aplicarFiltros);
+    }
+
+    botoesFiltro.forEach(function (botao) {
+        botao.addEventListener("click", function () {
+            botoesFiltro.forEach(function (b) {
+                b.classList.remove("active");
+            });
+
+            botao.classList.add("active");
+            filtroAtual = botao.dataset.filtro || "todos";
+
+            aplicarFiltros();
+        });
+    });
+});
+</script>
 {% endblock %}

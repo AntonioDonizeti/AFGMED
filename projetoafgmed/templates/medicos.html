@@ -1,57 +1,680 @@
 {% extends "base.html" %}
 
-{% block title %}Equipe - AFGMED{% endblock %}
+{% block title %}Equipe Médica - AFGMED{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h2 class="mb-4 text-center">Nossa Equipe</h2>
+<div class="medicos-page">
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for medico in medicos %}
-        <div class="col">
-            <div class="card h-100 text-center shadow-sm">
-                <div class="card-img-container">
-                    <img src="{{ url_for('static', filename='fotos_medicos/' ~ medico.foto) }}"
-                         class="card-img-top"
-                         alt="{{ medico.nome }} {{ medico.sobrenome }}">
-                </div>
+    <!-- CABEÇALHO -->
+    <section class="medicos-header text-center">
+        <h2 class="fw-bold">
+            Nossa Equipe Médica
+        </h2>
 
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title fw-bold">
-                        {{ medico.nome }} {{ medico.sobrenome }}
-                    </h5>
+        <p class="text-muted mb-0">
+            Escolha um profissional e agende sua consulta com praticidade e segurança.
+        </p>
+    </section>
 
-                    <p class="text-muted">{{ medico.especialidade }}</p>
-                    <p>Email: {{ medico.email }}</p>
-                    <p>Telefone: {{ medico.telefone }}</p>
+    {% if medicos %}
 
-                    {% if not current_user.is_medico or current_user.is_admin %}
-                        <a href="{{ url_for('consultas', medico_id=medico.id) }}" class="btn btn-success mt-2">
-                            Marcar consulta
-                        </a>
-                    {% endif %}
-
-                    {% if current_user.is_admin %}
-                    <div class="mt-auto d-grid gap-2">
-                        <a href="{{ url_for('editar_medico', id_medico=medico.id) }}" class="btn btn-sm btn-warning">
-                            Editar Médico
-                        </a>
-
-                        <form action="{{ url_for('remover_medico', id_medico=medico.id) }}" method="post">
-                            <button type="submit"
-                                    class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Deseja realmente remover este médico?');">
-                                Remover Médico
-                            </button>
-                        </form>
-                    </div>
-                    {% endif %}
-                </div>
+        <!-- BUSCA -->
+        <section class="medicos-filtros mb-4">
+            <div class="medico-busca">
+                <i class="bi bi-search"></i>
+                <input type="text"
+                       id="buscaMedico"
+                       class="form-control"
+                       placeholder="Buscar médico por nome, especialidade, e-mail ou telefone...">
             </div>
+        </section>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="medicosGrid">
+            {% for medico in medicos %}
+                <div class="col medico-col"
+                     data-nome="{{ (medico.nome ~ ' ' ~ medico.sobrenome)|lower }}"
+                     data-especialidade="{{ (medico.especialidade or '')|lower }}"
+                     data-email="{{ (medico.email or '')|lower }}"
+                     data-telefone="{{ (medico.telefone or '')|lower }}">
+
+                    <div class="medico-card h-100">
+
+                        <!-- TOPO DO CARD -->
+                        <div class="medico-card-top">
+                            <div class="medico-foto-frame">
+                                <img src="{{ url_for('static', filename='fotos_medicos/' ~ (medico.foto or 'default.jpg')) }}"
+                                     alt="{{ medico.nome }} {{ medico.sobrenome }}"
+                                     class="medico-foto">
+                            </div>
+                        </div>
+
+                        <!-- CORPO DO CARD -->
+                        <div class="medico-card-body">
+
+                            <div class="medico-nome-area text-center">
+                                <h4 class="fw-bold mb-1">
+                                    Dr(a). {{ medico.nome }} {{ medico.sobrenome }}
+                                </h4>
+
+                                <span class="medico-especialidade">
+                                    {{ medico.especialidade }}
+                                </span>
+                            </div>
+
+                            <div class="medico-info-list mt-4">
+
+                                <div class="medico-info-item">
+                                    <div class="medico-info-icon">
+                                        <i class="bi bi-envelope"></i>
+                                    </div>
+
+                                    <div>
+                                        <small>E-mail</small>
+                                        <p class="mb-0">{{ medico.email }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="medico-info-item">
+                                    <div class="medico-info-icon">
+                                        <i class="bi bi-telephone"></i>
+                                    </div>
+
+                                    <div>
+                                        <small>Telefone</small>
+                                        <p class="mb-0">{{ medico.telefone }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="medico-info-item">
+                                    <div class="medico-info-icon">
+                                        <i class="bi bi-patch-check"></i>
+                                    </div>
+
+                                    <div>
+                                        <small>Registro</small>
+                                        <p class="mb-0">CRM {{ medico.id }}</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="medico-actions mt-4">
+
+                                {% if not current_user.is_medico or current_user.is_admin %}
+                                    <a href="{{ url_for('consultas', medico_id=medico.id) }}"
+                                       class="btn btn-agendar w-100">
+                                        <i class="bi bi-calendar-plus"></i>
+                                        Marcar consulta
+                                    </a>
+                                {% endif %}
+
+                            </div>
+
+                            {% if current_user.is_admin %}
+                                <div class="medico-admin mt-3">
+                                    <button class="medico-admin-toggle"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#adminMedico{{ medico.id }}"
+                                            aria-expanded="false"
+                                            aria-controls="adminMedico{{ medico.id }}">
+                                        <span>
+                                            <i class="bi bi-gear"></i>
+                                            Gerenciar médico
+                                        </span>
+                                        <i class="bi bi-chevron-down"></i>
+                                    </button>
+
+                                    <div class="collapse mt-3" id="adminMedico{{ medico.id }}">
+                                        <div class="medico-admin-box">
+
+                                            <a href="{{ url_for('editar_medico', id_medico=medico.id) }}"
+                                               class="btn btn-admin-editar w-100">
+                                                <i class="bi bi-pencil-square"></i>
+                                                Editar médico
+                                            </a>
+
+                                            <form action="{{ url_for('remover_medico', id_medico=medico.id) }}"
+                                                  method="post"
+                                                  class="w-100">
+                                                <button type="submit"
+                                                        class="btn btn-admin-remover w-100"
+                                                        onclick="return confirm('Deseja realmente remover este médico?');">
+                                                    <i class="bi bi-trash"></i>
+                                                    Remover médico
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-        {% else %}
-        <p class="text-center">Nenhum médico cadastrado.</p>
-        {% endfor %}
-    </div>
+
+        <!-- SEM RESULTADO NA BUSCA -->
+        <div class="medicos-sem-resultado text-center d-none" id="medicosSemResultado">
+            <i class="bi bi-search"></i>
+
+            <h4 class="fw-bold mt-3 mb-2">
+                Nenhum médico encontrado
+            </h4>
+
+            <p class="text-muted mb-0">
+                Tente buscar por outro nome, especialidade, e-mail ou telefone.
+            </p>
+        </div>
+
+    {% else %}
+        <div class="medicos-vazio text-center">
+            <i class="bi bi-person-x"></i>
+
+            <h4 class="fw-bold mt-3 mb-2">
+                Nenhum médico cadastrado
+            </h4>
+
+            <p class="text-muted mb-0">
+                Assim que houver médicos cadastrados, eles aparecerão nesta página.
+            </p>
+        </div>
+    {% endif %}
+
 </div>
+
+<style>
+.medicos-page {
+    padding-top: 0;
+    padding-bottom: 50px;
+}
+
+/* CABEÇALHO */
+.medicos-header {
+    padding-top: 0;
+    margin-bottom: 28px;
+}
+
+.medicos-header h2 {
+    color: #072B59;
+    font-size: 2.15rem;
+    margin-bottom: 10px;
+}
+
+.medicos-header p {
+    font-size: 1.05rem;
+}
+
+/* BUSCA */
+.medicos-filtros {
+    padding: 18px;
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    box-shadow: 0 12px 30px rgba(7, 43, 89, 0.06);
+}
+
+.medico-busca {
+    position: relative;
+}
+
+.medico-busca i {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    color: #18A999;
+    z-index: 2;
+}
+
+.medico-busca .form-control {
+    min-height: 50px;
+    border-radius: 16px;
+    border: 1px solid #dce6ee;
+    background: #f8fbfd;
+    padding-left: 46px;
+    font-weight: 600;
+}
+
+.medico-busca .form-control:focus {
+    border-color: #18A999;
+    box-shadow: 0 0 0 0.2rem rgba(24, 169, 153, 0.13);
+}
+
+/* CARD */
+.medico-card {
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    box-shadow: 0 16px 38px rgba(7, 43, 89, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.medico-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 50px rgba(7, 43, 89, 0.14);
+}
+
+/* TOPO DO CARD */
+.medico-card-top {
+    height: 150px;
+    background:
+        radial-gradient(circle at top right, rgba(24, 169, 153, 0.35), transparent 34%),
+        linear-gradient(135deg, #072B59 0%, #0b3f7d 58%, #18A999 100%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 0;
+}
+
+/* FOTO */
+.medico-foto-frame {
+    width: 150px;
+    height: 150px;
+    transform: translateY(58px);
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 6px;
+    box-shadow: 0 12px 30px rgba(7, 43, 89, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+}
+
+.medico-foto {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+
+/* CORPO */
+.medico-card-body {
+    padding: 76px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.medico-nome-area h4 {
+    color: #072B59;
+    font-size: 1.35rem;
+}
+
+.medico-especialidade {
+    display: inline-flex;
+    align-items: center;
+    background: #eef8f7;
+    color: #18A999;
+    border-radius: 999px;
+    padding: 7px 13px;
+    font-weight: 800;
+    font-size: 0.92rem;
+}
+
+/* INFORMAÇÕES */
+.medico-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.medico-info-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 13px 14px;
+    border-radius: 18px;
+    background: #f8fbfd;
+    border: 1px solid #e5eaf0;
+}
+
+.medico-info-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: rgba(24, 169, 153, 0.12);
+    color: #18A999;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    font-size: 1.15rem;
+}
+
+.medico-info-item small {
+    display: block;
+    color: #6c757d;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.medico-info-item p {
+    color: #1f2933;
+    font-weight: 600;
+    word-break: break-word;
+}
+
+/* BOTÃO PRINCIPAL */
+.medico-actions {
+    display: flex;
+    flex-direction: column;
+}
+
+.btn-agendar {
+    border: none;
+    border-radius: 16px;
+    min-height: 48px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: 0.2s ease;
+    background: #18A999;
+    color: #ffffff;
+}
+
+.btn-agendar:hover {
+    background: #139181;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* ÁREA ADMIN */
+.medico-admin {
+    border-top: 1px solid #e5eaf0;
+    padding-top: 14px;
+    margin-top: auto;
+}
+
+.medico-admin-toggle {
+    width: 100%;
+    border: 1px solid #dce6ee;
+    background: #ffffff;
+    color: #072B59;
+    border-radius: 16px;
+    padding: 11px 14px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.medico-admin-toggle span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.medico-admin-toggle:hover {
+    background: #f8fbfd;
+}
+
+.medico-admin-box {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 18px;
+    background: #f8fbfd;
+    border: 1px solid #e5eaf0;
+}
+
+.btn-admin-editar,
+.btn-admin-remover {
+    border: none;
+    border-radius: 14px;
+    min-height: 42px;
+    font-weight: 800;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+}
+
+.btn-admin-editar {
+    background: #ffc107;
+    color: #1f2933;
+}
+
+.btn-admin-remover {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+/* ESTADO VAZIO */
+.medicos-vazio,
+.medicos-sem-resultado {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 55px 25px;
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    box-shadow: 0 16px 38px rgba(7, 43, 89, 0.08);
+}
+
+.medicos-vazio i,
+.medicos-sem-resultado i {
+    font-size: 4rem;
+    color: #adb5bd;
+}
+
+.medicos-vazio h4,
+.medicos-sem-resultado h4 {
+    color: #072B59;
+}
+
+/* TABLET */
+@media (max-width: 991.98px) {
+    .medicos-header {
+        padding-top: 22px;
+        margin-bottom: 26px;
+    }
+
+    .medicos-header h2 {
+        font-size: 1.95rem;
+    }
+
+    .medico-card-top {
+        height: 142px;
+    }
+
+    .medico-foto-frame {
+        width: 140px;
+        height: 140px;
+        transform: translateY(54px);
+    }
+
+    .medico-card-body {
+        padding: 70px 24px 26px;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 767.98px) {
+    .medicos-page {
+        padding-top: 0;
+        padding-bottom: 35px;
+    }
+
+    .medicos-header {
+        padding-top: 18px;
+        margin-bottom: 22px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .medicos-header h2 {
+        font-size: 1.75rem;
+        line-height: 1.2;
+        margin-bottom: 8px;
+    }
+
+    .medicos-header p {
+        font-size: 0.98rem;
+    }
+
+    .medicos-filtros {
+        padding: 14px;
+        border-radius: 20px;
+    }
+
+    .medico-busca .form-control {
+        min-height: 48px;
+        font-size: 0.95rem;
+    }
+
+    .medico-card {
+        border-radius: 22px;
+    }
+
+    .medico-card:hover {
+        transform: none;
+    }
+
+    .medico-card-top {
+        height: 128px;
+    }
+
+    .medico-foto-frame {
+        width: 128px;
+        height: 128px;
+        transform: translateY(48px);
+    }
+
+    .medico-card-body {
+        padding: 64px 20px 22px;
+    }
+
+    .medico-nome-area h4 {
+        font-size: 1.18rem;
+    }
+
+    .medico-especialidade {
+        font-size: 0.86rem;
+        padding: 6px 12px;
+    }
+
+    .medico-info-item {
+        padding: 12px;
+        align-items: flex-start;
+    }
+
+    .medico-info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 13px;
+        font-size: 1.05rem;
+    }
+
+    .btn-agendar {
+        min-height: 46px;
+        font-size: 0.95rem;
+    }
+
+    .medico-admin-toggle {
+        font-size: 0.94rem;
+    }
+}
+
+/* CELULARES PEQUENOS */
+@media (max-width: 420px) {
+    .medicos-header {
+        padding-top: 14px;
+        margin-bottom: 20px;
+    }
+
+    .medicos-header h2 {
+        font-size: 1.55rem;
+    }
+
+    .medicos-header p {
+        font-size: 0.92rem;
+    }
+
+    .medico-card-top {
+        height: 120px;
+    }
+
+    .medico-foto-frame {
+        width: 118px;
+        height: 118px;
+        transform: translateY(44px);
+    }
+
+    .medico-card-body {
+        padding: 58px 16px 20px;
+    }
+
+    .medico-info-item {
+        gap: 10px;
+    }
+
+    .medico-info-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .medicos-vazio,
+    .medicos-sem-resultado {
+        padding: 42px 18px;
+        border-radius: 22px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const inputBusca = document.getElementById("buscaMedico");
+    const medicos = document.querySelectorAll(".medico-col");
+    const semResultado = document.getElementById("medicosSemResultado");
+
+    function normalizarTexto(texto) {
+        return texto
+            .toString()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function filtrarMedicos() {
+        const busca = normalizarTexto(inputBusca ? inputBusca.value : "");
+        let quantidadeVisivel = 0;
+
+        medicos.forEach(function (medico) {
+            const nome = normalizarTexto(medico.dataset.nome || "");
+            const especialidade = normalizarTexto(medico.dataset.especialidade || "");
+            const email = normalizarTexto(medico.dataset.email || "");
+            const telefone = normalizarTexto(medico.dataset.telefone || "");
+
+            const encontrou =
+                nome.includes(busca) ||
+                especialidade.includes(busca) ||
+                email.includes(busca) ||
+                telefone.includes(busca);
+
+            if (encontrou) {
+                medico.classList.remove("d-none");
+                quantidadeVisivel += 1;
+            } else {
+                medico.classList.add("d-none");
+            }
+        });
+
+        if (semResultado) {
+            if (quantidadeVisivel === 0) {
+                semResultado.classList.remove("d-none");
+            } else {
+                semResultado.classList.add("d-none");
+            }
+        }
+    }
+
+    if (inputBusca) {
+        inputBusca.addEventListener("input", filtrarMedicos);
+    }
+});
+</script>
 {% endblock %}

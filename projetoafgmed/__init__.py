@@ -31,4 +31,5 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
 # Importa rotas depois para evitar loop
-from projetoafgmed import routes
+from projetoafgmed.rotas import registrar_rotas
+registrar_rotas()

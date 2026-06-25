@@ -2,94 +2,251 @@
 {% block title %}Meus Agendamentos{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4 fw-bold" style="color:#072B59;">Meus Agendamentos</h2>
+<div class="container mt-5 meus-agendamentos-page">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color:#072B59;">
+                Meus Agendamentos
+            </h2>
+
+            <p class="text-muted mb-0">
+                Acompanhe suas consultas agendadas e concluídas.
+            </p>
+        </div>
+    </div>
 
     {% if consultas %}
     <div class="row g-4">
         {% for c in consultas %}
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card shadow-lg h-100 p-4 border-0 rounded-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="border border-primary rounded-circle p-1 me-3">
-                        <img src="{{ url_for('static', filename='fotos_medicos/' + c.medico.foto) }}"
-                             alt="{{ c.medico.nome }} {{ c.medico.sobrenome }}"
-                             class="rounded-circle"
-                             style="width:70px; height:70px; object-fit:cover;">
+            {% set status = status_visual_consulta(c) %}
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-lg h-100 p-4 border-0 rounded-4 agendamento-card">
+
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="border border-primary rounded-circle p-1 me-3">
+                            <img src="{{ url_for('static', filename='fotos_medicos/' + (c.medico.foto or 'default.jpg')) }}"
+                                 alt="{{ c.medico.nome }} {{ c.medico.sobrenome }}"
+                                 class="rounded-circle"
+                                 style="width:70px; height:70px; object-fit:cover;">
+                        </div>
+
+                        <div>
+                            <h5 class="mb-0 fw-bold" style="color:#072B59;">
+                                {{ c.medico.nome }} {{ c.medico.sobrenome }}
+                            </h5>
+
+                            <small class="text-primary">
+                                {{ c.medico.especialidade }}
+                            </small>
+                        </div>
                     </div>
-                    <div>
-                        <h5 class="mb-0 fw-bold" style="color:#072B59;">
-                            {{ c.medico.nome }} {{ c.medico.sobrenome }}
-                        </h5>
-                        <small class="text-primary">{{ c.medico.especialidade }}</small>
+
+                    <span class="badge {{ status.classe }} agendamento-status mb-3">
+                        <i class="bi {{ status.icone }}"></i>
+                        {{ status.texto }}
+                    </span>
+
+                    {% if c.status == "concluida" %}
+                        <div class="alert alert-success agendamento-alerta-status">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Esta consulta foi concluída pelo médico.
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3 agendamento-info">
+                        <p class="mb-1">
+                            <strong>Data:</strong>
+                            {{ c.data.strftime('%d/%m/%Y') }}
+                        </p>
+
+                        <p class="mb-0">
+                            <strong>Horário:</strong>
+                            {{ c.horario }}
+                        </p>
+                    </div>
+
+                    {% if c.status == "agendada" %}
+                        <button class="btn btn-outline-danger w-100 fw-bold btn-cancelar mt-auto"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmModal{{ c.id }}">
+                            Cancelar
+                        </button>
+                    {% elif c.status == "concluida" %}
+                        <button class="btn btn-outline-success w-100 fw-bold mt-auto" disabled>
+                            <i class="bi bi-check-circle"></i>
+                            Consulta concluída
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if c.status == "agendada" %}
+            <div class="modal fade" id="confirmModal{{ c.id }}" tabindex="-1" aria-labelledby="modalLabel{{ c.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content modal-confirmacao-cancelamento">
+
+                        <div class="modal-header modal-cancelamento-header">
+                            <h5 class="modal-title fw-bold" id="modalLabel{{ c.id }}">
+                                Confirmar Cancelamento
+                            </h5>
+
+                            <button type="button"
+                                    class="btn-close btn-close-white"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Fechar"></button>
+                        </div>
+
+                        <div class="modal-body modal-cancelamento-body">
+                            <p class="mb-0">
+                                Tem certeza que deseja cancelar o agendamento com
+                                <strong>{{ c.medico.nome }} {{ c.medico.sobrenome }}</strong>
+                                no dia <strong>{{ c.data.strftime('%d/%m/%Y') }}</strong>
+                                às <strong>{{ c.horario }}</strong>?
+                            </p>
+                        </div>
+
+                        <div class="modal-footer modal-cancelamento-footer">
+                            <button type="button"
+                                    class="btn btn-secondary btn-modal-nao"
+                                    data-bs-dismiss="modal">
+                                Não
+                            </button>
+
+                            <form action="{{ url_for('cancelar_consulta', consulta_id=c.id) }}" method="POST">
+                                <button type="submit" class="btn btn-danger btn-modal-cancelar">
+                                    Sim, cancelar
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
                 </div>
-
-                <div class="mb-3">
-                    <p class="mb-1"><strong>Data:</strong> {{ c.data.strftime('%d/%m/%Y') }}</p>
-                    <p class="mb-0"><strong>Horário:</strong> {{ c.horario }}</p>
-                </div>
-
-                <button class="btn btn-outline-danger w-100 fw-bold btn-cancelar"
-                        data-bs-toggle="modal"
-                        data-bs-target="#confirmModal{{ c.id }}">
-                    Cancelar
-                </button>
             </div>
-        </div>
-
-        <div class="modal fade" id="confirmModal{{ c.id }}" tabindex="-1" aria-labelledby="modalLabel{{ c.id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 shadow-lg">
-              <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalLabel{{ c.id }}">Confirmar Cancelamento</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
-              </div>
-              <div class="modal-body">
-                <p>
-                    Tem certeza que deseja cancelar o agendamento com
-                    <strong>{{ c.medico.nome }} {{ c.medico.sobrenome }}</strong>
-                    no dia <strong>{{ c.data.strftime('%d/%m/%Y') }}</strong>
-                    às <strong>{{ c.horario }}</strong>?
-                </p>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-                <form action="{{ url_for('cancelar_consulta', consulta_id=c.id) }}" method="POST">
-                    <button type="submit" class="btn btn-danger">Sim, cancelar</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
+            {% endif %}
         {% endfor %}
     </div>
     {% else %}
-        <p class="text-muted fs-5 mt-4">Você não possui agendamentos.</p>
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center p-5">
+                <i class="bi bi-calendar-x text-muted" style="font-size:4rem;"></i>
+
+                <h4 class="fw-bold mt-3" style="color:#072B59;">
+                    Você não possui agendamentos
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Quando você marcar uma consulta, ela aparecerá aqui.
+                </p>
+            </div>
+        </div>
     {% endif %}
 </div>
 
 <style>
-.card {
+.agendamento-card {
     transition: transform 0.3s, box-shadow 0.3s;
 }
-.card:hover {
+
+.agendamento-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(7, 43, 89, 0.12);
+    box-shadow: 0 20px 40px rgba(7, 43, 89, 0.12) !important;
 }
+
+.agendamento-status {
+    width: fit-content;
+    border-radius: 999px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.agendamento-info {
+    padding: 14px;
+    border-radius: 18px;
+    background: #f8fbfd;
+    border: 1px solid #e5eaf0;
+}
+
+.agendamento-alerta-status {
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    padding: 12px 14px;
+}
+
 .btn-cancelar:hover {
     background-color: #a71d2a;
     color: #fff;
     border-color: #a71d2a;
 }
-.modal-content {
-    border-radius: 20px;
+
+/* MODAL DE CANCELAMENTO NO MESMO ESTILO DA IMAGEM */
+.modal-confirmacao-cancelamento {
+    border: none;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
 }
-.modal-header {
+
+.modal-cancelamento-header {
+    background: #0d6efd;
+    color: #ffffff;
+    padding: 24px 28px;
     border-bottom: none;
 }
-.modal-footer {
+
+.modal-cancelamento-header .modal-title {
+    font-size: 1.45rem;
+}
+
+.modal-cancelamento-body {
+    padding: 26px 28px 34px;
+    font-size: 1.08rem;
+    color: #2b2f36;
+    line-height: 1.55;
+}
+
+.modal-cancelamento-footer {
+    padding: 0 28px 26px;
     border-top: none;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-modal-nao,
+.btn-modal-cancelar {
+    border-radius: 14px;
+    padding: 11px 18px;
+    font-weight: 700;
+    border: none;
+}
+
+.btn-modal-nao {
+    background: #6c757d;
+}
+
+.btn-modal-cancelar {
+    background: #dc3545;
+}
+
+@media (max-width: 575.98px) {
+    .modal-cancelamento-footer {
+        flex-direction: column;
+    }
+
+    .modal-cancelamento-footer .btn,
+    .modal-cancelamento-footer form {
+        width: 100%;
+    }
+
+    .modal-cancelamento-footer form button {
+        width: 100%;
+    }
 }
 </style>
 {% endblock %}
