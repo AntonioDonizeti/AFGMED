@@ -1,12 +1,18 @@
 {% extends "base.html" %}
-{% block title %}AFGMED - Home{% endblock %}
+
+{% block title %}
+    AFGMED - Home
+{% endblock %}
 
 {% block content %}
 
 <!-- BANNER -->
 <div class="hero-banner d-flex align-items-center mb-5">
+
     <div class="container">
+
         <div class="row align-items-center">
+
             <div class="col-12 col-md-8 col-lg-6 hero-conteudo">
 
                 <span class="badge bg-light text-dark mb-3 px-3 py-2">
@@ -18,140 +24,281 @@
                 </h1>
 
                 <p class="fs-5 text-white mb-4">
-                    Agende consultas, realize exames e receba seus remédios em casa com a plataforma AFGMED.
+                    Agende consultas e receba medicamentos e produtos
+                    farmacêuticos em sua casa com a plataforma AFGMED.
                 </p>
 
                 <div class="d-flex gap-3 flex-wrap">
-                    {% if not current_user.is_authenticated or not current_user.is_medico %}
-                    <a href="{{ url_for('medicos') }}"
-                       class="btn text-white py-2 px-4 fw-bold"
-                       style="background-color: #072B59;">
-                        Agendar consultas
-                    </a>
+
+                    {% if not current_user.is_authenticated or
+                          not current_user.is_medico or
+                          current_user.is_admin %}
+
+                        <a href="{{ url_for('medicos') }}"
+                           class="btn text-white py-2 px-4 fw-bold"
+                           style="background-color:#072B59;">
+
+                            <i class="bi bi-calendar-plus me-1"></i>
+                            Agendar consulta
+                        </a>
+
                     {% endif %}
 
                     <a href="{{ url_for('produtos') }}"
                        class="btn btn-light py-2 px-4 fw-bold">
+
+                        <i class="bi bi-bag-heart me-1"></i>
                         Ver produtos
                     </a>
+
                 </div>
 
             </div>
+
         </div>
+
     </div>
+
 </div>
 
 <!-- BENEFÍCIOS -->
 <div class="row g-4 mb-5">
 
     <div class="col-md-4">
-        <div class="card h-100 text-center shadow-sm p-3">
+
+        <div class="card h-100 text-center shadow-sm p-3 border-0">
+
             <div class="card-body">
+
                 <i class="bi bi-truck fs-1 text-success mb-3"></i>
-                <h5 class="fw-bold">Entrega rápida</h5>
-                <p class="text-muted mb-0">
-                    Receba seus medicamentos com praticidade e segurança.
-                </p>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card h-100 text-center shadow-sm p-3">
-            <div class="card-body">
-                <i class="bi bi-hospital fs-1 text-success mb-3"></i>
-                <h5 class="fw-bold">Atendimento integrado</h5>
-                <p class="text-muted mb-0">
-                    Consultas, médicos e produtos em um só lugar.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card h-100 text-center shadow-sm p-3">
-            <div class="card-body">
-                <i class="bi bi-shield-check fs-1 text-success mb-3"></i>
-                <h5 class="fw-bold">Compra segura</h5>
-                <p class="text-muted mb-0">
-                    Mais confiança do pedido até a finalização.
-                </p>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- PRODUTOS -->
-<h1 class="text-center mb-2 fw-bold" style="color: #072B59;">
-    Mais Vendidos
-</h1>
-
-<p class="text-center text-muted mb-4">
-    Os produtos preferidos dos nossos clientes
-</p>
-
-<div class="row row-cols-1 row-cols-md-4 g-4 mt-3">
-
-    {% for produto in produtos %}
-    <div class="col">
-        <div class="card h-100 text-center shadow-sm">
-
-            <img src="{{ url_for('static', filename='fotos_produtos/' + produto.foto) }}"
-                 class="card-img-top p-3"
-                 style="height:180px; object-fit:contain;"
-                 alt="{{ produto.nome }}">
-
-            <div class="card-body d-flex flex-column">
-
-                <h5 class="card-title fw-bold" style="color: #072B59;">
-                    {{ produto.nome }}
+                <h5 class="fw-bold">
+                    Entrega rápida
                 </h5>
 
-                <p class="card-text text-truncate text-muted">
-                    {{ produto.descricao }}
+                <p class="text-muted mb-0">
+                    Receba seus medicamentos e produtos com praticidade
+                    e segurança.
                 </p>
-
-                <p class="fw-bold text-success fs-5">
-                    R$ {{ '%.2f' % produto.preco }}
-                </p>
-
-                {% if produto.estoque > 0 %}
-                    <small class="text-success mb-3">
-                        <i class="bi bi-check-circle"></i>
-                        Em estoque
-                    </small>
-
-                    <form action="{{ url_for('adicionar_carrinho', id_produto=produto.id) }}"
-                          method="post"
-                          class="mt-auto">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-cart-plus"></i>
-                            Adicionar ao Carrinho
-                        </button>
-                    </form>
-                {% else %}
-                    <small class="text-danger mb-3">
-                        <i class="bi bi-x-circle"></i>
-                        Produto indisponível
-                    </small>
-
-                    <button class="btn btn-secondary w-100 mt-auto" disabled>
-                        Indisponível
-                    </button>
-                {% endif %}
 
             </div>
+
         </div>
+
     </div>
-    {% endfor %}
+
+    <div class="col-md-4">
+
+        <div class="card h-100 text-center shadow-sm p-3 border-0">
+
+            <div class="card-body">
+
+                <i class="bi bi-hospital fs-1 text-success mb-3"></i>
+
+                <h5 class="fw-bold">
+                    Atendimento integrado
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Consultas, profissionais de saúde e produtos
+                    em um só lugar.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <div class="card h-100 text-center shadow-sm p-3 border-0">
+
+            <div class="card-body">
+
+                <i class="bi bi-shield-check fs-1 text-success mb-3"></i>
+
+                <h5 class="fw-bold">
+                    Compra segura
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Mais confiança desde a escolha do produto
+                    até a confirmação do pagamento.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-<div class="text-center mt-5">
-    <a href="{{ url_for('produtos') }}" class="btn btn-outline-primary px-4 py-2 fw-bold">
-        Ver todos os produtos
-    </a>
-</div>
+<!-- PRODUTOS EM DESTAQUE -->
+<section>
+
+    <h2 class="text-center mb-2 fw-bold"
+        style="color:#072B59;">
+        Mais Vendidos
+    </h2>
+
+    <p class="text-center text-muted mb-4">
+        Produtos selecionados em destaque pela AFGMED
+    </p>
+
+    {% if produtos %}
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 mt-3">
+
+            {% for produto in produtos %}
+
+                <div class="col">
+
+                    <div class="card h-100 text-center shadow-sm border-0 rounded-4">
+
+                        <img src="{{ url_for(
+                            'static',
+                            filename='fotos_produtos/' + (
+                                produto.foto or 'default.jpg'
+                            )
+                        ) }}"
+                             class="card-img-top p-3"
+                             style="height:180px; object-fit:contain;"
+                             alt="{{ produto.nome }}">
+
+                        <div class="card-body d-flex flex-column">
+
+                            <h5 class="card-title fw-bold"
+                                style="color:#072B59;">
+
+                                {{ produto.nome }}
+                            </h5>
+
+                            <p class="card-text text-truncate text-muted"
+                               title="{{ produto.descricao or '' }}">
+
+                                {{ produto.descricao or
+                                   "Produto AFGMED para cuidado e bem-estar." }}
+                            </p>
+
+                            <p class="fw-bold text-success fs-5">
+                                R$ {{ '%.2f' % produto.preco }}
+                            </p>
+
+                            {% if produto.estoque > 0 %}
+
+                                <small class="text-success mb-3">
+
+                                    <i class="bi bi-check-circle"></i>
+                                    Em estoque
+                                </small>
+
+                                {% if current_user.is_authenticated and
+                                      current_user.is_medico and
+                                      not current_user.is_admin %}
+
+                                    <button type="button"
+                                            class="btn btn-secondary w-100 mt-auto"
+                                            disabled>
+
+                                        <i class="bi bi-lock"></i>
+                                        Compra indisponível para médico
+                                    </button>
+
+                                {% elif not current_user.is_authenticated %}
+
+                                    <a href="{{ url_for('login') }}"
+                                       class="btn btn-primary w-100 mt-auto">
+
+                                        <i class="bi bi-box-arrow-in-right"></i>
+                                        Entrar para comprar
+                                    </a>
+
+                                {% else %}
+
+                                    <form action="{{ url_for(
+                                              'adicionar_carrinho',
+                                              id_produto=produto.id
+                                          ) }}"
+                                          method="POST"
+                                          class="mt-auto">
+
+                                        <button type="submit"
+                                                class="btn btn-primary w-100">
+
+                                            <i class="bi bi-cart-plus"></i>
+                                            Adicionar ao carrinho
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <small class="text-danger mb-3">
+
+                                    <i class="bi bi-x-circle"></i>
+                                    Produto indisponível
+                                </small>
+
+                                <button type="button"
+                                        class="btn btn-secondary w-100 mt-auto"
+                                        disabled>
+
+                                    <i class="bi bi-x-circle"></i>
+                                    Indisponível
+                                </button>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body text-center p-5">
+
+                <i class="bi bi-bag-x text-muted"
+                   style="font-size:4rem;"></i>
+
+                <h4 class="fw-bold mt-3"
+                    style="color:#072B59;">
+                    Nenhum produto em destaque
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Os produtos selecionados como Mais Vendidos
+                    aparecerão nesta seção.
+                </p>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    <div class="text-center mt-5">
+
+        <a href="{{ url_for('produtos') }}"
+           class="btn btn-outline-primary px-4 py-2 fw-bold">
+
+            <i class="bi bi-grid me-1"></i>
+            Ver todos os produtos
+        </a>
+
+    </div>
+
+</section>
 
 {% endblock %}

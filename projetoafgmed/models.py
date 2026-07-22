@@ -36,6 +36,10 @@ class PerfilUsuario(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     id_usuario = database.Column(database.Integer, database.ForeignKey("usuario.id"), nullable=False)
 
+    telefone = database.Column(database.String(20), nullable=True)
+    cpf = database.Column(database.String(20), nullable=True, unique=True)
+    data_nascimento = database.Column(database.Date, nullable=True)
+
     endereco = database.Column(database.String(200))
     cidade = database.Column(database.String(100))
     estado = database.Column(database.String(50))

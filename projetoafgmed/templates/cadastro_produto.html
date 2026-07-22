@@ -1,40 +1,282 @@
 {% extends "base.html" %}
-{% block title %}Cadastrar Produto - AFGMED{% endblock %}
+
+{% block title %}
+    {% if produto %}
+        Editar Produto - AFGMED
+    {% else %}
+        Cadastrar Produto - AFGMED
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5 pt-5">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h3 class="text-center mb-4">Cadastrar Produto</h3>
-                <form method="POST" enctype="multipart/form-data">
+
+<div class="row justify-content-center mt-4">
+
+    <div class="col-12 col-md-8 col-lg-6">
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body p-4 p-md-5">
+
+                <div class="text-center mb-4">
+
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary mb-3"
+                         style="width:70px; height:70px; font-size:2rem;">
+
+                        {% if produto %}
+                            <i class="bi bi-pencil-square"></i>
+                        {% else %}
+                            <i class="bi bi-box-seam"></i>
+                        {% endif %}
+
+                    </div>
+
+                    <h3 class="fw-bold mb-2"
+                        style="color:#072B59;">
+
+                        {% if produto %}
+                            Editar Produto
+                        {% else %}
+                            Cadastrar Produto
+                        {% endif %}
+                    </h3>
+
+                    <p class="text-muted mb-0">
+
+                        {% if produto %}
+                            Atualize as informações do produto selecionado.
+                        {% else %}
+                            Preencha os dados para adicionar um novo produto.
+                        {% endif %}
+                    </p>
+
+                </div>
+
+                <form method="POST"
+                      enctype="multipart/form-data"
+                      novalidate>
+
                     {{ form.hidden_tag() }}
 
+                    <!-- NOME -->
                     <div class="mb-3">
-                        {{ form.nome.label(class="form-label") }}
-                        {{ form.nome(class="form-control") }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.descricao.label(class="form-label") }}
-                        {{ form.descricao(class="form-control") }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.preco.label(class="form-label") }}
-                        {{ form.preco(class="form-control") }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.estoque.label(class="form-label") }}
-                        {{ form.estoque(class="form-control") }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.foto.label(class="form-label") }}
-                        {{ form.foto(class="form-control") }}
+
+                        {{ form.nome.label(class="form-label fw-semibold") }}
+
+                        {{ form.nome(
+                            class="form-control" +
+                            (" is-invalid" if form.nome.errors else ""),
+                            placeholder="Nome do produto"
+                        ) }}
+
+                        {% for erro in form.nome.errors %}
+                            <div class="invalid-feedback">
+                                {{ erro }}
+                            </div>
+                        {% endfor %}
+
                     </div>
 
-                    {{ form.botao_confirmacao(class="btn btn-primary w-100") }}
+                    <!-- DESCRIÇÃO -->
+                    <div class="mb-3">
+
+                        {{ form.descricao.label(class="form-label fw-semibold") }}
+
+                        {{ form.descricao(
+                            class="form-control" +
+                            (" is-invalid" if form.descricao.errors else ""),
+                            placeholder="Descrição do produto"
+                        ) }}
+
+                        {% for erro in form.descricao.errors %}
+                            <div class="invalid-feedback">
+                                {{ erro }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="row">
+
+                        <!-- PREÇO -->
+                        <div class="col-12 col-md-6 mb-3">
+
+                            {{ form.preco.label(class="form-label fw-semibold") }}
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    R$
+                                </span>
+
+                                {{ form.preco(
+                                    class="form-control" +
+                                    (" is-invalid" if form.preco.errors else ""),
+                                    placeholder="0,00",
+                                    step="0.01",
+                                    min="0"
+                                ) }}
+
+                                {% for erro in form.preco.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ erro }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                        <!-- ESTOQUE -->
+                        <div class="col-12 col-md-6 mb-3">
+
+                            {{ form.estoque.label(class="form-label fw-semibold") }}
+
+                            {{ form.estoque(
+                                class="form-control" +
+                                (" is-invalid" if form.estoque.errors else ""),
+                                min="0",
+                                placeholder="Quantidade disponível"
+                            ) }}
+
+                            {% for erro in form.estoque.errors %}
+                                <div class="invalid-feedback">
+                                    {{ erro }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                    <!-- FOTO ATUAL -->
+                    {% if produto and produto.foto %}
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Foto atual
+                            </label>
+
+                            <div class="border rounded-4 p-3 text-center bg-light">
+
+                                <img src="{{ url_for(
+                                    'static',
+                                    filename='fotos_produtos/' + (
+                                        produto.foto or 'default.jpg'
+                                    )
+                                ) }}"
+                                     alt="{{ produto.nome }}"
+                                     style="width:140px; height:140px; object-fit:contain;">
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                    <!-- FOTO -->
+                    <div class="mb-4">
+
+                        {{ form.foto.label(class="form-label fw-semibold") }}
+
+                        {{ form.foto(
+                            class="form-control" +
+                            (" is-invalid" if form.foto.errors else ""),
+                            accept=".jpg,.jpeg,.png"
+                        ) }}
+
+                        {% for erro in form.foto.errors %}
+                            <div class="invalid-feedback">
+                                {{ erro }}
+                            </div>
+                        {% endfor %}
+
+                        {% if produto %}
+                            <div class="form-text">
+                                Deixe este campo vazio para manter a foto atual.
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                    <!-- CONFIGURAÇÕES -->
+                    <div class="border rounded-4 p-3 mb-4 bg-light">
+
+                        <h6 class="fw-bold mb-3"
+                            style="color:#072B59;">
+
+                            <i class="bi bi-sliders me-1"></i>
+                            Configurações do produto
+                        </h6>
+
+                        <div class="form-check form-switch mb-3">
+
+                            {{ form.ativo(
+                                class="form-check-input",
+                                role="switch"
+                            ) }}
+
+                            {{ form.ativo.label(
+                                class="form-check-label fw-semibold"
+                            ) }}
+
+                            <div class="form-text">
+                                Produtos inativos não poderão ser comprados.
+                            </div>
+
+                        </div>
+
+                        <div class="form-check form-switch">
+
+                            {{ form.destaque_home(
+                                class="form-check-input",
+                                role="switch"
+                            ) }}
+
+                            {{ form.destaque_home.label(
+                                class="form-check-label fw-semibold"
+                            ) }}
+
+                            <div class="form-text">
+                                Exibe o produto na seção Mais Vendidos da página inicial.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- BOTÕES -->
+                    <div class="d-grid gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary py-2 fw-bold">
+
+                            {% if produto %}
+                                <i class="bi bi-check-lg me-1"></i>
+                                Salvar alterações
+                            {% else %}
+                                <i class="bi bi-plus-circle me-1"></i>
+                                Cadastrar produto
+                            {% endif %}
+
+                        </button>
+
+                        <a href="{{ url_for('produtos') }}"
+                           class="btn btn-outline-secondary py-2">
+
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Voltar para produtos
+                        </a>
+
+                    </div>
+
                 </form>
+
             </div>
         </div>
+
     </div>
 </div>
+
 {% endblock %}

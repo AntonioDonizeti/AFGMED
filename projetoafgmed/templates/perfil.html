@@ -1,116 +1,797 @@
 {% extends "base.html" %}
-{% block title %}Perfil{% endblock %}
+
+{% block title %}Meu Perfil - AFGMED{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="fw-bold mb-4" style="color:#072B59;">Meu Perfil</h2>
 
-    <form method="POST" enctype="multipart/form-data">
-        <div class="row mb-4">
+<div class="perfil-page">
 
-            <div class="col-md-3 text-center mb-4">
-                <label class="fw-semibold mb-2">Foto de perfil</label><br>
+    <!-- CABEÇALHO -->
+    <header class="perfil-header mb-4">
 
-                <img src="{{ url_for('static', filename='fotos_perfil/' + (usuario.foto or 'usuario_padrao.jpg')) }}"
-                     class="mb-2 rounded-circle border"
-                     style="width:150px; height:150px; object-fit:cover;">
+        <h2 class="fw-bold mb-1">
+            Meu Perfil
+        </h2>
 
-                <input type="file" name="foto" class="form-control mt-2">
-            </div>
+        <p class="text-muted mb-0">
+            Atualize seus dados pessoais, foto e endereço de entrega.
+        </p>
 
-            <div class="col-md-9">
-                <div class="card shadow-sm">
-                    <div class="card-body">
+    </header>
 
-                        <h4 class="fw-bold mb-3" style="color:#072B59;">
-                            Dados Pessoais
-                        </h4>
+    <form method="POST"
+          enctype="multipart/form-data"
+          id="formPerfil">
 
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Nome</label>
-                                <input type="text"
-                                       name="nome"
-                                       class="form-control"
-                                       value="{{ usuario.nome }}">
-                            </div>
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}">
 
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">Sobrenome</label>
-                                <input type="text"
-                                       name="sobrenome"
-                                       class="form-control"
-                                       value="{{ usuario.sobrenome }}">
-                            </div>
+        <div class="row g-4 align-items-start">
 
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label">E-mail</label>
-                                <input type="email"
-                                       name="email"
-                                       class="form-control"
-                                       value="{{ usuario.email }}">
-                            </div>
-                        </div>
+            <!-- COLUNA DA FOTO -->
+            <aside class="col-12 col-lg-4">
 
-                        <hr class="my-4">
+                <div class="perfil-card perfil-card-foto">
 
-                        <h4 class="fw-bold mb-3" style="color:#072B59;">
-                            Endereço
-                        </h4>
+                    <div class="perfil-foto-area">
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Endereço</label>
-                                <input type="text"
-                                       name="endereco"
-                                       class="form-control"
-                                       value="{{ perfil.endereco or '' }}">
-                            </div>
+                        <img src="{{ url_for(
+                            'static',
+                            filename='fotos_perfil/' + (
+                                usuario.foto or 'usuario_padrao.jpg'
+                            )
+                        ) }}"
+                             alt="Foto de perfil de {{ usuario.nome }}"
+                             class="perfil-foto"
+                             id="previewFoto">
 
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Cidade</label>
-                                <input type="text"
-                                       name="cidade"
-                                       class="form-control"
-                                       value="{{ perfil.cidade or '' }}">
-                            </div>
+                        <label for="foto"
+                               class="perfil-foto-btn"
+                               title="Alterar foto de perfil"
+                               aria-label="Alterar foto de perfil">
 
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">Estado</label>
-                                <input type="text"
-                                       name="estado"
-                                       class="form-control"
-                                       value="{{ perfil.estado or '' }}">
-                            </div>
+                            <i class="bi bi-camera"></i>
+                        </label>
 
-                            <div class="col-md-3 mb-3">
-                                <label class="form-label">CEP</label>
-                                <input type="text"
-                                       name="cep"
-                                       class="form-control"
-                                       value="{{ perfil.cep or '' }}">
-                            </div>
-                        </div>
-
-                        <div class="alert alert-light border rounded-4 mt-3">
-                            <div class="d-flex gap-2 align-items-start">
-                                <i class="bi bi-shield-check text-success"></i>
-                                <small class="text-muted">
-                                    Os dados de pagamento não ficam salvos no perfil.
-                                    O pagamento será feito em ambiente seguro do Mercado Pago.
-                                </small>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary mt-3">
-                            Salvar Alterações
-                        </button>
+                        <input type="file"
+                               name="foto"
+                               id="foto"
+                               class="d-none"
+                               accept=".jpg,.jpeg,.png,.webp">
 
                     </div>
+
+                    <h4 class="fw-bold mt-3 mb-1">
+                        {{ usuario.nome }} {{ usuario.sobrenome }}
+                    </h4>
+
+                    <p class="text-muted mb-3 perfil-email">
+                        {{ usuario.email }}
+                    </p>
+
+                    <div class="perfil-tipo">
+
+                        {% if usuario.is_admin %}
+
+                            <i class="bi bi-shield-check"></i>
+                            Administrador
+
+                        {% elif usuario.is_medico %}
+
+                            <i class="bi bi-person-badge"></i>
+                            Médico
+
+                        {% else %}
+
+                            <i class="bi bi-person"></i>
+                            Cliente
+
+                        {% endif %}
+
+                    </div>
+
+                    <p class="perfil-foto-ajuda mb-0 mt-3">
+                        Clique no ícone da câmera para selecionar uma nova foto.
+                    </p>
+
                 </div>
-            </div>
+
+            </aside>
+
+            <!-- COLUNA DOS FORMULÁRIOS -->
+            <section class="col-12 col-lg-8">
+
+                <!-- DADOS PESSOAIS -->
+                <div class="perfil-card mb-4">
+
+                    <div class="perfil-section-title">
+
+                        <div class="perfil-section-icon">
+                            <i class="bi bi-person-lines-fill"></i>
+                        </div>
+
+                        <div>
+
+                            <h4 class="fw-bold mb-1">
+                                Dados pessoais
+                            </h4>
+
+                            <p class="text-muted mb-0">
+                                Informações principais da sua conta.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row g-3">
+
+                        <div class="col-12 col-md-6">
+
+                            <label for="nome"
+                                   class="form-label">
+                                Nome
+                            </label>
+
+                            <input type="text"
+                                   name="nome"
+                                   id="nome"
+                                   class="form-control perfil-input"
+                                   value="{{ usuario.nome }}"
+                                   maxlength="100"
+                                   autocomplete="given-name"
+                                   required>
+
+                        </div>
+
+                        <div class="col-12 col-md-6">
+
+                            <label for="sobrenome"
+                                   class="form-label">
+                                Sobrenome
+                            </label>
+
+                            <input type="text"
+                                   name="sobrenome"
+                                   id="sobrenome"
+                                   class="form-control perfil-input"
+                                   value="{{ usuario.sobrenome }}"
+                                   maxlength="100"
+                                   autocomplete="family-name"
+                                   required>
+
+                        </div>
+
+                        <div class="col-12">
+
+                            <label for="email"
+                                   class="form-label">
+                                E-mail
+                            </label>
+
+                            <input type="email"
+                                   name="email"
+                                   id="email"
+                                   class="form-control perfil-input"
+                                   value="{{ usuario.email }}"
+                                   maxlength="150"
+                                   autocomplete="email"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- DADOS COMPLEMENTARES -->
+                <div class="perfil-card mb-4">
+
+                    <div class="perfil-section-title">
+
+                        <div class="perfil-section-icon">
+                            <i class="bi bi-card-checklist"></i>
+                        </div>
+
+                        <div>
+
+                            <h4 class="fw-bold mb-1">
+                                Dados complementares
+                            </h4>
+
+                            <p class="text-muted mb-0">
+                                Essas informações ajudam no atendimento e identificação.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row g-3">
+
+                        <div class="col-12 col-md-4">
+
+                            <label for="telefone"
+                                   class="form-label">
+                                Telefone
+                            </label>
+
+                            <input type="text"
+                                   name="telefone"
+                                   id="telefone"
+                                   class="form-control perfil-input"
+                                   placeholder="(00) 00000-0000"
+                                   maxlength="15"
+                                   autocomplete="tel"
+                                   value="{{ perfil.telefone or '' }}">
+
+                        </div>
+
+                        <div class="col-12 col-md-4">
+
+                            <label for="cpf"
+                                   class="form-label">
+                                CPF
+                            </label>
+
+                            <input type="text"
+                                   name="cpf"
+                                   id="cpf"
+                                   class="form-control perfil-input"
+                                   placeholder="000.000.000-00"
+                                   maxlength="14"
+                                   inputmode="numeric"
+                                   value="{{ perfil.cpf or '' }}">
+
+                        </div>
+
+                        <div class="col-12 col-md-4">
+
+                            <label for="data_nascimento"
+                                   class="form-label">
+                                Data de nascimento
+                            </label>
+
+                            <input type="date"
+                                   name="data_nascimento"
+                                   id="data_nascimento"
+                                   class="form-control perfil-input"
+                                   value="{{ perfil.data_nascimento.strftime('%Y-%m-%d') if perfil.data_nascimento else '' }}">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ENDEREÇO -->
+                <div class="perfil-card mb-4">
+
+                    <div class="perfil-section-title">
+
+                        <div class="perfil-section-icon">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+
+                        <div>
+
+                            <h4 class="fw-bold mb-1">
+                                Endereço
+                            </h4>
+
+                            <p class="text-muted mb-0">
+                                Usado para facilitar suas entregas de medicamentos.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row g-3">
+
+                        <div class="col-12">
+
+                            <label for="endereco"
+                                   class="form-label">
+                                Endereço
+                            </label>
+
+                            <input type="text"
+                                   name="endereco"
+                                   id="endereco"
+                                   class="form-control perfil-input"
+                                   placeholder="Rua, número e bairro"
+                                   maxlength="255"
+                                   autocomplete="street-address"
+                                   value="{{ perfil.endereco or '' }}">
+
+                        </div>
+
+                        <div class="col-12 col-md-5">
+
+                            <label for="cidade"
+                                   class="form-label">
+                                Cidade
+                            </label>
+
+                            <input type="text"
+                                   name="cidade"
+                                   id="cidade"
+                                   class="form-control perfil-input"
+                                   maxlength="100"
+                                   autocomplete="address-level2"
+                                   value="{{ perfil.cidade or '' }}">
+
+                        </div>
+
+                        <div class="col-12 col-md-3">
+
+                            <label for="estado"
+                                   class="form-label">
+                                Estado
+                            </label>
+
+                            <input type="text"
+                                   name="estado"
+                                   id="estado"
+                                   class="form-control perfil-input"
+                                   placeholder="SP"
+                                   maxlength="2"
+                                   autocomplete="address-level1"
+                                   value="{{ perfil.estado or '' }}">
+
+                        </div>
+
+                        <div class="col-12 col-md-4">
+
+                            <label for="cep"
+                                   class="form-label">
+                                CEP
+                            </label>
+
+                            <input type="text"
+                                   name="cep"
+                                   id="cep"
+                                   class="form-control perfil-input"
+                                   placeholder="00000-000"
+                                   maxlength="9"
+                                   inputmode="numeric"
+                                   autocomplete="postal-code"
+                                   value="{{ perfil.cep or '' }}">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- AÇÕES -->
+                <div class="perfil-actions">
+
+                    <a href="{{ url_for('homepage') }}"
+                       class="btn btn-outline-secondary">
+
+                        Cancelar
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-salvar-perfil"
+                            id="btnSalvarPerfil">
+
+                        <i class="bi bi-check2-circle"></i>
+                        Salvar alterações
+                    </button>
+
+                </div>
+
+            </section>
 
         </div>
+
     </form>
+
 </div>
+
+<style>
+/* =========================================================
+   PERFIL
+========================================================= */
+
+.perfil-page {
+    padding-top: 0;
+    padding-bottom: 50px;
+}
+
+.perfil-header h2 {
+    color: #072b59;
+    font-size: 2.1rem;
+}
+
+.perfil-header p {
+    font-size: 1.04rem;
+}
+
+.perfil-card {
+    padding: 28px;
+    background: #ffffff;
+    border: 1px solid rgba(7, 43, 89, 0.08);
+    border-radius: 28px;
+    box-shadow: 0 16px 38px rgba(7, 43, 89, 0.08);
+}
+
+/*
+    IMPORTANTE:
+    position static impede que o card acompanhe a rolagem.
+    O !important sobrescreve o position sticky do style.css.
+*/
+.perfil-card-foto {
+    position: static !important;
+    top: auto !important;
+    bottom: auto !important;
+    align-self: flex-start;
+    text-align: center;
+}
+
+.perfil-foto-area {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+}
+
+.perfil-foto {
+    display: block;
+    width: 150px;
+    height: 150px;
+    background: #f8fbfd;
+    border: 6px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 12px 30px rgba(7, 43, 89, 0.18);
+    object-fit: cover;
+    object-position: center;
+}
+
+.perfil-foto-btn {
+    position: absolute;
+    right: 2px;
+    bottom: 8px;
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    color: #ffffff;
+    background: #18a999;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 8px 18px rgba(24, 169, 153, 0.25);
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.perfil-foto-btn:hover {
+    color: #ffffff;
+    background: #139181;
+    transform: translateY(-1px);
+}
+
+.perfil-email {
+    word-break: break-word;
+}
+
+.perfil-tipo {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    color: #072b59;
+    background: #eef8f7;
+    border-radius: 999px;
+    font-weight: 800;
+}
+
+.perfil-tipo i {
+    color: #18a999;
+}
+
+.perfil-foto-ajuda {
+    color: #7b8794;
+    font-size: 0.79rem;
+    line-height: 1.5;
+}
+
+.perfil-section-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.perfil-section-title h4 {
+    color: #072b59;
+}
+
+.perfil-section-icon {
+    display: grid;
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    place-items: center;
+    color: #18a999;
+    background: rgba(24, 169, 153, 0.12);
+    border-radius: 18px;
+    font-size: 1.45rem;
+}
+
+.perfil-card .form-label {
+    color: #072b59;
+    font-weight: 800;
+}
+
+.perfil-input {
+    min-height: 50px;
+    color: #1c2733;
+    background: #f8fbfd;
+    border: 1px solid #dce6ee;
+    border-radius: 16px;
+    font-weight: 600;
+}
+
+.perfil-input:focus {
+    background: #ffffff;
+    border-color: #18a999;
+    box-shadow: 0 0 0 0.2rem rgba(24, 169, 153, 0.13);
+}
+
+.perfil-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.perfil-actions .btn {
+    min-height: 48px;
+    padding-right: 22px;
+    padding-left: 22px;
+    border-radius: 16px;
+    font-weight: 800;
+}
+
+.btn-salvar-perfil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: #ffffff;
+    background: #18a999;
+    border: 1px solid #18a999;
+}
+
+.btn-salvar-perfil:hover,
+.btn-salvar-perfil:focus {
+    color: #ffffff;
+    background: #139181;
+    border-color: #139181;
+}
+
+/* TABLET */
+@media (max-width: 991.98px) {
+    .perfil-header h2 {
+        font-size: 1.95rem;
+    }
+
+    .perfil-card {
+        padding: 24px;
+    }
+
+    .perfil-card-foto {
+        position: static !important;
+        top: auto !important;
+    }
+}
+
+/* MOBILE */
+@media (max-width: 767.98px) {
+    .perfil-page {
+        padding-bottom: 35px;
+    }
+
+    .perfil-header {
+        text-align: left;
+    }
+
+    .perfil-header h2 {
+        font-size: 1.75rem;
+    }
+
+    .perfil-header p {
+        font-size: 0.96rem;
+    }
+
+    .perfil-card {
+        padding: 22px;
+        border-radius: 22px;
+    }
+
+    .perfil-section-title {
+        align-items: flex-start;
+    }
+
+    .perfil-section-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 16px;
+        font-size: 1.25rem;
+    }
+
+    .perfil-section-title h4 {
+        font-size: 1.18rem;
+    }
+
+    .perfil-section-title p {
+        font-size: 0.92rem;
+    }
+
+    .perfil-actions {
+        flex-direction: column-reverse;
+    }
+
+    .perfil-actions .btn {
+        width: 100%;
+    }
+}
+
+/* CELULARES PEQUENOS */
+@media (max-width: 420px) {
+    .perfil-card {
+        padding: 18px;
+    }
+
+    .perfil-foto-area,
+    .perfil-foto {
+        width: 132px;
+        height: 132px;
+    }
+
+    .perfil-foto-btn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .perfil-input {
+        min-height: 48px;
+        font-size: 0.94rem;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const cpfInput = document.getElementById("cpf");
+    const telefoneInput = document.getElementById("telefone");
+    const cepInput = document.getElementById("cep");
+    const estadoInput = document.getElementById("estado");
+    const fotoInput = document.getElementById("foto");
+    const previewFoto = document.getElementById("previewFoto");
+    const formPerfil = document.getElementById("formPerfil");
+    const btnSalvar = document.getElementById("btnSalvarPerfil");
+
+    function somenteNumeros(valor) {
+        return valor.replace(/\D/g, "");
+    }
+
+    if (cpfInput) {
+        cpfInput.addEventListener("input", function () {
+            let valor = somenteNumeros(cpfInput.value).slice(0, 11);
+
+            valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+            valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+            valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+            cpfInput.value = valor;
+        });
+    }
+
+    if (telefoneInput) {
+        telefoneInput.addEventListener("input", function () {
+            let valor = somenteNumeros(telefoneInput.value).slice(0, 11);
+
+            if (valor.length <= 10) {
+                valor = valor.replace(/(\d{2})(\d)/, "($1) $2");
+                valor = valor.replace(/(\d{4})(\d)/, "$1-$2");
+            } else {
+                valor = valor.replace(/(\d{2})(\d)/, "($1) $2");
+                valor = valor.replace(/(\d{5})(\d)/, "$1-$2");
+            }
+
+            telefoneInput.value = valor;
+        });
+    }
+
+    if (cepInput) {
+        cepInput.addEventListener("input", function () {
+            let valor = somenteNumeros(cepInput.value).slice(0, 8);
+
+            valor = valor.replace(/(\d{5})(\d)/, "$1-$2");
+
+            cepInput.value = valor;
+        });
+    }
+
+    if (estadoInput) {
+        estadoInput.addEventListener("input", function () {
+            estadoInput.value = estadoInput.value
+                .replace(/[^a-zA-Z]/g, "")
+                .slice(0, 2)
+                .toUpperCase();
+        });
+    }
+
+    if (fotoInput && previewFoto) {
+        fotoInput.addEventListener("change", function () {
+            const arquivo = fotoInput.files[0];
+
+            if (!arquivo) {
+                return;
+            }
+
+            const formatosPermitidos = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!formatosPermitidos.includes(arquivo.type)) {
+                window.alert(
+                    "Selecione uma imagem nos formatos JPG, PNG ou WEBP."
+                );
+
+                fotoInput.value = "";
+                return;
+            }
+
+            const limiteEmBytes = 5 * 1024 * 1024;
+
+            if (arquivo.size > limiteEmBytes) {
+                window.alert(
+                    "A imagem deve possuir no máximo 5 MB."
+                );
+
+                fotoInput.value = "";
+                return;
+            }
+
+            const leitor = new FileReader();
+
+            leitor.addEventListener("load", function (evento) {
+                previewFoto.src = evento.target.result;
+            });
+
+            leitor.readAsDataURL(arquivo);
+        });
+    }
+
+    if (formPerfil && btnSalvar) {
+        formPerfil.addEventListener("submit", function () {
+            btnSalvar.disabled = true;
+
+            btnSalvar.innerHTML = `
+                <span class="spinner-border spinner-border-sm"
+                      aria-hidden="true"></span>
+                Salvando...
+            `;
+        });
+    }
+});
+</script>
 {% endblock %}

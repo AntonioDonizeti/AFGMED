@@ -1,10 +1,15 @@
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from datetime import datetime
+from uuid import uuid4
 import os
 
 from projetoafgmed import app, database
 from projetoafgmed.models import Usuario, PerfilUsuario
+
+
+EXTENSOES_PERMITIDAS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
 @app.route("/perfil", methods=["GET", "POST"])
@@ -14,11 +19,20 @@ def perfil():
     perfil_usuario = usuario.perfil or PerfilUsuario(usuario=usuario)
 
     if request.method == "POST":
+
+        # FOTO DE PERFIL
         if "foto" in request.files and request.files["foto"].filename:
             arquivo = request.files["foto"]
-            nome_foto = secure_filename(arquivo.filename)
+            nome_original = secure_filename(arquivo.filename)
+            extensao = os.path.splitext(nome_original)[1].lower()
 
-            pasta_fotos = os.path.join(app.root_path, "static/fotos_perfil")
+            if extensao not in EXTENSOES_PERMITIDAS:
+                flash("Formato de imagem inválido. Use JPG, PNG ou WEBP.", "danger")
+                return redirect(url_for("perfil"))
+
+            nome_foto = f"{uuid4().hex}{extensao}"
+
+            pasta_fotos = os.path.join(app.root_path, "static", "fotos_perfil")
             os.makedirs(pasta_fotos, exist_ok=True)
 
             caminho = os.path.join(pasta_fotos, nome_foto)
@@ -26,6 +40,7 @@ def perfil():
 
             usuario.foto = nome_foto
 
+        # DADOS DO USUÁRIO
         usuario.nome = request.form.get("nome") or usuario.nome
         usuario.sobrenome = request.form.get("sobrenome") or usuario.sobrenome
 
@@ -45,6 +60,25 @@ def perfil():
 
             usuario.email = email_novo
 
+        # DADOS COMPLEMENTARES
+        perfil_usuario.telefone = request.form.get("telefone")
+        perfil_usuario.cpf = request.form.get("cpf")
+
+        data_nascimento = request.form.get("data_nascimento")
+
+        if data_nascimento:
+            try:
+                perfil_usuario.data_nascimento = datetime.strptime(
+                    data_nascimento,
+                    "%Y-%m-%d"
+                ).date()
+            except ValueError:
+                flash("Data de nascimento inválida.", "danger")
+                return redirect(url_for("perfil"))
+        else:
+            perfil_usuario.data_nascimento = None
+
+        # ENDEREÇO
         perfil_usuario.endereco = request.form.get("endereco")
         perfil_usuario.cidade = request.form.get("cidade")
         perfil_usuario.estado = request.form.get("estado")

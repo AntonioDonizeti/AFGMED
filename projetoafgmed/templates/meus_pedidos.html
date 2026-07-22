@@ -1,34 +1,58 @@
 {% extends "base.html" %}
-{% block title %}Minhas Compras - AFGMED{% endblock %}
+
+{% block title %}
+    Minhas Compras - AFGMED
+{% endblock %}
 
 {% block content %}
+
 <div class="container mt-5 minhas-compras-page">
 
     <div class="compras-header mb-4">
+
         <span class="compras-badge">
+
             <i class="bi bi-bag-check"></i>
             Área do Cliente
         </span>
 
-        <h2 class="fw-bold mt-3 mb-2" style="color:#072B59;">
+        <h2 class="fw-bold mt-3 mb-2"
+            style="color:#072B59;">
+
             Minhas Compras
         </h2>
 
         <p class="text-muted mb-0">
-            Acompanhe seus medicamentos comprados, pagamentos pendentes e pedidos confirmados.
+            Acompanhe seus medicamentos comprados, pagamentos pendentes
+            e pedidos confirmados.
         </p>
+
     </div>
 
     {% if pedidos %}
+
         <div class="row g-4">
+
             {% for compra in pedidos %}
-                {% set pedido = compra.carrinho %}
+
+                {% set pedido = compra.pedido %}
                 {% set status = compra.status %}
 
                 <div class="col-12">
+
                     <div class="card border-0 shadow-sm rounded-4 pedido-card"
-                         data-status-url="{{ url_for('status_pagamento', id_carrinho=pedido.id) }}"
-                         data-pendente="{% if pedido.status == 'aguardando_pagamento' or pedido.status_pagamento in ['pendente', 'pending', 'in_process'] %}1{% else %}0{% endif %}">
+                         data-status-url="{{ url_for(
+                             'status_pagamento',
+                             id_carrinho=pedido.id_carrinho
+                         ) }}"
+                         data-pendente="{% if
+                             pedido.status == 'aguardando_pagamento'
+                             or pedido.status_pagamento in [
+                                 'pendente',
+                                 'pending',
+                                 'in_process'
+                             ]
+                         %}1{% else %}0{% endif %}">
 
                         <div class="card-body p-4">
 
@@ -36,134 +60,244 @@
                             <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-start gap-3 mb-4">
 
                                 <div>
+
                                     <div class="d-flex align-items-center gap-2 mb-2">
+
                                         <div class="pedido-icon">
                                             <i class="bi bi-receipt"></i>
                                         </div>
 
                                         <div>
-                                            <h5 class="fw-bold mb-0" style="color:#072B59;">
+
+                                            <h5 class="fw-bold mb-0"
+                                                style="color:#072B59;">
+
                                                 Pedido #{{ pedido.id }}
                                             </h5>
 
                                             <small class="text-muted">
-                                                {{ pedido.data_criacao.strftime('%d/%m/%Y às %H:%M') }}
+
+                                                {% if pedido.data_criacao %}
+                                                    {{ pedido.data_criacao.strftime(
+                                                        '%d/%m/%Y às %H:%M'
+                                                    ) }}
+                                                {% endif %}
+
                                             </small>
+
                                         </div>
+
                                     </div>
+
                                 </div>
 
                                 <div class="pedido-status-area">
+
                                     <span class="badge {{ status.classe }} pedido-status-badge">
-                                        <i class="bi {{ status.icone }}"></i>
-                                        <span class="pedido-status-texto">{{ status.texto }}</span>
+
+                                        <i class="bi {{ status.icone }} pedido-status-icone"></i>
+
+                                        <span class="pedido-status-texto">
+                                            {{ status.texto }}
+                                        </span>
+
                                     </span>
 
                                     <div class="small text-muted mt-2 pedido-status-descricao">
                                         {{ status.descricao }}
                                     </div>
+
                                 </div>
 
                             </div>
 
                             <!-- PRODUTOS -->
                             <div class="pedido-produtos">
-                                {% for item in pedido.itens %}
-                                <div class="pedido-produto-item">
 
-                                    <div class="pedido-produto-img">
-                                        <img src="{{ url_for('static', filename='fotos_produtos/' + (item.produto.foto or 'default.jpg')) }}"
-                                             alt="{{ item.produto.nome }}">
+                                {% if pedido.itens %}
+
+                                    {% for item in pedido.itens %}
+
+                                        <div class="pedido-produto-item">
+
+                                            <div class="pedido-produto-img">
+
+                                                <img src="{{ url_for(
+                                                    'static',
+                                                    filename='fotos_produtos/' + (
+                                                        item.foto_produto or
+                                                        'default.jpg'
+                                                    )
+                                                ) }}"
+                                                     alt="{{ item.nome_produto }}">
+
+                                            </div>
+
+                                            <div class="pedido-produto-info">
+
+                                                <h6 class="fw-bold mb-1"
+                                                    style="color:#072B59;">
+
+                                                    {{ item.nome_produto }}
+                                                </h6>
+
+                                                {% if item.descricao_produto %}
+
+                                                    <p class="text-muted small mb-1">
+                                                        {{ item.descricao_produto }}
+                                                    </p>
+
+                                                {% endif %}
+
+                                                <p class="text-muted small mb-0">
+
+                                                    {{ item.quantidade }}
+                                                    unidade(s) ·
+
+                                                    R$ {{ '%.2f' %
+                                                        item.preco_unitario }}
+                                                    cada
+                                                </p>
+
+                                            </div>
+
+                                            <div class="pedido-produto-total">
+
+                                                R$ {{ '%.2f' % item.subtotal }}
+                                            </div>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                {% else %}
+
+                                    <div class="alert alert-light border mb-0">
+
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Nenhum item foi encontrado neste pedido.
                                     </div>
 
-                                    <div class="pedido-produto-info">
-                                        <h6 class="fw-bold mb-1" style="color:#072B59;">
-                                            {{ item.produto.nome }}
-                                        </h6>
+                                {% endif %}
 
-                                        <p class="text-muted small mb-0">
-                                            {{ item.quantidade }} unidade(s) ·
-                                            R$ {{ '%.2f' % item.preco_unitario }} cada
-                                        </p>
-                                    </div>
-
-                                    <div class="pedido-produto-total">
-                                        R$ {{ '%.2f' % (item.quantidade * item.preco_unitario) }}
-                                    </div>
-
-                                </div>
-                                {% endfor %}
                             </div>
 
                             <!-- ENTREGA E TOTAL -->
                             <div class="pedido-footer mt-4 pt-4">
 
                                 <div class="pedido-entrega">
-                                    {% if pedido.entrega %}
-                                        <div class="d-flex gap-2 align-items-start">
-                                            <i class="bi bi-geo-alt text-primary mt-1"></i>
-                                            <div>
-                                                <strong style="color:#072B59;">Endereço de entrega</strong>
-                                                <p class="text-muted small mb-0">
-                                                    {{ pedido.entrega.endereco }},
-                                                    {{ pedido.entrega.cidade }} -
-                                                    {{ pedido.entrega.estado }},
-                                                    CEP {{ pedido.entrega.cep }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    {% else %}
-                                        <div class="d-flex gap-2 align-items-start">
-                                            <i class="bi bi-info-circle text-muted mt-1"></i>
+
+                                    <div class="d-flex gap-2 align-items-start">
+
+                                        <i class="bi bi-geo-alt text-primary mt-1"></i>
+
+                                        <div>
+
+                                            <strong style="color:#072B59;">
+                                                Endereço de entrega
+                                            </strong>
+
                                             <p class="text-muted small mb-0">
-                                                Endereço de entrega ainda não registrado.
+
+                                                {{ pedido.endereco }},
+                                                {{ pedido.cidade }} -
+                                                {{ pedido.estado }},
+                                                CEP {{ pedido.cep }}
                                             </p>
+
                                         </div>
-                                    {% endif %}
+
+                                    </div>
+
                                 </div>
 
                                 <div class="pedido-total-area">
-                                    <small class="text-muted">Total do pedido</small>
+
+                                    {% if pedido.total_entrega > 0 %}
+
+                                        <small class="text-muted d-block">
+                                            Produtos:
+                                            R$ {{ '%.2f' %
+                                                pedido.total_produtos }}
+                                        </small>
+
+                                        <small class="text-muted d-block">
+                                            Entrega:
+                                            R$ {{ '%.2f' %
+                                                pedido.total_entrega }}
+                                        </small>
+
+                                    {% endif %}
+
+                                    <small class="text-muted">
+                                        Total do pedido
+                                    </small>
 
                                     <strong class="pedido-total">
-                                        R$ {{ '%.2f' % compra.total }}
+
+                                        R$ {{ '%.2f' % pedido.total }}
                                     </strong>
 
-                                    {% if pedido.status == "aguardando_pagamento" and pedido.mercado_pago_init_point %}
+                                    {% if
+                                        pedido.status == "aguardando_pagamento"
+                                        and pedido.mercado_pago_init_point
+                                    %}
+
                                         <a href="{{ pedido.mercado_pago_init_point }}"
                                            class="btn btn-outline-primary btn-sm pedido-btn-pagamento mt-2">
+
                                             <i class="bi bi-credit-card"></i>
                                             Continuar pagamento
                                         </a>
+
                                     {% endif %}
+
                                 </div>
 
                             </div>
 
                         </div>
+
                     </div>
+
                 </div>
+
             {% endfor %}
+
         </div>
 
     {% else %}
+
         <div class="card border-0 shadow-sm rounded-4">
+
             <div class="card-body text-center p-5">
 
                 <div class="compras-vazio-icon">
                     <i class="bi bi-bag-x"></i>
                 </div>
 
-                <h4 class="fw-bold mt-4 mb-2" style="color:#072B59;">
+                <h4 class="fw-bold mt-4 mb-2"
+                    style="color:#072B59;">
+
                     Nenhuma compra encontrada
                 </h4>
 
-                <p class="text-muted mb-0">
-                    Quando você comprar medicamentos, seus pedidos aparecerão aqui.
+                <p class="text-muted mb-4">
+                    Quando você comprar medicamentos ou produtos,
+                    seus pedidos aparecerão aqui.
                 </p>
 
+                <a href="{{ url_for('produtos') }}"
+                   class="btn btn-primary">
+
+                    <i class="bi bi-bag-heart me-1"></i>
+                    Ver produtos
+                </a>
+
             </div>
+
         </div>
+
     {% endif %}
 
 </div>
@@ -260,6 +394,15 @@
     padding: 8px;
 }
 
+.pedido-produto-info {
+    min-width: 0;
+}
+
+.pedido-produto-info h6,
+.pedido-produto-info p {
+    overflow-wrap: anywhere;
+}
+
 .pedido-produto-total {
     font-weight: 800;
     color: #072B59;
@@ -339,7 +482,9 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const cardsPendentes = document.querySelectorAll(".pedido-card[data-pendente='1']");
+    const cardsPendentes = document.querySelectorAll(
+        ".pedido-card[data-pendente='1']"
+    );
 
     cardsPendentes.forEach(function (card) {
         const statusUrl = card.dataset.statusUrl;
@@ -347,7 +492,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const intervalo = setInterval(async function () {
             try {
                 const resposta = await fetch(statusUrl, {
-                    cache: "no-store"
+                    method: "GET",
+                    cache: "no-store",
+                    headers: {
+                        "Accept": "application/json"
+                    }
                 });
 
                 if (!resposta.ok) {
@@ -356,18 +505,59 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const data = await resposta.json();
 
-                const badge = card.querySelector(".pedido-status-badge");
-                const texto = card.querySelector(".pedido-status-texto");
-                const descricao = card.querySelector(".pedido-status-descricao");
-                const botaoPagamento = card.querySelector(".pedido-btn-pagamento");
-
-                if (badge && texto && descricao) {
-                    badge.className = "badge pedido-status-badge " + data.classe;
-                    texto.textContent = data.texto;
-                    descricao.textContent = data.descricao;
+                if (data.sucesso === false) {
+                    return;
                 }
 
-                if (data.status === "finalizado" || data.status_pagamento === "approved") {
+                const badge = card.querySelector(
+                    ".pedido-status-badge"
+                );
+
+                const icone = card.querySelector(
+                    ".pedido-status-icone"
+                );
+
+                const texto = card.querySelector(
+                    ".pedido-status-texto"
+                );
+
+                const descricao = card.querySelector(
+                    ".pedido-status-descricao"
+                );
+
+                const botaoPagamento = card.querySelector(
+                    ".pedido-btn-pagamento"
+                );
+
+                if (badge) {
+                    badge.className =
+                        "badge pedido-status-badge " +
+                        (data.classe || "bg-secondary");
+                }
+
+                if (icone) {
+                    icone.className =
+                        "bi " +
+                        (data.icone || "bi-info-circle") +
+                        " pedido-status-icone";
+                }
+
+                if (texto) {
+                    texto.textContent =
+                        data.texto || "Status em análise";
+                }
+
+                if (descricao) {
+                    descricao.textContent =
+                        data.descricao ||
+                        "Estamos verificando o status do pedido.";
+                }
+
+                if (
+                    data.status === "finalizado" ||
+                    data.status_pedido === "pago" ||
+                    data.status_pagamento === "approved"
+                ) {
                     card.dataset.pendente = "0";
                     clearInterval(intervalo);
 
@@ -376,11 +566,24 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
 
+                if (
+                    data.status_pedido === "falha" ||
+                    data.status_pedido === "cancelado" ||
+                    data.status_pagamento === "rejected" ||
+                    data.status_pagamento === "cancelled"
+                ) {
+                    card.dataset.pendente = "0";
+                    clearInterval(intervalo);
+                }
+
             } catch (erro) {
-                console.log("Aguardando atualização do status do pedido...");
+                console.log(
+                    "Aguardando atualização do status do pedido."
+                );
             }
         }, 5000);
     });
 });
 </script>
+
 {% endblock %}

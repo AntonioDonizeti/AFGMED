@@ -1,917 +1,389 @@
-/* ========================== */
-/*       GLOBAL STYLES        */
-/* ========================== */
-body {
-    background: #f4f8fb;
-    color: #273444;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* ========================== */
-/*         NAVBAR             */
-/* ========================== */
-.navbar {
-    background: #072B59 !important;
-    box-shadow: 0 4px 18px rgba(7, 43, 89, 0.18);
-}
-
-.navbar-brand {
-    font-weight: 700;
-    letter-spacing: .3px;
-}
-
-.navbar-brand img {
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-.navbar .nav-link {
-    color: rgba(255, 255, 255, .88) !important;
-    font-weight: 500;
-}
-
-.navbar .nav-link:hover {
-    color: #7ee0d2 !important;
-}
-
-/* ========================== */
-/*         BANNER             */
-/* ========================== */
-.hero-banner {
-    min-height: 430px;
-    border-radius: 24px;
-    padding: 55px 0;
-    overflow: hidden;
-    position: relative;
-    background:
-        linear-gradient(90deg, rgba(7,43,89,.94), rgba(7,43,89,.50)),
-        url("../imagens/banner.jpg") center/cover no-repeat;
-    box-shadow: 0 18px 45px rgba(7, 43, 89, .16);
-}
-
-.hero-banner::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 85% 20%, rgba(24,169,153,.35), transparent 28%);
-}
-
-.hero-conteudo {
-    position: relative;
-    z-index: 2;
-    padding-left: 3rem;
-}
-
-.hero-conteudo h1 {
-    letter-spacing: -1px;
-    line-height: 1.08;
-}
-
-.hero-conteudo p {
-    color: rgba(255,255,255,.88) !important;
-}
-
-/* ========================== */
-/*          BOTÕES            */
-/* ========================== */
-.btn {
-    border-radius: 12px;
-    transition: .2s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-.btn-primary {
-    background-color: #072B59;
-    border-color: #072B59;
-    font-weight: 700;
-}
-
-.btn-primary:hover {
-    background-color: #0B3A75;
-    border-color: #0B3A75;
-}
-
-.btn-success {
-    background-color: #18A999;
-    border-color: #18A999;
-    font-weight: 700;
-}
-
-.btn-success:hover {
-    background-color: #129585;
-    border-color: #129585;
-    font-weight: 700;
-}
-
-.btn-outline-primary {
-    color: #072B59;
-    border-color: #072B59;
-    border-radius: 12px;
-    font-weight: 700;
-}
-
-.btn-outline-primary:hover {
-    background: #072B59;
-    border-color: #072B59;
-    color: #fff;
-}
-
-/* ========================== */
-/*           CARDS            */
-/* ========================== */
-.card {
-    border: none;
-    border-radius: 20px;
-    overflow: hidden;
-    transition: .25s ease;
-    box-shadow: 0 8px 24px rgba(7,43,89,.08) !important;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 36px rgba(7,43,89,.14) !important;
-}
-
-.card-body {
-    padding: 22px;
-}
-
-.card-title {
-    color: #072B59;
-}
-
-.card-img-top {
-    background: linear-gradient(180deg, #eef7fb, #ffffff);
-}
-
-.card-img-container {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.card-img-container img {
-    width: auto;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* ========================== */
-/*          TEXTOS            */
-/* ========================== */
-h1.text-center {
-    color: #072B59;
-    font-weight: 800;
-    margin-top: 20px;
-}
-
-.text-muted {
-    color: #6b7280 !important;
-}
-
-.text-success {
-    color: #18A999 !important;
-}
-
-/* ========================== */
-/*           CARRINHO         */
-/* ========================== */
-.badge.bg-danger {
-    font-size: 0.7rem;
-}
-
-.offcanvas-title {
-    color: #072B59;
-    font-weight: 700;
-}
-
-.list-group-item {
-    border-radius: 12px !important;
-    margin-bottom: 10px;
-    border: 1px solid #e5eaf0;
-}
-
-/* ========================== */
-/*      CARRINHO MOBILE       */
-/* ========================== */
-.carrinho-mobile-btn {
-    width: 46px;
-    height: 46px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 10px;
-    color: #ffffff !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    position: relative;
-}
-
-.carrinho-mobile-btn i {
-    font-size: 1.45rem;
-}
-
-.carrinho-mobile-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: #7ee0d2 !important;
-}
-
-.carrinho-mobile-btn .badge,
-.badge-carrinho {
-    font-size: 0.65rem;
-    min-width: 18px;
-    height: 18px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 5px;
-    border-radius: 999px;
-}
-
-/* ========================== */
-/*           RODAPÉ           */
-/* ========================== */
-.footer-afg {
-    background: #072B59;
-    color: #ffffff;
-    border-radius: 24px 24px 0 0;
-}
-
-.footer-logo {
-    border-radius: 10px;
-    object-fit: cover;
-}
-
-.footer-text {
-    color: rgba(255, 255, 255, 0.75);
-    line-height: 1.6;
-    margin-bottom: 0;
-}
-
-.footer-title {
-    font-weight: 700;
-    margin-bottom: 15px;
-    color: #ffffff;
-}
-
-.footer-links {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.footer-links li {
-    margin-bottom: 10px;
-    color: rgba(255, 255, 255, 0.75);
-}
-
-.footer-links a {
-    color: rgba(255, 255, 255, 0.75);
-    text-decoration: none;
-    transition: .2s ease;
-}
-
-.footer-links a:hover {
-    color: #7ee0d2;
-}
-
-.footer-icons {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-}
-
-.footer-icons i {
-    width: 38px;
-    height: 38px;
-    background: rgba(255, 255, 255, 0.12);
-    color: #7ee0d2;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    font-size: 1.2rem;
-}
-
-.footer-line {
-    border-color: rgba(255, 255, 255, 0.18);
-    margin: 30px 0 20px;
-}
-
-.footer-afg small {
-    color: rgba(255, 255, 255, 0.68);
-}
-
-/* ========================== */
-/*        FOTO DE PERFIL      */
-/* ========================== */
-.foto-perfil {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-/* ========================== */
-/*       FORMULÁRIO PERFIL    */
-/* ========================== */
-.perfil-form input,
-.perfil-form select {
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    border: 1px solid #ced4da;
-}
-
-.perfil-form button {
-    border-radius: 8px;
-    padding: 10px 20px;
-}
-
-/* ========================== */
-/*          ENTREGA           */
-/* ========================== */
-.entrega-page {
-    padding-bottom: 30px;
-}
-
-.entrega-header h2 {
-    color: #072B59;
-}
-
-.entrega-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #ffffff;
-    color: #072B59;
-    border: 1px solid rgba(7, 43, 89, 0.08);
-    border-radius: 999px;
-    padding: 8px 14px;
-    font-weight: 700;
-    box-shadow: 0 8px 24px rgba(7,43,89,.08);
-}
-
-.entrega-badge i {
-    color: #18A999;
-}
-
-.entrega-card {
-    border-radius: 24px;
-    overflow: hidden;
-}
-
-.entrega-section-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.entrega-section-title h4 {
-    color: #072B59;
-    font-size: 1.15rem;
-    font-weight: 800;
-    margin-bottom: 0;
-}
-
-.entrega-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    background: rgba(24, 169, 153, 0.12);
-    color: #18A999;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-}
-
-.entrega-input {
-    border-radius: 12px;
-    border: 1px solid #d8e1ea;
-    padding: 11px 13px;
-    transition: .2s ease;
-}
-
-.entrega-input:focus {
-    border-color: #18A999;
-    box-shadow: 0 0 0 0.2rem rgba(24, 169, 153, 0.15);
-}
-
-.entrega-btn-finalizar {
-    padding: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.entrega-mapa-card {
-    height: auto;
-    align-self: flex-start;
-}
-
-.entrega-mapa-topo {
-    padding: 22px;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    border-bottom: 1px solid #e5eaf0;
-}
-
-.entrega-mapa-topo h4 {
-    color: #072B59;
-    font-weight: 800;
-}
-
-.entrega-mapa-status {
-    width: 46px;
-    height: 46px;
-    border-radius: 16px;
-    display: grid;
-    place-items: center;
-    color: #072B59;
-    background: #eef7fb;
-    font-size: 1.4rem;
-    flex-shrink: 0;
-}
-
-.entrega-mapa-wrapper {
-    width: 100%;
-    height: 430px;
-    background: #e9eef5;
-}
-
-#mapa-entrega {
-    width: 100%;
-    height: 100%;
-}
-
-.entrega-mapa-rodape {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    padding: 14px 20px;
-    background: #f8fbfd;
-    border-top: 1px solid #e5eaf0;
-    color: #6b7280;
-    font-size: 0.85rem;
-}
-
-.entrega-mapa-rodape i {
-    color: #18A999;
-    margin-top: 2px;
-}
-
-.entrega-mapa-sem-chave {
-    height: 100%;
-    min-height: 320px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6b7280;
-    text-align: center;
-    padding: 30px;
-}
-
-/* ========================== */
-/*    POPUP COMPRA SUCESSO    */
-/* ========================== */
-.modal-compra-sucesso {
-    border: none;
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow: 0 24px 70px rgba(7, 43, 89, 0.22);
-}
-
-.compra-sucesso-icon {
-    width: 86px;
-    height: 86px;
-    margin: 0 auto;
-    border-radius: 50%;
-    background: rgba(24, 169, 153, 0.14);
-    color: #18A999;
-    display: grid;
-    place-items: center;
-    font-size: 3rem;
-    animation: compraPulse 1.4s ease infinite;
-}
-
-.modal-compra-sucesso h3 {
-    color: #072B59;
-}
-
-.compra-sucesso-loading {
-    color: #6b7280;
-    font-size: 0.95rem;
-}
-
-@keyframes compraPulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(24, 169, 153, 0.35);
-    }
-
-    70% {
-        transform: scale(1.04);
-        box-shadow: 0 0 0 18px rgba(24, 169, 153, 0);
-    }
-
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(24, 169, 153, 0);
-    }
-}
-
-/* ========================== */
-/*   POPUP EMAIL CADASTRADO   */
-/* ========================== */
-.modal-email-existente {
-    border: none;
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow: 0 24px 70px rgba(7, 43, 89, 0.22);
-}
-
-.email-existente-icon {
-    width: 86px;
-    height: 86px;
-    margin: 0 auto;
-    border-radius: 50%;
-    background: rgba(255, 193, 7, 0.16);
-    color: #d99a00;
-    display: grid;
-    place-items: center;
-    font-size: 2.8rem;
-    animation: emailPulse 1.4s ease infinite;
-}
-
-.modal-email-existente h3 {
-    color: #072B59;
-}
-
-.email-existente-info {
-    background: #f8fbfd;
-    border: 1px solid #e5eaf0;
-    color: #072B59;
-    border-radius: 14px;
-    padding: 10px 14px;
-    font-weight: 700;
-    word-break: break-word;
-}
-
-@keyframes emailPulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.32);
-    }
-
-    70% {
-        transform: scale(1.04);
-        box-shadow: 0 0 0 18px rgba(255, 193, 7, 0);
-    }
-
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
-    }
-}
-
-/* ========================== */
-/*       RESPONSIVO TABLET    */
-/* ========================== */
-@media (max-width: 992px) {
-    .hero-banner {
-        background-position: center;
-    }
-
-    .hero-conteudo {
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
-
-    .entrega-mapa-wrapper {
-        height: 380px;
-    }
-}
-
-/* ========================== */
-/*       NAVBAR MOBILE        */
-/* ========================== */
-@media (max-width: 991px) {
-    .navbar {
-        padding: 8px 0;
-    }
-
-    .navbar .container {
-        gap: 10px;
-    }
-
-    .navbar-brand {
-        font-size: 1.55rem;
-        display: flex;
-        align-items: center;
-        margin-right: auto;
-    }
-
-    .navbar-brand img {
-        width: 46px;
-        height: 46px;
-    }
-
-    .navbar-toggler {
-        width: 50px;
-        height: 46px;
-        padding: 0 !important;
-        border-radius: 9px;
-        border: 3px solid rgba(255, 255, 255, 0.45);
-        box-shadow: none !important;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .navbar-toggler:focus {
-        box-shadow: none !important;
-    }
-
-    .navbar-toggler-icon {
-        width: 24px;
-        height: 24px;
-        margin: 0;
-        background-size: 100% 100%;
-        background-position: center;
-    }
-
-    .navbar-collapse {
-        margin-top: 14px;
-        padding-top: 18px;
-        border-top: 1px solid rgba(255, 255, 255, 0.16);
-        width: 100%;
-    }
-
-    .navbar-nav {
-        width: 100%;
-        padding-top: 0;
-        align-items: center !important;
-        text-align: center;
-    }
-
-    .navbar-nav .nav-item {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    .navbar-nav .nav-link {
-        width: auto;
-        padding: 12px 0;
-        text-align: center;
-        font-size: 1.05rem;
-        font-weight: 700;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .navbar-nav .btn {
-        width: auto;
-        min-width: 220px;
-        display: inline-flex;
-        justify-content: center;
-        text-align: center;
-        margin-top: 10px;
-        padding: 12px 18px;
-    }
-
-    .navbar-nav.ms-lg-3 {
-        margin-left: 0 !important;
-        margin-top: 18px;
-        padding-top: 18px;
-        border-top: 1px solid rgba(255, 255, 255, 0.16);
-        align-items: center !important;
-    }
-
-    .navbar .dropdown {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    #perfilDropdown {
-        width: auto;
-        display: inline-flex !important;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 10px 0;
-        text-align: center;
-    }
-
-    #perfilDropdown img {
-        width: 42px !important;
-        height: 42px !important;
-        flex-shrink: 0;
-    }
-
-    .navbar .dropdown-menu {
-        position: static !important;
-        transform: none !important;
-        width: 100%;
-        max-width: 320px;
-        margin-top: 10px;
-        padding: 8px;
-        border: none;
-        border-radius: 16px;
-        box-shadow: none;
-        background: #ffffff;
-        text-align: left;
-    }
-
-    .navbar .dropdown-menu.show {
-        display: block;
-    }
-
-    .navbar .dropdown-item {
-        width: 100%;
-        padding: 12px 14px;
-        border-radius: 12px;
-        font-weight: 600;
-        color: #072B59;
-        justify-content: flex-start;
-        text-align: left;
-    }
-
-    .navbar .dropdown-item:hover {
-        background: #eef7fb;
-        color: #072B59;
-    }
-
-    .navbar .dropdown-divider {
-        margin: 8px 0;
-    }
-}
-
-/* ========================== */
-/*       RESPONSIVO MOBILE    */
-/* ========================== */
-@media (max-width: 768px) {
-    main.container {
-        margin-top: 25px !important;
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
-    .hero-banner {
-        min-height: auto;
-        padding: 45px 22px;
-        border-radius: 18px;
-        background-position: center;
-    }
-
-    .hero-conteudo h1 {
-        font-size: 2rem;
-    }
-
-    .hero-conteudo p {
-        font-size: 1rem !important;
-    }
-
-    .hero-conteudo .d-flex {
-        flex-direction: column;
-    }
-
-    .hero-conteudo .btn {
-        width: 100%;
-    }
-
-    .card-img-top {
-        height: 160px !important;
-    }
-
-    h1.text-center {
-        font-size: 1.8rem;
-    }
-
-    .card-body {
-        padding: 18px;
-    }
-
-    .footer-afg {
-        text-align: center;
-        border-radius: 18px 18px 0 0;
-    }
-
-    .footer-afg .d-flex {
-        justify-content: center;
-    }
-
-    .footer-icons {
-        justify-content: center;
-    }
-
-    .entrega-header h2 {
-        font-size: 1.8rem;
-    }
-
-    .entrega-mapa-topo {
-        align-items: flex-start;
-    }
-
-    .entrega-mapa-wrapper {
-        height: 340px;
-    }
-
-    .entrega-section-title {
-        align-items: flex-start;
-    }
-
-    .modal-compra-sucesso .modal-body,
-    .modal-email-existente .modal-body {
-        padding: 35px 24px !important;
-    }
-}
-
-/* ========================== */
-/*   RESPONSIVO CELULAR PEQUENO */
-/* ========================== */
-@media (max-width: 480px) {
-    .hero-conteudo h1 {
-        font-size: 1.75rem;
-    }
-
-    .hero-banner {
-        padding: 38px 18px;
-    }
-
-    .navbar-brand img {
-        width: 42px;
-        height: 42px;
-    }
-
-    .navbar-brand {
-        font-size: 1.35rem;
-    }
-
-    .btn {
-        font-size: 0.95rem;
-    }
-
-    .hero-conteudo {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
-    .entrega-badge {
-        font-size: 0.9rem;
-    }
-
-    .entrega-mapa-wrapper {
-        height: 300px;
-    }
-
-    .entrega-mapa-topo,
-    .entrega-mapa-rodape {
-        padding: 16px;
-    }
-
-    .compra-sucesso-icon,
-    .email-existente-icon {
-        width: 74px;
-        height: 74px;
-        font-size: 2.4rem;
-    }
-
-    .modal-compra-sucesso h3,
-    .modal-email-existente h3 {
-        font-size: 1.45rem;
-    }
-
-    .carrinho-mobile-btn {
-        width: 42px;
-        height: 42px;
-    }
-
-    .carrinho-mobile-btn i {
-        font-size: 1.3rem;
-    }
-
-    .navbar-toggler {
-        width: 50px;
-        height: 46px;
-    }
-
-    .navbar-toggler-icon {
-        width: 24px;
-        height: 24px;
-    }
+/* AFGMED — IDENTIDADE VISUAL | Visual sóbrio, clínico e profissional */
+:root{--afg-navy-950:#091827;--afg-navy-900:#10263b;--afg-navy-800:#17344f;--afg-navy-700:#214764;--afg-teal-700:#176f6a;--afg-teal-600:#1c817a;--afg-teal-500:#26968d;--afg-teal-100:#e7f3f1;--afg-slate-900:#1c2733;--afg-slate-800:#2c3946;--afg-slate-700:#465564;--afg-slate-600:#617080;--afg-slate-500:#7b8794;--afg-slate-300:#cbd3da;--afg-slate-200:#dde3e8;--afg-slate-100:#edf1f4;--afg-slate-50:#f6f8fa;--afg-white:#ffffff;--afg-success:#237a57;--afg-warning:#a56b15;--afg-danger:#a93f46;--afg-info:#316a96;--afg-border:#dbe2e8;--afg-border-soft:#e8edf1;--afg-background:#f4f6f8;--afg-radius-sm:6px;--afg-radius:10px;--afg-radius-lg:14px;--afg-radius-xl:18px;--afg-shadow-xs:0 1px 2px rgba(9,24,39,0.04);--afg-shadow-sm:0 4px 14px rgba(9,24,39,0.06);--afg-shadow-md:0 12px 28px rgba(9,24,39,0.09);--afg-transition:160ms ease;}
+
+/* BASE */
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;min-height:100vh;background:var(--afg-background);color:var(--afg-slate-800);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+main.container{min-height:65vh;margin-top:36px !important;}
+h1,h2,h3,h4,h5,h6{color:var(--afg-navy-900);font-weight:700;letter-spacing:-0.025em;}
+h1{font-size:clamp(2rem,4vw,3.5rem);}
+h2{font-size:clamp(1.65rem,3vw,2.2rem);}
+h3{font-size:clamp(1.35rem,2vw,1.7rem);}
+a{color:var(--afg-teal-700);text-decoration:none;transition:color var(--afg-transition),background-color var(--afg-transition),border-color var(--afg-transition);}
+a:hover{color:var(--afg-navy-800);}
+.text-primary{color:var(--afg-teal-700) !important;}
+.text-success{color:var(--afg-success) !important;}
+.text-muted{color:var(--afg-slate-600) !important;}
+.bg-primary{background-color:var(--afg-navy-800) !important;}
+.bg-success{background-color:var(--afg-success) !important;}
+.bg-warning{background-color:#d19a3a !important;}
+.bg-danger{background-color:var(--afg-danger) !important;}
+.rounded-4{border-radius:var(--afg-radius-lg) !important;}
+.shadow-sm,.shadow-lg{box-shadow:var(--afg-shadow-sm) !important;}
+
+/* CONTAINERS E CARDS */
+.card{background:var(--afg-white);border:1px solid var(--afg-border-soft);border-radius:var(--afg-radius-lg);box-shadow:var(--afg-shadow-xs);}
+.card-body{padding:24px;}
+hr{border-color:var(--afg-border);opacity:1;}
+.badge{border-radius:var(--afg-radius-sm);padding:7px 10px;font-size:0.75rem;font-weight:650;letter-spacing:0.01em;}
+.modal-content{border:1px solid var(--afg-border-soft);border-radius:var(--afg-radius-lg);box-shadow:0 24px 70px rgba(9,24,39,0.22);}
+.modal-header{border-bottom:1px solid var(--afg-border-soft);}
+.modal-footer{border-top:1px solid var(--afg-border-soft);}
+
+/* NAVBAR */
+.navbar{min-height:72px;padding:10px 0;background:var(--afg-navy-950) !important;border-bottom:1px solid rgba(255,255,255,0.07);box-shadow:0 2px 12px rgba(9,24,39,0.12);}
+.navbar-brand{color:var(--afg-white) !important;font-size:1.15rem;font-weight:750;letter-spacing:0.01em;}
+.navbar-brand img{width:42px !important;height:42px;border-radius:8px;object-fit:cover;}
+.navbar .nav-link{color:rgba(255,255,255,0.74);padding:9px 12px !important;border-radius:7px;font-size:0.92rem;font-weight:550;}
+.navbar .nav-link:hover,.navbar .nav-link:focus{color:var(--afg-white);background:rgba(255,255,255,0.07);}
+.navbar .btn{min-height:38px;padding:8px 14px;font-size:0.87rem;}
+.navbar .dropdown-menu{min-width:220px;margin-top:10px;padding:7px;border:1px solid var(--afg-border);border-radius:var(--afg-radius);box-shadow:var(--afg-shadow-md);}
+.navbar .dropdown-item{padding:10px 12px;border-radius:7px;color:var(--afg-slate-800);font-size:0.9rem;}
+.navbar .dropdown-item:hover{color:var(--afg-navy-900);background:var(--afg-slate-100);}
+.navbar-toggler{border:1px solid rgba(255,255,255,0.2);}
+.badge-carrinho{min-width:19px;min-height:19px;padding:3px 5px;border:2px solid var(--afg-navy-950);border-radius:50%;font-size:0.65rem;}
+
+/* FLASH */
+.flash-container{position:relative;z-index:1050;margin-top:18px;}
+.flash-message{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:10px;padding:13px 16px;border:1px solid;border-left-width:4px;border-radius:var(--afg-radius);box-shadow:var(--afg-shadow-sm);font-size:0.92rem;}
+.flash-content{display:flex;align-items:center;gap:11px;}
+.flash-icon{display:inline-grid;place-items:center;font-size:1.05rem;}
+.alert-success{color:#19553e;background:#eef8f3;border-color:#b9ddcc;}
+.alert-danger{color:#7d2f35;background:#fbf0f1;border-color:#e5bdc0;}
+.alert-warning{color:#765019;background:#fff7e8;border-color:#ead3a7;}
+.alert-info{color:#285575;background:#eef5fa;border-color:#bfd4e4;}
+
+/* BOTÕES */
+.btn{min-height:43px;padding:9px 17px;border-radius:8px;font-size:0.91rem;font-weight:650;box-shadow:none;transition:background-color var(--afg-transition),border-color var(--afg-transition),color var(--afg-transition),box-shadow var(--afg-transition);}
+.btn:focus,.btn:focus-visible{box-shadow:0 0 0 3px rgba(28,129,122,0.18) !important;}
+.btn-primary{color:var(--afg-white);background:var(--afg-navy-800);border-color:var(--afg-navy-800);}
+.btn-primary:hover,.btn-primary:focus{color:var(--afg-white);background:var(--afg-navy-900);border-color:var(--afg-navy-900);}
+.btn-success{color:var(--afg-white);background:var(--afg-teal-700);border-color:var(--afg-teal-700);}
+.btn-success:hover,.btn-success:focus{color:var(--afg-white);background:#125e5a;border-color:#125e5a;}
+.btn-outline-primary{color:var(--afg-navy-800);background:transparent;border-color:var(--afg-navy-800);}
+.btn-outline-primary:hover{color:var(--afg-white);background:var(--afg-navy-800);border-color:var(--afg-navy-800);}
+.btn-outline-secondary{color:var(--afg-slate-700);background:var(--afg-white);border-color:var(--afg-slate-300);}
+.btn-outline-secondary:hover{color:var(--afg-navy-900);background:var(--afg-slate-100);border-color:var(--afg-slate-500);}
+.btn-outline-danger{color:var(--afg-danger);border-color:#d5a2a6;}
+.btn-outline-danger:hover{color:var(--afg-white);background:var(--afg-danger);border-color:var(--afg-danger);}
+.btn:disabled,.btn.disabled{color:var(--afg-slate-500);background:var(--afg-slate-100);border-color:var(--afg-slate-200);opacity:1;}
+
+/* FORMULÁRIOS */
+.form-label{margin-bottom:7px;color:var(--afg-slate-800);font-size:0.87rem;font-weight:650;}
+.form-control,.form-select{min-height:46px;padding:10px 13px;color:var(--afg-slate-900);background:var(--afg-white);border:1px solid var(--afg-slate-300);border-radius:8px;font-size:0.93rem;font-weight:450;}
+.form-control::placeholder{color:#9ba6b1;}
+.form-control:hover,.form-select:hover{border-color:#aeb9c3;}
+.form-control:focus,.form-select:focus{color:var(--afg-slate-900);background:var(--afg-white);border-color:var(--afg-teal-600);box-shadow:0 0 0 3px rgba(28,129,122,0.13);}
+.form-control[readonly]{background:var(--afg-slate-100);}
+.form-check-input:checked{background-color:var(--afg-teal-700);border-color:var(--afg-teal-700);}
+.input-group-text{color:var(--afg-slate-700);background:var(--afg-slate-100);border-color:var(--afg-slate-300);}
+.row.justify-content-center>.col-md-6>.card,.row.justify-content-center>.col-lg-6>.card{border-top:3px solid var(--afg-teal-700);}
+.row.justify-content-center>[class*="col-"]>.card .card-body{padding:32px;}
+.modal-email-existente{border-top:4px solid var(--afg-warning);}
+.email-existente-icon{display:grid;place-items:center;width:58px;height:58px;margin:0 auto;color:var(--afg-warning);background:#fff5df;border-radius:50%;font-size:1.65rem;}
+.email-existente-info{padding:11px 14px;color:var(--afg-slate-800);background:var(--afg-slate-100);border:1px solid var(--afg-border);border-radius:8px;font-weight:600;word-break:break-word;}
+
+/* HOME */
+.hero-banner{position:relative;min-height:450px;margin-right:calc(-50vw + 50%);margin-left:calc(-50vw + 50%);overflow:hidden;background:linear-gradient(90deg,rgba(9,24,39,0.95) 0%,rgba(16,38,59,0.87) 48%,rgba(16,38,59,0.42) 100%),url("../imagens/banner.jpg") center / cover no-repeat;}
+.hero-banner .container{position:relative;z-index:2;}
+.hero-conteudo{padding-top:70px;padding-bottom:70px;}
+.hero-conteudo .badge{color:var(--afg-navy-900) !important;background:rgba(255,255,255,0.92) !important;border-radius:6px;}
+.hero-conteudo h1{max-width:650px;color:var(--afg-white);font-weight:720 !important;line-height:1.08;}
+.hero-conteudo p{max-width:590px;color:rgba(255,255,255,0.82) !important;line-height:1.6;}
+.hero-conteudo .btn{min-height:47px;border-radius:7px;}
+.hero-banner + .row .card{border-top:2px solid var(--afg-border);box-shadow:none;}
+.hero-banner + .row .card:hover{border-top-color:var(--afg-teal-600);}
+.hero-banner + .row .card i{color:var(--afg-teal-700) !important;}
+.hero-banner ~ .row .card-img-top{background:var(--afg-slate-50);border-bottom:1px solid var(--afg-border-soft);}
+.hero-banner ~ .row .card-title{color:var(--afg-navy-900) !important;}
+
+/* CABEÇALHOS DAS PÁGINAS */
+.medicos-header,.produtos-titulo-area,.perfil-header,.entrega-header,.compras-header{margin-bottom:25px;}
+.medicos-header{padding:6px 0 8px;text-align:left !important;}
+.medicos-header h2,.produtos-titulo-area h2,.perfil-header h2,.entrega-header h2,.compras-header h2{margin-bottom:5px;color:var(--afg-navy-900) !important;}
+.medicos-header p,.produtos-titulo-area p,.perfil-header p,.entrega-header p,.compras-header p{max-width:720px;font-size:0.98rem;}
+
+/* LISTA DE MÉDICOS */
+.medicos-page{padding-bottom:45px;}
+.medicos-filtros{padding:14px;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:var(--afg-radius);box-shadow:var(--afg-shadow-xs);}
+.medico-busca,.produto-busca{position:relative;}
+.medico-busca>i,.produto-busca>i{position:absolute;top:50%;left:14px;z-index:2;color:var(--afg-slate-500);transform:translateY(-50%);}
+.medico-busca .form-control,.produto-busca .form-control{padding-left:42px;}
+.medico-card{display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--afg-white);border:1px solid #dce4ea;border-radius:12px;box-shadow:0 1px 2px rgba(9,24,39,0.03),0 7px 20px rgba(9,24,39,0.05);transition:border-color var(--afg-transition),box-shadow var(--afg-transition),transform var(--afg-transition);}
+.medico-card:hover{border-color:#b9c6d0;box-shadow:0 2px 4px rgba(9,24,39,0.04),0 12px 28px rgba(9,24,39,0.08);transform:translateY(-2px);}
+.medico-card-top{position:relative;display:flex;align-items:flex-end;justify-content:center;height:104px;background:var(--afg-navy-900);border-bottom:1px solid rgba(255,255,255,0.07);}
+.medico-foto-frame{position:relative;z-index:2;width:108px;height:108px;padding:4px;background:var(--afg-white);border:1px solid #d8e1e8;border-radius:50%;box-shadow:0 5px 16px rgba(9,24,39,0.14);transform:translateY(38px);}
+.medico-foto{display:block;width:100%;height:100%;background:var(--afg-slate-50);border-radius:50%;object-fit:cover;object-position:top center;}
+.medico-card-body{display:flex;flex:1;flex-direction:column;padding:51px 20px 19px;}
+.medico-nome-area{text-align:center;}
+.medico-nome-area h4{margin:0 0 7px !important;color:var(--afg-navy-900);font-size:1.07rem;font-weight:700;line-height:1.35;letter-spacing:-0.015em;}
+.medico-especialidade{display:inline-flex;align-items:center;justify-content:center;padding:5px 9px;color:var(--afg-teal-700);background:var(--afg-teal-100);border:1px solid #d4e8e4;border-radius:6px;font-size:0.75rem;font-weight:650;line-height:1.2;}
+.medico-info-list{display:flex;flex-direction:column;gap:0;margin-top:20px !important;border-top:1px solid var(--afg-border-soft);}
+.medico-info-item{display:flex;align-items:center;gap:11px;min-height:59px;padding:10px 1px;background:transparent;border:none;border-bottom:1px solid var(--afg-border-soft);border-radius:0;}
+.medico-info-icon{display:grid;flex:0 0 auto;place-items:center;width:35px;height:35px;color:var(--afg-teal-700);background:var(--afg-teal-100);border:1px solid #d9eae7;border-radius:7px;font-size:0.96rem;}
+.medico-info-item>div:last-child{min-width:0;}
+.medico-info-item small{display:block;margin-bottom:1px;color:var(--afg-slate-500);font-size:0.69rem;font-weight:650;line-height:1.3;}
+.medico-info-item p{margin:0;color:var(--afg-slate-800);font-size:0.84rem;font-weight:550;line-height:1.4;overflow-wrap:anywhere;}
+.btn-agendar{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:43px;padding:8px 14px;color:var(--afg-white);background:var(--afg-teal-700);border:1px solid var(--afg-teal-700);border-radius:8px;box-shadow:none;font-size:0.86rem;font-weight:650;transition:background-color var(--afg-transition),border-color var(--afg-transition),box-shadow var(--afg-transition);}
+.btn-agendar:hover,.btn-agendar:focus{color:var(--afg-white);background:#125c58;border-color:#125c58;box-shadow:0 4px 12px rgba(23,111,106,0.16);transform:none;}
+.medico-admin{margin-top:16px;padding-top:13px;border-top:1px solid var(--afg-border-soft);}
+.medico-admin-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:41px;padding:8px 11px;color:var(--afg-slate-700);background:var(--afg-white);border:1px solid var(--afg-border);border-radius:8px;font-size:0.77rem;font-weight:650;transition:background-color var(--afg-transition),border-color var(--afg-transition),color var(--afg-transition);}
+.medico-admin-toggle:hover{color:var(--afg-navy-900);background:var(--afg-slate-50);border-color:#bdc9d2;}
+.medico-admin-box{display:flex;flex-direction:column;gap:7px;margin-top:9px;}
+.medico-admin-box .btn{min-height:38px;padding:7px 11px;border-radius:7px;font-size:0.77rem;font-weight:650;}
+.btn-admin-editar{color:var(--afg-navy-800);background:var(--afg-white);border:1px solid var(--afg-slate-300);}
+.btn-admin-editar:hover{color:var(--afg-white);background:var(--afg-navy-800);border-color:var(--afg-navy-800);}
+.btn-admin-remover{color:var(--afg-danger);background:#fffafa;border:1px solid #dfb5b8;}
+.btn-admin-remover:hover{color:var(--afg-white);background:var(--afg-danger);border-color:var(--afg-danger);}
+.medicos-sem-resultado,.medicos-vazio{padding:55px 24px;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:var(--afg-radius-lg);}
+.medicos-sem-resultado>i,.medicos-vazio>i{color:#a5afb8;font-size:2.5rem;}
+
+/* PRODUTOS */
+.produtos-page{padding-bottom:45px;}
+.produtos-filtros{padding:14px;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:var(--afg-radius);box-shadow:var(--afg-shadow-xs);}
+.produto-filtro-botoes{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;}
+.produto-filtro-btn{min-height:39px;padding:7px 13px;color:var(--afg-slate-700);background:var(--afg-white);border:1px solid var(--afg-slate-300);border-radius:7px;font-size:0.82rem;font-weight:600;}
+.produto-filtro-btn:hover,.produto-filtro-btn.active{color:var(--afg-white);background:var(--afg-navy-800);border-color:var(--afg-navy-800);}
+.produto-card{display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--afg-white);border:1px solid #dce4ea;border-radius:12px;box-shadow:0 1px 2px rgba(9,24,39,0.03),0 7px 20px rgba(9,24,39,0.05);transition:border-color var(--afg-transition),box-shadow var(--afg-transition),transform var(--afg-transition);}
+.produto-card:hover{border-color:#b9c6d0;box-shadow:0 2px 4px rgba(9,24,39,0.04),0 12px 28px rgba(9,24,39,0.08);transform:translateY(-2px);}
+.produto-img-area{position:relative;display:grid;min-height:190px;padding:26px 21px;place-items:center;background:var(--afg-slate-50);border-bottom:1px solid var(--afg-border-soft);}
+.produto-img{display:block;width:100%;height:130px;object-fit:contain;transition:transform var(--afg-transition);}
+.produto-card:hover .produto-img{transform:scale(1.015);}
+.produto-badges{position:absolute;top:11px;left:11px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;}
+.produto-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid;border-radius:6px;font-size:0.67rem;font-weight:650;line-height:1.15;}
+.badge-estoque{color:#1d6c4e;background:#eff7f3;border-color:#cbe1d6;}
+.badge-indisponivel{color:#913b42;background:#fbf1f2;border-color:#e6c3c6;}
+.badge-destaque{color:#765414;background:#fff7e7;border-color:#e7d19f;}
+.produto-card-body{display:flex;flex:1;flex-direction:column;padding:19px;}
+.produto-conteudo{margin-bottom:15px;}
+.produto-nome{margin:0 0 6px;color:var(--afg-navy-900);font-size:1.04rem;font-weight:700;line-height:1.35;letter-spacing:-0.015em;}
+.produto-descricao{min-height:40px;margin:0;color:var(--afg-slate-600);font-size:0.82rem;line-height:1.5;}
+.produto-preco-area{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:auto;padding:14px 0 0;background:transparent;border:none;border-top:1px solid var(--afg-border-soft);border-radius:0;}
+.produto-preco-area>div:first-child{min-width:0;}
+.produto-preco-area small{display:block;margin-bottom:2px;color:var(--afg-slate-500);font-size:0.68rem;font-weight:650;line-height:1.2;}
+.produto-preco-area strong{display:block;color:var(--afg-teal-700);font-size:1.18rem;font-weight:750;line-height:1.2;letter-spacing:-0.025em;overflow-wrap:anywhere;}
+.produto-estoque-info{display:inline-flex;align-items:center;justify-content:flex-end;gap:5px;max-width:47%;color:var(--afg-slate-600);font-size:0.71rem;font-weight:600;line-height:1.3;text-align:right;overflow-wrap:anywhere;}
+.btn-produto-carrinho{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:43px;padding:8px 14px;color:var(--afg-white);background:var(--afg-teal-700);border:1px solid var(--afg-teal-700);border-radius:8px;box-shadow:none;font-size:0.86rem;font-weight:650;transition:background-color var(--afg-transition),border-color var(--afg-transition),box-shadow var(--afg-transition);}
+.btn-produto-carrinho:hover,.btn-produto-carrinho:focus{color:var(--afg-white);background:#125c58;border-color:#125c58;box-shadow:0 4px 12px rgba(23,111,106,0.16);transform:none;}
+.btn-produto-disabled{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:43px;padding:8px 14px;color:var(--afg-slate-500);background:var(--afg-slate-100);border:1px solid var(--afg-border);border-radius:8px;font-size:0.82rem;font-weight:600;}
+.produto-admin{margin-top:16px;padding-top:13px;border-top:1px solid var(--afg-border-soft);}
+.produto-admin-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:41px;padding:8px 11px;color:var(--afg-slate-700);background:var(--afg-white);border:1px solid var(--afg-border);border-radius:8px;font-size:0.77rem;font-weight:650;transition:background-color var(--afg-transition),border-color var(--afg-transition),color var(--afg-transition);}
+.produto-admin-toggle:hover{color:var(--afg-navy-900);background:var(--afg-slate-50);border-color:#bdc9d2;}
+.produto-admin-box{display:flex;flex-direction:column;gap:7px;margin-top:9px;}
+.produto-admin-box .btn{min-height:38px;padding:7px 11px;border-radius:7px;font-size:0.77rem;font-weight:650;}
+.btn-admin-destaque{color:#725214;background:#fffaf0;border:1px solid #e4d3ad;}
+.btn-admin-destaque:hover{color:#5f430f;background:#fff3d6;border-color:#d8bf88;}
+.btn-admin-desativar{color:var(--afg-danger);background:#fffafa;border:1px solid #dfb5b8;}
+.btn-admin-desativar:hover{color:var(--afg-white);background:var(--afg-danger);border-color:var(--afg-danger);}
+.btn-admin-ativar{color:var(--afg-success);background:#f4faf7;border:1px solid #c6ded2;}
+.btn-admin-ativar:hover{color:var(--afg-white);background:var(--afg-success);border-color:var(--afg-success);}
+.produtos-sem-resultado{padding:55px 24px;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:var(--afg-radius-lg);}
+.produtos-sem-resultado>i{color:#a5afb8;font-size:2.5rem;}
+
+@media (max-width:767.98px){
+    .medico-card-body,.produto-card-body{padding-right:17px;padding-left:17px;}
+    .produto-preco-area{align-items:flex-start;}
+    .produto-estoque-info{max-width:45%;}
+}
+
+@media (max-width:420px){
+    .produto-preco-area{flex-direction:column;align-items:flex-start;gap:8px;}
+    .produto-estoque-info{max-width:100%;text-align:left;justify-content:flex-start;}
+}
+
+/* AGENDAMENTO DE CONSULTA */
+.consulta-page{padding-bottom:45px;}
+.consulta-hero{padding:28px 30px;background:var(--afg-white);border:1px solid var(--afg-border);border-left:4px solid var(--afg-teal-700);border-radius:var(--afg-radius-lg);box-shadow:var(--afg-shadow-xs);}
+.consulta-hero h1{font-size:clamp(1.8rem,3vw,2.4rem);}
+.consulta-badge,.consulta-card-label,.consulta-especialidade,.entrega-badge,.compras-badge{display:inline-flex;align-items:center;gap:7px;color:var(--afg-teal-700);background:var(--afg-teal-100);border-radius:5px;font-size:0.75rem;font-weight:650;}
+.consulta-badge,.entrega-badge,.compras-badge{padding:6px 9px;}
+.consulta-card-label{padding:5px 8px;margin-bottom:7px;text-transform:uppercase;letter-spacing:0.04em;}
+.consulta-hero-mini-card{display:flex;align-items:center;gap:12px;padding:15px;background:var(--afg-slate-50);border:1px solid var(--afg-border);border-radius:9px;}
+.consulta-mini-icon,.consulta-card-icon,.consulta-dado-icon,.consulta-resumo-icon,.entrega-icon,.entrega-mapa-status,.perfil-section-icon,.pedido-icon,.consulta-avatar-icon{display:grid;flex:0 0 auto;place-items:center;color:var(--afg-teal-700);background:var(--afg-teal-100);}
+.consulta-mini-icon{width:42px;height:42px;border-radius:8px;font-size:1.15rem;}
+.consulta-medico-card,.consulta-ajuda-card,.consulta-agendamento-card{overflow:hidden;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:var(--afg-radius-lg);box-shadow:var(--afg-shadow-xs);}
+.consulta-medico-cover{height:94px;background:var(--afg-navy-900);}
+.consulta-medico-body{padding:0 22px 23px;}
+.consulta-foto-wrap{width:122px;height:122px;padding:4px;margin:-61px auto 0;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:50%;box-shadow:var(--afg-shadow-sm);}
+.consulta-foto{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.consulta-especialidade{padding:5px 9px;}
+.consulta-medico-dados{display:flex;flex-direction:column;gap:8px;}
+.consulta-dado-item{display:flex;align-items:center;gap:10px;padding:11px;background:var(--afg-slate-50);border:1px solid var(--afg-border-soft);border-radius:8px;}
+.consulta-dado-icon{width:37px;height:37px;border-radius:7px;}
+.consulta-dado-item small{display:block;color:var(--afg-slate-500);font-size:0.72rem;}
+.consulta-dado-item strong{color:var(--afg-slate-800);font-size:0.87rem;}
+.consulta-ajuda-card{padding:21px;}
+.consulta-step{display:flex;align-items:flex-start;gap:11px;margin-top:13px;}
+.consulta-step span{display:grid;flex:0 0 auto;place-items:center;width:25px;height:25px;color:var(--afg-white);background:var(--afg-navy-800);border-radius:50%;font-size:0.75rem;font-weight:700;}
+.consulta-step p{margin:1px 0 0;color:var(--afg-slate-600);font-size:0.88rem;}
+.consulta-agendamento-card{padding:25px;}
+.consulta-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:20px;border-bottom:1px solid var(--afg-border-soft);}
+.consulta-card-icon{width:46px;height:46px;border-radius:8px;font-size:1.25rem;}
+.consulta-form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.consulta-input-icon{position:relative;}
+.consulta-input-icon>i{position:absolute;top:50%;left:13px;z-index:2;color:var(--afg-slate-500);transform:translateY(-50%);}
+.consulta-input-icon .form-control{padding-left:39px;}
+.consulta-horarios-area{padding-top:20px;border-top:1px solid var(--afg-border-soft);}
+.consulta-horarios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.horario-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;color:var(--afg-navy-800);background:var(--afg-white);border:1px solid var(--afg-slate-300);border-radius:7px;font-weight:600;transition:background-color var(--afg-transition),border-color var(--afg-transition),color var(--afg-transition);}
+.horario-btn:hover:not(:disabled){color:var(--afg-teal-700);background:var(--afg-teal-100);border-color:#94c5bf;}
+.horario-btn.selecionado,.horario-btn.active{color:var(--afg-white);background:var(--afg-teal-700);border-color:var(--afg-teal-700);}
+.horario-btn:disabled,.horario-btn.ocupado{color:#9aa4ad;background:var(--afg-slate-100);border-color:var(--afg-border);cursor:not-allowed;}
+.consulta-legenda{display:inline-flex;align-items:center;color:var(--afg-slate-600);font-size:0.77rem;}
+.legenda-livre,.legenda-ocupado{display:inline-block;width:9px;height:9px;margin-right:5px;border-radius:50%;}
+.legenda-livre{background:var(--afg-teal-600);}
+.legenda-ocupado{background:var(--afg-slate-300);}
+.consulta-resumo{display:flex;align-items:center;gap:12px;padding:14px;background:var(--afg-slate-50);border:1px solid var(--afg-border);border-radius:8px;}
+.consulta-resumo-icon{width:39px;height:39px;border-radius:7px;}
+
+/* PERFIL */
+.perfil-page{padding-bottom:45px;}
+.perfil-card{padding:24px;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:var(--afg-radius-lg);box-shadow:var(--afg-shadow-xs);}
+.perfil-card-foto {
+    position: static !important;
+    top: auto !important;
+}
+.perfil-foto-area{position:relative;width:132px;height:132px;margin:0 auto;}
+.perfil-foto{width:132px;height:132px;background:var(--afg-slate-50);border:4px solid var(--afg-white);border-radius:50%;box-shadow:0 0 0 1px var(--afg-border);object-fit:cover;}
+.perfil-foto-btn{position:absolute;right:0;bottom:5px;display:grid;place-items:center;width:37px;height:37px;color:var(--afg-white);background:var(--afg-teal-700);border:3px solid var(--afg-white);border-radius:50%;cursor:pointer;}
+.perfil-email{word-break:break-word;}
+.perfil-tipo{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;color:var(--afg-teal-700);background:var(--afg-teal-100);border-radius:5px;font-size:0.78rem;font-weight:650;}
+.perfil-section-title,.entrega-section-title{display:flex;align-items:center;gap:12px;}
+.perfil-section-icon,.entrega-icon{width:44px;height:44px;border-radius:8px;font-size:1.15rem;}
+.perfil-section-title h4,.entrega-section-title h4{margin-bottom:2px !important;font-size:1.1rem;}
+.perfil-input,.entrega-input{min-height:45px;}
+.perfil-actions{display:flex;justify-content:flex-end;gap:9px;}
+
+/* ENTREGA */
+.entrega-page{padding-bottom:45px;}
+.entrega-header{padding-bottom:20px;border-bottom:1px solid var(--afg-border);}
+.entrega-card{overflow:hidden;border:1px solid var(--afg-border);box-shadow:var(--afg-shadow-xs);}
+.entrega-card .card-body{padding:24px;}
+.entrega-mapa-card{padding:0;}
+.entrega-mapa-topo{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--afg-border-soft);}
+.entrega-mapa-topo h4{font-size:1.08rem;}
+.entrega-mapa-status{width:40px;height:40px;border-radius:8px;}
+.entrega-mapa-wrapper{position:relative;min-height:490px;background:var(--afg-slate-100);}
+#mapa-entrega{width:100%;height:490px;}
+.entrega-mapa-rodape{display:flex;align-items:flex-start;gap:8px;padding:14px 20px;color:var(--afg-slate-600);background:var(--afg-slate-50);border-top:1px solid var(--afg-border-soft);font-size:0.79rem;}
+#resumo-rota{border-radius:8px !important;}
+
+/* CARRINHO */
+#carrinhoLateral{width:min(420px,100vw);border-left:1px solid var(--afg-border);}
+#carrinhoLateral .offcanvas-header{padding:19px 20px;border-bottom:1px solid var(--afg-border);}
+#carrinhoLateral .offcanvas-title{color:var(--afg-navy-900);font-size:1.1rem;}
+#carrinhoLateral .offcanvas-body{background:var(--afg-slate-50);}
+.carrinho-item{padding:14px !important;background:var(--afg-white);border:1px solid var(--afg-border) !important;border-radius:9px !important;}
+.carrinho-item p{color:var(--afg-navy-900);font-size:0.91rem;}
+.carrinho-item small{color:var(--afg-slate-600);}
+.carrinho-item strong{color:var(--afg-navy-900);font-size:0.9rem;}
+.carrinho-item .btn-sm{display:inline-grid;place-items:center;min-width:32px;min-height:32px;padding:4px 8px;border-radius:6px;}
+.carrinho-total{padding:16px 2px 6px !important;border-color:var(--afg-border) !important;}
+#total-carrinho{color:var(--afg-navy-900);font-size:1.15rem;}
+
+/* AGENDAMENTOS E ÁREA DO MÉDICO */
+.meus-agendamentos-page,.consultas-medico-page,.minhas-compras-page{padding-bottom:45px;}
+.agendamento-card,.consultas-top-card,.consulta-card-medico,.pedido-card{border:1px solid var(--afg-border) !important;border-radius:var(--afg-radius-lg) !important;box-shadow:var(--afg-shadow-xs) !important;}
+.agendamento-card{padding:21px !important;transition:border-color var(--afg-transition),box-shadow var(--afg-transition);}
+.agendamento-card:hover{border-color:#bdc8d1 !important;box-shadow:var(--afg-shadow-sm) !important;}
+.agendamento-card .rounded-circle{border-color:var(--afg-border) !important;}
+.agendamento-card img.rounded-circle{width:62px !important;height:62px !important;}
+.agendamento-status,.consulta-status-badge,.pedido-status-badge{display:inline-flex;align-items:center;gap:6px;width:fit-content;padding:6px 9px;border-radius:5px;font-size:0.75rem;}
+.agendamento-info,.consulta-info-box{padding:12px;background:var(--afg-slate-50);border:1px solid var(--afg-border-soft);border-radius:8px;}
+.agendamento-alerta-status{display:flex;align-items:center;gap:7px;padding:10px 12px;border-radius:8px;font-size:0.84rem;font-weight:550;}
+.consulta-resumo-medico{display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:8px;}
+.consulta-resumo-medico>div{padding:10px 12px;text-align:center;background:var(--afg-slate-50);border:1px solid var(--afg-border);border-radius:8px;}
+.consulta-resumo-medico small{display:block;color:var(--afg-slate-500);font-size:0.7rem;font-weight:600;}
+.consulta-resumo-medico strong{display:block;color:var(--afg-navy-900);font-size:1.18rem;}
+.consulta-avatar-icon{width:44px;height:44px;border-radius:8px;font-size:1.15rem;}
+
+/* PEDIDOS */
+.compras-header{padding:22px 24px;background:var(--afg-white);border:1px solid var(--afg-border);border-left:4px solid var(--afg-teal-700);border-radius:var(--afg-radius-lg);box-shadow:var(--afg-shadow-xs);}
+.pedido-card{overflow:hidden;}
+.pedido-icon{width:42px;height:42px;border-radius:8px;font-size:1.1rem;}
+.pedido-status-area{max-width:300px;text-align:right;}
+.pedido-produtos{display:flex;flex-direction:column;gap:8px;}
+.pedido-produto-item{display:grid;grid-template-columns:65px 1fr auto;align-items:center;gap:14px;padding:11px;background:var(--afg-slate-50);border:1px solid var(--afg-border-soft);border-radius:8px;}
+.pedido-produto-img{display:grid;width:65px;height:65px;overflow:hidden;place-items:center;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:7px;}
+.pedido-produto-img img{width:100%;height:100%;padding:6px;object-fit:contain;}
+.pedido-produto-info h6{margin-bottom:3px !important;font-size:0.92rem;}
+.pedido-produto-total{color:var(--afg-navy-900);font-size:0.91rem;font-weight:700;white-space:nowrap;}
+.pedido-footer{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;border-top:1px solid var(--afg-border);}
+.pedido-total-area{min-width:175px;text-align:right;}
+.pedido-total{display:block;color:var(--afg-navy-900);font-size:1.25rem;line-height:1.25;}
+.compras-vazio-icon{display:grid;width:70px;height:70px;margin:0 auto;place-items:center;color:var(--afg-slate-500);background:var(--afg-slate-100);border-radius:50%;font-size:2rem;}
+
+/* MODAIS DE CONSULTA */
+.modal-confirmacao-cancelamento,.modal-confirmacao-consulta{overflow:hidden;border:1px solid var(--afg-border);border-radius:var(--afg-radius-lg);}
+.modal-cancelamento-header,.modal-confirmacao-header{padding:19px 21px;color:var(--afg-white);background:var(--afg-navy-900);border-bottom:none;}
+.modal-cancelamento-header .modal-title,.modal-confirmacao-header .modal-title{color:var(--afg-white);font-size:1.1rem;}
+.modal-cancelamento-body,.modal-confirmacao-body{padding:23px 21px;color:var(--afg-slate-800);font-size:0.95rem;line-height:1.6;}
+.modal-cancelamento-footer,.modal-confirmacao-footer{display:flex;justify-content:flex-end;gap:8px;padding:0 21px 21px;border-top:none;}
+.btn-modal-nao,.btn-modal-cancelar,.btn-modal-concluir{min-height:40px;padding:8px 15px;}
+.btn-modal-cancelar{color:var(--afg-white);background:var(--afg-danger);border-color:var(--afg-danger);}
+.btn-modal-concluir{color:var(--afg-white);background:var(--afg-success);border-color:var(--afg-success);}
+
+/* PAGAMENTO */
+.modal-compra-sucesso{border-top:4px solid var(--afg-success);}
+.compra-sucesso-icon{display:grid;width:65px;height:65px;margin:0 auto;place-items:center;color:var(--afg-white);background:var(--afg-success);border-radius:50%;font-size:1.8rem;}
+
+/* RODAPÉ */
+.footer-afg{margin-top:70px !important;color:rgba(255,255,255,0.73);background:var(--afg-navy-950);border-top:1px solid rgba(255,255,255,0.06);}
+.footer-afg h5,.footer-afg h6{color:var(--afg-white);}
+.footer-logo{width:40px !important;height:40px;border-radius:7px;object-fit:cover;}
+.footer-title{margin-bottom:15px;font-size:0.86rem;letter-spacing:0.04em;text-transform:uppercase;}
+.footer-text{max-width:360px;color:rgba(255,255,255,0.62);font-size:0.86rem;}
+.footer-links{display:flex;flex-direction:column;gap:9px;padding:0;margin:0;list-style:none;}
+.footer-links li,.footer-links a{color:rgba(255,255,255,0.65);font-size:0.84rem;}
+.footer-links a:hover{color:var(--afg-white);}
+.footer-links i{width:18px;color:#7fc0ba;}
+.footer-icons{display:flex;gap:13px;color:#7fc0ba;font-size:1.25rem;}
+.footer-line{margin:30px 0 20px;border-color:rgba(255,255,255,0.12);}
+.footer-afg small{color:rgba(255,255,255,0.5);}
+
+/* RESPONSIVIDADE */
+@media (max-width:991.98px){
+    .navbar-collapse{padding-top:13px;padding-bottom:7px;}
+    .navbar .nav-item{width:100%;}
+    .navbar .btn{width:100%;margin-bottom:6px;}
+    .perfil-card-foto{position:static;}
+    .consulta-form-grid{grid-template-columns:1fr;}
+    .consulta-horarios-grid{grid-template-columns:repeat(2,1fr);}
+    .produto-filtro-botoes{justify-content:flex-start;}
+    .consulta-resumo-medico{grid-template-columns:repeat(2,1fr);}
+    .entrega-mapa-wrapper,#mapa-entrega{min-height:420px;height:420px;}
+}
+
+@media (max-width:767.98px){
+    body{font-size:14px;}
+    main.container{margin-top:26px !important;}
+    .card-body{padding:20px;}
+    .hero-banner{min-height:410px;text-align:left;background:linear-gradient(90deg,rgba(9,24,39,0.96),rgba(16,38,59,0.82)),url("../imagens/banner.jpg") center / cover no-repeat;}
+    .hero-conteudo{padding-top:55px;padding-bottom:55px;}
+    .medicos-header{text-align:left !important;}
+    .consulta-hero,.consulta-agendamento-card,.perfil-card,.entrega-card .card-body,.compras-header{padding:20px;}
+    .consulta-card-header{flex-direction:column;}
+    .consulta-horarios-grid{grid-template-columns:repeat(2,1fr);}
+    .perfil-actions{flex-direction:column-reverse;}
+    .perfil-actions .btn{width:100%;}
+    .pedido-status-area{max-width:none;text-align:left;}
+    .pedido-produto-item{grid-template-columns:55px 1fr;}
+    .pedido-produto-img{width:55px;height:55px;}
+    .pedido-produto-total{grid-column:2;}
+    .pedido-footer{grid-template-columns:1fr;}
+    .pedido-total-area{text-align:left;}
+    .modal-cancelamento-footer,.modal-confirmacao-footer{flex-direction:column;}
+    .modal-cancelamento-footer form,.modal-confirmacao-footer form,.modal-cancelamento-footer .btn,.modal-confirmacao-footer .btn{width:100%;}
+}
+
+@media (max-width:575.98px){
+    .navbar-brand img{width:37px !important;height:37px;}
+    .hero-conteudo .d-flex{flex-direction:column;}
+    .hero-conteudo .btn{width:100%;}
+    .consulta-horarios-grid{grid-template-columns:1fr 1fr;}
+    .consulta-resumo-medico{grid-template-columns:1fr 1fr;}
+    .produto-filtro-btn{flex:1 1 auto;}
+    .flash-message{align-items:flex-start;}
+    .footer-afg{margin-top:50px !important;}
 }
