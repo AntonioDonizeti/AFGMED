@@ -104,40 +104,430 @@ hr{border-color:var(--afg-border);opacity:1;}
 .medicos-header h2,.produtos-titulo-area h2,.perfil-header h2,.entrega-header h2,.compras-header h2{margin-bottom:5px;color:var(--afg-navy-900) !important;}
 .medicos-header p,.produtos-titulo-area p,.perfil-header p,.entrega-header p,.compras-header p{max-width:720px;font-size:0.98rem;}
 
-/* LISTA DE MÉDICOS */
-.medicos-page{padding-bottom:45px;}
-.medicos-filtros{padding:14px;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:var(--afg-radius);box-shadow:var(--afg-shadow-xs);}
-.medico-busca,.produto-busca{position:relative;}
-.medico-busca>i,.produto-busca>i{position:absolute;top:50%;left:14px;z-index:2;color:var(--afg-slate-500);transform:translateY(-50%);}
-.medico-busca .form-control,.produto-busca .form-control{padding-left:42px;}
-.medico-card{display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--afg-white);border:1px solid #dce4ea;border-radius:12px;box-shadow:0 1px 2px rgba(9,24,39,0.03),0 7px 20px rgba(9,24,39,0.05);transition:border-color var(--afg-transition),box-shadow var(--afg-transition),transform var(--afg-transition);}
-.medico-card:hover{border-color:#b9c6d0;box-shadow:0 2px 4px rgba(9,24,39,0.04),0 12px 28px rgba(9,24,39,0.08);transform:translateY(-2px);}
-.medico-card-top{position:relative;display:flex;align-items:flex-end;justify-content:center;height:104px;background:var(--afg-navy-900);border-bottom:1px solid rgba(255,255,255,0.07);}
-.medico-foto-frame{position:relative;z-index:2;width:108px;height:108px;padding:4px;background:var(--afg-white);border:1px solid #d8e1e8;border-radius:50%;box-shadow:0 5px 16px rgba(9,24,39,0.14);transform:translateY(38px);}
-.medico-foto{display:block;width:100%;height:100%;background:var(--afg-slate-50);border-radius:50%;object-fit:cover;object-position:top center;}
-.medico-card-body{display:flex;flex:1;flex-direction:column;padding:51px 20px 19px;}
-.medico-nome-area{text-align:center;}
-.medico-nome-area h4{margin:0 0 7px !important;color:var(--afg-navy-900);font-size:1.07rem;font-weight:700;line-height:1.35;letter-spacing:-0.015em;}
-.medico-especialidade{display:inline-flex;align-items:center;justify-content:center;padding:5px 9px;color:var(--afg-teal-700);background:var(--afg-teal-100);border:1px solid #d4e8e4;border-radius:6px;font-size:0.75rem;font-weight:650;line-height:1.2;}
-.medico-info-list{display:flex;flex-direction:column;gap:0;margin-top:20px !important;border-top:1px solid var(--afg-border-soft);}
-.medico-info-item{display:flex;align-items:center;gap:11px;min-height:59px;padding:10px 1px;background:transparent;border:none;border-bottom:1px solid var(--afg-border-soft);border-radius:0;}
-.medico-info-icon{display:grid;flex:0 0 auto;place-items:center;width:35px;height:35px;color:var(--afg-teal-700);background:var(--afg-teal-100);border:1px solid #d9eae7;border-radius:7px;font-size:0.96rem;}
-.medico-info-item>div:last-child{min-width:0;}
-.medico-info-item small{display:block;margin-bottom:1px;color:var(--afg-slate-500);font-size:0.69rem;font-weight:650;line-height:1.3;}
-.medico-info-item p{margin:0;color:var(--afg-slate-800);font-size:0.84rem;font-weight:550;line-height:1.4;overflow-wrap:anywhere;}
-.btn-agendar{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:43px;padding:8px 14px;color:var(--afg-white);background:var(--afg-teal-700);border:1px solid var(--afg-teal-700);border-radius:8px;box-shadow:none;font-size:0.86rem;font-weight:650;transition:background-color var(--afg-transition),border-color var(--afg-transition),box-shadow var(--afg-transition);}
-.btn-agendar:hover,.btn-agendar:focus{color:var(--afg-white);background:#125c58;border-color:#125c58;box-shadow:0 4px 12px rgba(23,111,106,0.16);transform:none;}
-.medico-admin{margin-top:16px;padding-top:13px;border-top:1px solid var(--afg-border-soft);}
-.medico-admin-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:41px;padding:8px 11px;color:var(--afg-slate-700);background:var(--afg-white);border:1px solid var(--afg-border);border-radius:8px;font-size:0.77rem;font-weight:650;transition:background-color var(--afg-transition),border-color var(--afg-transition),color var(--afg-transition);}
-.medico-admin-toggle:hover{color:var(--afg-navy-900);background:var(--afg-slate-50);border-color:#bdc9d2;}
-.medico-admin-box{display:flex;flex-direction:column;gap:7px;margin-top:9px;}
-.medico-admin-box .btn{min-height:38px;padding:7px 11px;border-radius:7px;font-size:0.77rem;font-weight:650;}
-.btn-admin-editar{color:var(--afg-navy-800);background:var(--afg-white);border:1px solid var(--afg-slate-300);}
-.btn-admin-editar:hover{color:var(--afg-white);background:var(--afg-navy-800);border-color:var(--afg-navy-800);}
-.btn-admin-remover{color:var(--afg-danger);background:#fffafa;border:1px solid #dfb5b8;}
-.btn-admin-remover:hover{color:var(--afg-white);background:var(--afg-danger);border-color:var(--afg-danger);}
-.medicos-sem-resultado,.medicos-vazio{padding:55px 24px;background:var(--afg-white);border:1px solid var(--afg-border);border-radius:var(--afg-radius-lg);}
-.medicos-sem-resultado>i,.medicos-vazio>i{color:#a5afb8;font-size:2.5rem;}
+/* =========================================================
+   CARD MÉDICO — MODELO PROFISSIONAL V2
+   ========================================================= */
+
+.medico-card-v2 {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 100%;
+
+    overflow: hidden;
+
+    background: var(--afg-white);
+
+    border: 1px solid var(--afg-border);
+    border-radius: var(--afg-radius-lg);
+
+    box-shadow:
+        0 1px 2px rgba(9, 24, 39, 0.03),
+        0 8px 24px rgba(9, 24, 39, 0.06);
+
+    transition:
+        border-color var(--afg-transition),
+        box-shadow var(--afg-transition),
+        transform var(--afg-transition);
+}
+
+.medico-card-v2:hover {
+    transform: translateY(-3px);
+
+    border-color: #b8c7d1;
+
+    box-shadow:
+        0 3px 6px rgba(9, 24, 39, 0.04),
+        0 14px 32px rgba(9, 24, 39, 0.09);
+}
+
+/* FOTO */
+
+.medico-card-v2__media {
+    position: relative;
+
+    height: 220px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #d4e0e6 0%,
+            #bdcdd5 48%,
+            #a9bdc7 100%
+        );
+
+    border-bottom: 1px solid #aebfc8;
+
+    box-shadow:
+        inset 0 -12px 24px rgba(9, 40, 63, 0.06);
+}
+
+.medico-card-v2__foto {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: contain;
+    object-position: center bottom;
+}
+
+/* DISPONIBILIDADE */
+
+.medico-card-v2__disponibilidade {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 6px 10px;
+
+    color: #226a4c;
+    background: rgba(245, 251, 248, 0.96);
+
+    border: 1px solid #bcdccc;
+    border-radius: 7px;
+
+    box-shadow: 0 2px 8px rgba(9, 24, 39, 0.06);
+
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.medico-card-v2__disponibilidade i {
+    color: #2b9368;
+    font-size: 0.48rem;
+}
+
+/* CORPO */
+
+.medico-card-v2__body {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 22px;
+}
+
+/* IDENTIDADE */
+
+.medico-card-v2__identidade {
+    padding-bottom: 18px;
+}
+
+.medico-card-v2__especialidade {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--afg-teal-700);
+
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 0.055em;
+    line-height: 1.3;
+
+    text-transform: uppercase;
+}
+
+.medico-card-v2__nome {
+    margin: 0 0 7px;
+
+    color: var(--afg-navy-900);
+
+    font-size: 1.23rem;
+    font-weight: 720;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+}
+
+.medico-card-v2__registro {
+    margin: 0;
+
+    color: var(--afg-slate-500);
+
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+/* CONTATOS */
+
+.medico-card-v2__contatos {
+    margin-bottom: 22px;
+
+    border-top: 1px solid var(--afg-border-soft);
+}
+
+.medico-card-v2__contato {
+    min-height: 62px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 11px 0;
+
+    border-bottom: 1px solid var(--afg-border-soft);
+}
+
+.medico-card-v2__contato-icone {
+    width: 36px;
+    height: 36px;
+
+    flex: 0 0 36px;
+
+    display: grid;
+    place-items: center;
+
+    color: var(--afg-teal-700);
+    background: var(--afg-teal-100);
+
+    border: 1px solid #d7e8e5;
+    border-radius: 8px;
+
+    font-size: 0.96rem;
+}
+
+.medico-card-v2__contato-texto {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.medico-card-v2__contato-texto small {
+    margin-bottom: 1px;
+
+    color: var(--afg-slate-500);
+
+    font-size: 0.68rem;
+    font-weight: 650;
+}
+
+.medico-card-v2__contato-texto a,
+.medico-card-v2__contato-texto span {
+    overflow-wrap: anywhere;
+
+    color: var(--afg-slate-800);
+
+    font-size: 0.82rem;
+    font-weight: 550;
+}
+
+.medico-card-v2__contato-texto a:hover {
+    color: var(--afg-teal-700);
+}
+
+/* AÇÃO PRINCIPAL */
+
+.medico-card-v2__acoes {
+    display: flex;
+    flex-direction: column;
+}
+
+.medico-card-v2__agendar {
+    width: 100%;
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    color: var(--afg-white);
+    background: var(--afg-teal-700);
+
+    border: 1px solid var(--afg-teal-700);
+    border-radius: 8px;
+
+    font-size: 0.87rem;
+    font-weight: 700;
+}
+
+.medico-card-v2__agendar:hover,
+.medico-card-v2__agendar:focus {
+    color: var(--afg-white);
+    background: #125e5a;
+    border-color: #125e5a;
+}
+
+.medico-card-v2__indisponivel {
+    width: 100%;
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    color: var(--afg-slate-500);
+    background: var(--afg-slate-100);
+
+    border: 1px solid var(--afg-slate-200);
+    border-radius: 8px;
+
+    font-size: 0.85rem;
+    font-weight: 650;
+}
+
+/* ADMINISTRAÇÃO */
+
+.medico-card-v2__admin {
+    margin-top: 16px;
+    padding-top: 14px;
+
+    border-top: 1px solid var(--afg-border-soft);
+}
+
+.medico-card-v2__admin-toggle {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding: 10px 11px;
+
+    color: var(--afg-slate-700);
+    background: transparent;
+
+    border: none;
+    border-radius: 7px;
+
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.medico-card-v2__admin-toggle span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.medico-card-v2__admin-toggle:hover {
+    color: var(--afg-navy-900);
+    background: var(--afg-slate-50);
+}
+
+.medico-card-v2__admin-toggle[aria-expanded="true"]
+.bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+.medico-card-v2__admin-toggle .bi-chevron-down {
+    transition: transform var(--afg-transition);
+}
+
+.medico-card-v2__admin-acoes {
+    display: grid;
+    gap: 8px;
+
+    margin-top: 10px;
+    padding: 12px;
+
+    background: var(--afg-slate-50);
+
+    border: 1px solid var(--afg-border-soft);
+    border-radius: 9px;
+}
+
+.medico-card-v2__admin-acoes form {
+    margin: 0;
+}
+
+.medico-card-v2__editar,
+.medico-card-v2__remover {
+    width: 100%;
+    min-height: 39px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    background: var(--afg-white);
+
+    border-radius: 7px;
+
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.medico-card-v2__editar {
+    color: var(--afg-navy-800);
+    border: 1px solid var(--afg-slate-300);
+}
+
+.medico-card-v2__editar:hover {
+    color: var(--afg-navy-900);
+    background: var(--afg-slate-100);
+}
+
+.medico-card-v2__remover {
+    color: var(--afg-danger);
+    border: 1px solid #d9aeb2;
+}
+
+.medico-card-v2__remover:hover {
+    color: var(--afg-white);
+    background: var(--afg-danger);
+    border-color: var(--afg-danger);
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 991.98px) {
+    .medico-card-v2__media {
+        height: 210px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .medico-card-v2:hover {
+        transform: none;
+    }
+
+    .medico-card-v2__media {
+        height: 230px;
+    }
+
+    .medico-card-v2__body {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 420px) {
+    .medico-card-v2__media {
+        height: 205px;
+    }
+
+    .medico-card-v2__nome {
+        font-size: 1.12rem;
+    }
+
+    .medico-card-v2__body {
+        padding: 18px;
+    }
+}
 
 /* PRODUTOS */
 .produtos-page{padding-bottom:45px;}
